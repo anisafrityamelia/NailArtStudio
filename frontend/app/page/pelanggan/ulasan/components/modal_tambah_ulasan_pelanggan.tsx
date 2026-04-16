@@ -110,6 +110,20 @@ export default function ModalTambahUlasanPelanggan({
               />
             </div>
 
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-semibold text-[#7D344B] sm:text-sm">
+                Ulasan
+              </label>
+              <textarea
+                value={ulasan}
+                onChange={(e) => setUlasan(e.target.value)}
+                placeholder="Masukkan ulasan Anda"
+                rows={3}
+                required
+                className="w-full resize-none rounded-md border border-[#dd98ad] bg-white px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0] sm:text-sm"
+              />
+            </div>
+
             <div className="flex flex-col gap-2">
               <label className="text-xs font-semibold text-[#7D344B] sm:text-sm">
                 Rating
@@ -135,21 +149,7 @@ export default function ModalTambahUlasanPelanggan({
                 ))}
               </div>
             </div>
-
-            <div className="flex flex-col gap-1">
-              <label className="text-xs font-semibold text-[#7D344B] sm:text-sm">
-                Ulasan
-              </label>
-              <textarea
-                value={ulasan}
-                onChange={(e) => setUlasan(e.target.value)}
-                placeholder="Masukkan ulasan"
-                rows={3}
-                required
-                className="w-full resize-none rounded-md border border-[#dd98ad] bg-white px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0] sm:text-sm"
-              />
-            </div>
-
+            
             <div className="flex flex-col gap-1">
               <label className="text-xs font-semibold text-[#7D344B] sm:text-sm">
                 Unggah Gambar
