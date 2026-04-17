@@ -22,7 +22,7 @@ type SidebarProps = {
 const menuItems = [
     {
         title: "Dasbor Pelanggan",
-        href: "/page/pelanggan",
+        href: "/page/pelanggan/dasbor_pelanggan",
         icon: LayoutDashboard,
     },
     {
