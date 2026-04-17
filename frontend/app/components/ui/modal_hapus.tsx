@@ -16,21 +16,22 @@ export default function Modal_Hapus({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/30 px-4">
-            <div className="relative w-[85%] max-w-sm rounded-lg bg-[#ffecf2] px-5 py-6 shadow-[0_6px_20px_rgba(0,0,0,0.2)] sm:px-8 sm:py-10">
+        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/30 px-4 py-6">
+            <div className="relative w-full max-w-[320px] rounded-2xl bg-[#ffecf2] px-5 pb-6 pt-10 shadow-[0_6px_20px_rgba(0,0,0,0.2)] sm:max-w-[360px] sm:px-6 sm:pb-7 sm:pt-11">
                 <button
                     type="button"
                     onClick={onClose}
-                    className="rounded-full p-1 absolute right-4 top-4 text-[#7d344b] cursor-pointer transition hover:bg-[#f8dfe8]"
+                    className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full text-[#7d344b] transition hover:bg-[#f8dfe8] sm:right-4 sm:top-4"
                 >
-                    <X size={20} />
+                    <X size={18} />
                 </button>
 
                 <div className="flex flex-col items-center text-center">
-                    <h2 className="text-md sm:text-lg font-semibold text-[#7d344b] shadow-soft-text">
-                        Apakah Anda yakin ingin menghapus?
+                    <h2 className="text-base sm:text-lg font-semibold text-[#7d344b] shadow-soft-text">
+                        <span className="block">Apakah Anda yakin ingin</span>
+                        <span className="block">menghapus?</span>
                     </h2>
-                    <div className="mt-7 flex items-center justify-center gap-7">
+                    <div className="mt-7 flex w-full items-center justify-center gap-6 sm:gap-7">
                         <button
                             type="button"
                             onClick={onClose}
