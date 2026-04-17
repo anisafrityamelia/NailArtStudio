@@ -5,6 +5,7 @@ import { Plus } from "lucide-react";
 import Judul_Halaman from "@/app/components/ui/judul_halaman";
 import Tabel_Manajemen_Pengguna from "./components/tabel_manajemen_pengguna";
 import ModalTambahManajemenPengguna from "./components/modal_tambah_manajemen_pengguna";
+import ModalEditManajemenPengguna from "./components/modal_edit_manajemen_pengguna";
 import Modal_Hapus from "@/app/components/ui/modal_hapus";
 
 type ManajemenPengguna = {
@@ -92,8 +93,21 @@ export default function ManajemenPenggunaPage() {
 
     const [roleFilter, setRoleFilter] = useState("semua");
     const [isModalTambahOpen, setIsModalTambahOpen] = useState(false);
+    const [isModalEditOpen, setIsModalEditOpen] = useState(false);
     const [isModalHapusOpen, setIsModalHapusOpen] = useState(false);
+
+    const [dataEdit, setDataEdit] = useState<ManajemenPengguna | null>(null);
     const [dataHapus, setDataHapus] = useState<ManajemenPengguna | null>(null);
+
+    function handleBukaModalEdit(item: ManajemenPengguna) {
+        setDataEdit(item);
+        setIsModalEditOpen(true);
+    }
+
+    function handleTutupModalEdit() {
+        setIsModalEditOpen(false);
+        setDataEdit(null);
+    }
         
     function handleBukaModalHapus(item: ManajemenPengguna) {
         setDataHapus(item);
@@ -145,6 +159,7 @@ export default function ManajemenPenggunaPage() {
                 {/* Tabel daftar manajemen pengguna */}
                 <Tabel_Manajemen_Pengguna 
                     data={dataTampil} 
+                    onEdit={handleBukaModalEdit}
                     onDelete={handleBukaModalHapus}
                 />
             </section>
@@ -152,11 +167,16 @@ export default function ManajemenPenggunaPage() {
             <ModalTambahManajemenPengguna
                 isOpen={isModalTambahOpen}
                 onClose={() => setIsModalTambahOpen(false)}
-                onSubmit={() => {
-                    setIsModalTambahOpen(false);
-                }}
+                onSubmit={() => setIsModalTambahOpen(false)}
             />
-    
+
+            <ModalEditManajemenPengguna
+                isOpen={isModalEditOpen}
+                onClose={handleTutupModalEdit}
+                data={dataEdit}
+                onSubmit={() => handleTutupModalEdit()}
+            />
+
             <Modal_Hapus
                 isOpen={isModalHapusOpen}
                 onClose={handleTutupModalHapus}

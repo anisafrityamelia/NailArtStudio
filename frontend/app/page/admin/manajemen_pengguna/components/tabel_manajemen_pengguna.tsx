@@ -12,11 +12,13 @@ export type Baris_Manajemen_Pengguna = {
 
 type Props_Tabel_Manajemen_Pengguna = {
   data: Baris_Manajemen_Pengguna[];
+  onEdit: (item: Baris_Manajemen_Pengguna) => void;
   onDelete: (item: Baris_Manajemen_Pengguna) => void;
 };
 
 export default function Tabel_Manajemen_Pengguna({ 
     data,
+    onEdit,
     onDelete,
 }: Props_Tabel_Manajemen_Pengguna) {
 
@@ -49,6 +51,7 @@ export default function Tabel_Manajemen_Pengguna({
                                         <div className="flex flex-nowrap items-center justify-center gap-1 sm:gap-2">
                                             <button
                                                 type="button"
+                                                onClick={() => onEdit(item)}
                                                 className="flex shrink-0 items-center gap-1 whitespace-nowrap rounded bg-gradient-to-r from-[#E45082] to-[#7D344B] px-1.5 py-1 text-[10px] text-white transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 cursor-pointer sm:px-2 sm:text-sm shadow-soft-text"
                                             >
                                                 <Pencil size={15} /> Edit
