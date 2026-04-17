@@ -101,8 +101,12 @@ export default function ModalTambahManajemenPengguna({
                             </label>
                             <input
                                 type="text"
+                                inputMode="numeric"
                                 value={noHP}
-                                onChange={(e) => setNoHP(e.target.value)}
+                                onChange={(e) => {
+                                    const value = e.target.value.replace(/\D/g, "");
+                                    setNoHP(value);
+                                }}
                                 placeholder="Masukkan nomor HP"
                                 required
                                 className="w-full cursor-text rounded-md border border-[#dd98ad] bg-white px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0] sm:text-sm"

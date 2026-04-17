@@ -88,12 +88,12 @@ export default function HalamanPemesanan() {
                 No HP
               </label>
               <input
-                type="tel"
+                type="text"
                 inputMode="numeric"
                 value={noHp}
                 onChange={(e) => {
-                    const hanyaAngka = e.target.value.replace(/\D/g, "");
-                    setNoHp(hanyaAngka);
+                  const value = e.target.value.replace(/\D/g, "");
+                  setNoHp(value);
                 }}
                 placeholder="Masukkan No HP (Aktif)"
                 className="w-full rounded-md border border-[#dd98ad] bg-white px-3 py-1.5 text-xs text-[#7D344B] outline-none transition shadow-soft-text placeholder:text-[#b57f91] focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0] sm:text-sm"

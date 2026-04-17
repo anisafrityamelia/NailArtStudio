@@ -86,7 +86,13 @@ export default function ModalEditManajemenPengguna({
                             value={nama}
                             onChange={(e) => setNama(e.target.value)}
                             readOnly={isPelanggan}
-                            className="w-full cursor-text rounded-md border border-[#dd98ad] bg-white px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0] sm:text-sm"
+                            className={`w-full cursor-text rounded-md border border-[#dd98ad] bg-white px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text sm:text-sm cursor-not-allowed
+                                ${
+                                    isPelanggan
+                                    ? ""
+                                    : "focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0]"
+                                }
+                            `}
                         />
                     </div>
 
@@ -99,7 +105,13 @@ export default function ModalEditManajemenPengguna({
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             readOnly={isPelanggan}
-                            className="w-full cursor-text rounded-md border border-[#dd98ad] bg-white px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0] sm:text-sm"
+                            className={`w-full cursor-text rounded-md border border-[#dd98ad] bg-white px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text sm:text-sm cursor-not-allowed
+                                ${
+                                    isPelanggan
+                                    ? ""
+                                    : "focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0]"
+                                }
+                            `}
                         />
                     </div>
 
@@ -110,10 +122,20 @@ export default function ModalEditManajemenPengguna({
                             </label>
                             <input
                                 type="text"
+                                inputMode="numeric"
                                 value={noHP}
-                                onChange={(e) => setNoHP(e.target.value)}
+                                onChange={(e) => {
+                                    const value = e.target.value.replace(/\D/g, "");
+                                    setNoHP(value);
+                                }}
                                 readOnly={isPelanggan}
-                                className="w-full cursor-text rounded-md border border-[#dd98ad] bg-white px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0] sm:text-sm"
+                                className={`w-full cursor-text rounded-md border border-[#dd98ad] bg-white px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text sm:text-sm
+                                    ${
+                                        isPelanggan
+                                        ? ""
+                                        : "focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0]"
+                                    }
+                                `}
                             />
                         </div>
 
@@ -147,7 +169,7 @@ export default function ModalEditManajemenPengguna({
                             <button
                                 type="button"
                                 onClick={() => setIsPasswordReset(true)}
-                                className="shrink-0 rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-3 py-1.5 text-[10px] text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 sm:px-4 sm:py-2 sm:text-sm"
+                                className="shrink-0 rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-3 py-1.5 text-[10px] text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 sm:px-4 sm:py-2 sm:text-sm cursor-pointer"
                             >
                                 Reset Kata Sandi
                             </button>
