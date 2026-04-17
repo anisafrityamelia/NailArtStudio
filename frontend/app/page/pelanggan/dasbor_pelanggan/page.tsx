@@ -2,7 +2,7 @@
 
 import { ChangeEvent, useState } from "react";
 import Image from "next/image";
-import { Pencil } from "lucide-react";
+import { Pencil, Save } from "lucide-react";
 import Judul_Halaman from "@/app/components/ui/judul_halaman";
 
 export default function DashboardPelangganPage() {
@@ -17,9 +17,15 @@ export default function DashboardPelangganPage() {
   const [noHp, setNoHp] = useState(dataDummy.noHp);
   const [email, setEmail] = useState(dataDummy.email);
   const [fotoProfil, setFotoProfil] = useState(dataDummy.fotoProfil);
+  const [isEditing, setIsEditing] = useState(false);
 
-  const handleEdit = () => {
-    alert("Perubahan berhasil disimpan");
+  const handleButtonClick = () => {
+    if (isEditing) {
+      alert("Perubahan berhasil disimpan");
+      setIsEditing(false);
+    } else {
+      setIsEditing(true);
+    }
   };
 
   const handleFotoChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -82,8 +88,9 @@ export default function DashboardPelangganPage() {
               type="text"
               value={nama}
               onChange={(e) => setNama(e.target.value)}
+              disabled={!isEditing}
               placeholder="Masukkan Nama Anda"
-              className="w-full rounded-md border border-[#dd98ad] bg-transparent px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text placeholder:text-[#b57f91] focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0] sm:text-sm"
+              className="w-full rounded-md border border-[#dd98ad] bg-transparent px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text placeholder:text-[#b57f91] focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0] sm:text-sm disabled:opacity-60 disabled:text-gray-400 disabled:cursor-not-allowed"
             />
           </div>
 
@@ -97,7 +104,8 @@ export default function DashboardPelangganPage() {
               value={noHp}
               onChange={(e) => setNoHp(e.target.value.replace(/\D/g, ""))}
               placeholder="Masukkan Nomor HP Anda"
-              className="w-full rounded-md border border-[#dd98ad] bg-transparent px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text placeholder:text-[#b57f91] focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0] sm:text-sm"
+              disabled={!isEditing}
+              className="w-full rounded-md border border-[#dd98ad] bg-transparent px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text placeholder:text-[#b57f91] focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0] sm:text-sm disabled:opacity-60 disabled:text-gray-400 disabled:cursor-not-allowed"
             />
           </div>
 
@@ -110,7 +118,8 @@ export default function DashboardPelangganPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Masukkan Email Anda"
-              className="w-full rounded-md border border-[#dd98ad] bg-transparent px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text placeholder:text-[#b57f91] focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0] sm:text-sm"
+              disabled={!isEditing}
+              className="w-full rounded-md border border-[#dd98ad] bg-transparent px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text placeholder:text-[#b57f91] focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0] sm:text-sm disabled:opacity-60 disabled:text-gray-400 disabled:cursor-not-allowed"
             />
           </div>
         </div>
@@ -118,11 +127,11 @@ export default function DashboardPelangganPage() {
         <div className="mt-10 flex justify-end">
           <button
             type="button"
-            onClick={handleEdit}
-            className="flex cursor-pointer items-center gap-2 rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-4 py-2 text-xs font-medium text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 sm:px-5 sm:py-2 sm:text-sm"
+            onClick={handleButtonClick}
+            className="flex cursor-pointer items-center gap-2 rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-4 py-2 text-xs font-medium text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 sm:px-4 sm:py-2 sm:text-sm"
           >
-            <Pencil size={16} />
-            Edit
+            {isEditing ? <Save size={16} /> : <Pencil size={16} />}
+            {isEditing ? "Simpan" : "Edit"}
           </button>
         </div>
       </div>
