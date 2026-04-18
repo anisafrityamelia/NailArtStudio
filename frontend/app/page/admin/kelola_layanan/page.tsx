@@ -5,6 +5,7 @@ import Judul_Halaman from "@/app/components/ui/judul_halaman";
 import Tabel_Kelola_Layanan, {type Baris_Kelola_Layanan} from "./components/tabel_kelola_layanan";
 import ModalEditLayanan from "./components/modal_edit_layanan";
 import Card_Keunggulan_Beranda from "./components/card_keunggulan_beranda";
+import Card_Galeri_Beranda from "./components/card_galeri_beranda";
 
 export default function KelolaLayananPage() {
     const data: Baris_Kelola_Layanan[] = [
@@ -75,6 +76,7 @@ export default function KelolaLayananPage() {
                 <Judul_Halaman title="Kelola Beranda" />
 
                 <Card_Keunggulan_Beranda />
+                <Card_Galeri_Beranda />
             </section>
 
             <ModalEditLayanan

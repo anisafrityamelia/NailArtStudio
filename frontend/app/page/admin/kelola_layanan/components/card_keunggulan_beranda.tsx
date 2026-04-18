@@ -85,9 +85,10 @@ export default function Card_Keunggulan_Beranda() {
                 </label>
 
                 <textarea
-                    value={isEdit ? deskripsi : data.deskripsi}
+                    value={isEdit ? deskripsi : data.deskripsi || ""}
                     onChange={(e) => setDeskripsi(e.target.value)}
                     readOnly={!isEdit}
+                    placeholder="Masukkan deskripsi keunggulan"
                     rows={5}
                     className={`w-full rounded-md border border-[#dd98ad] px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text sm:text-sm ${
                     isEdit
