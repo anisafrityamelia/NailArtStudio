@@ -184,7 +184,7 @@ export default function ModalEditUlasanPelanggan({
                                 const file = e.target.files?.[0] || null;
                                 setGambar(file);
                             }}
-                            className="w-full cursor-pointer rounded-md border border-[#dd98ad] bg-white px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text file:mr-3 file:rounded-md file:border-0 file:bg-[#e6b1c2] file:px-3 file:py-1 file:text-xs file:text-[#7D344B] hover:file:bg-[#d996ad] sm:text-sm"
+                            className="w-full rounded-md border border-[#dd98ad] bg-white px-3 py-1.5 text-xs text-[#7D344B] outline-none shadow-soft-text sm:text-sm file:mr-3 file:rounded-md file:border-0 file:bg-[#d88fa5] file:px-3 file:py-1 file:text-white file:bg-[#e6b1c2] hover:file:bg-[#d996ad] file:cursor-pointer"
                         />
                         
                     </div>

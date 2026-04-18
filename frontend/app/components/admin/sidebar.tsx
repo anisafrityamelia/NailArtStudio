@@ -40,8 +40,8 @@ const menuItems = [
     ],
   },
   {
-    title: "Kelola Layanan",
-    href: "/admin/layanan",
+    title: "Kelola Layanan & Beranda",
+    href: "/page/admin/kelola_layanan",
     icon: Settings,
   },
   {
