@@ -4,7 +4,7 @@ import { useState } from "react";
 import Judul_Halaman from "@/app/components/ui/judul_halaman";
 import Tabel_Kelola_Layanan, {type Baris_Kelola_Layanan} from "./components/tabel_kelola_layanan";
 import ModalEditLayanan from "./components/modal_edit_layanan";
-import { Modal } from "flowbite";
+import Card_Keunggulan_Beranda from "./components/card_keunggulan_beranda";
 
 export default function KelolaLayananPage() {
     const data: Baris_Kelola_Layanan[] = [
@@ -69,6 +69,12 @@ export default function KelolaLayananPage() {
                     data={data}
                     onEdit={handleBukaModalEdit}
                 />
+            </section>
+
+            <section className="mt-10 space-y-5">
+                <Judul_Halaman title="Kelola Beranda" />
+
+                <Card_Keunggulan_Beranda />
             </section>
 
             <ModalEditLayanan
