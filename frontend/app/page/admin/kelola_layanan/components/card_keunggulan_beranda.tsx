@@ -8,37 +8,40 @@ type Data_Keunggulan = {
 }
 
 export default function Card_Keunggulan_Beranda() {
-    const data: Data_Keunggulan = {
-        deskripsi: "Alia Oye Studio menawarkan nail art custom sesuai keinginan, dikerjakan oleh nail artist berpengalaman dengan hasil rapi dan tahan lama.",
-    };
-
     const [isEdit, setIsEdit] = useState(false);
+
+    // data yang ditampilkan di card
+    const [dataKeunggulan, setDataKeunggulan] = useState<Data_Keunggulan | null>(null);
+
+    // data form saat edit
     const [deskripsi, setDeskripsi] = useState("");
 
     useEffect(() => {
-        if (isEdit) {
-            setDeskripsi(data.deskripsi);
+        if (isEdit && dataKeunggulan) {
+            setDeskripsi(dataKeunggulan?.deskripsi);
         }
-    }, [isEdit]);
+    }, [isEdit, dataKeunggulan]);
 
     function handleBukaEdit() {
         setIsEdit(true);
     }
 
     function handleBatalEdit() {
-        setDeskripsi(data.deskripsi);
+        setDeskripsi(dataKeunggulan?.deskripsi || "");
         setIsEdit(false);
     }
 
     function handleSimpanEdit(e: React.FormEvent) {
         e.preventDefault();
 
-        const payload = {
-            deskripsi,
+        const payload: Data_Keunggulan = {
+            deskripsi: deskripsi.trim(),
         };
 
         console.log("Payload keunggulan:", payload);
 
+        // dummy disimpan ke state dulu
+        setDataKeunggulan(payload);
         setIsEdit(false);
     }
 
@@ -85,10 +88,10 @@ export default function Card_Keunggulan_Beranda() {
                 </label>
 
                 <textarea
-                    value={isEdit ? deskripsi : data.deskripsi || ""}
+                    value={isEdit ? deskripsi : dataKeunggulan?.deskripsi || ""}
                     onChange={(e) => setDeskripsi(e.target.value)}
                     readOnly={!isEdit}
-                    placeholder="Masukkan deskripsi keunggulan"
+                    placeholder={isEdit ? "Masukkan deskripsi keunggulan" : ""}
                     rows={5}
                     className={`w-full rounded-md border border-[#dd98ad] px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text sm:text-sm ${
                     isEdit

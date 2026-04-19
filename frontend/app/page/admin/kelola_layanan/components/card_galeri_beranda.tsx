@@ -8,41 +8,42 @@ type Item_Galeri = {
   gambar: string;
 };
 
+const data: Item_Galeri[] = [
+    { 
+        id: 1, 
+        gambar: "/V.jfif",
+    },
+    { 
+        id: 2, 
+        gambar: "/V1.jfif",
+    },
+    { 
+        id: 3, 
+        gambar: "/V.jfif",
+    },
+    { 
+        id: 4, 
+        gambar: "/V1.jfif",
+    },
+    { 
+        id: 5, 
+        gambar: "/V.jfif",
+    },
+    { 
+        id: 6, 
+        gambar: "/V1.jfif",
+    },
+    { 
+        id: 7, 
+        gambar: "/V.jfif", 
+    },
+    { 
+        id: 8, 
+        gambar: "", 
+    },
+];
+
 export default function Card_Galeri_Beranda() {
-    const data: Item_Galeri[] = [
-        { 
-            id: 1, 
-            gambar: "/V.jfif",
-        },
-        { 
-            id: 2, 
-            gambar: "/V1.jfif",
-        },
-        { 
-            id: 3, 
-            gambar: "/V.jfif",
-        },
-        { 
-            id: 4, 
-            gambar: "/V1.jfif",
-        },
-        { 
-            id: 5, 
-            gambar: "/V.jfif",
-        },
-        { 
-            id: 6, 
-            gambar: "/V1.jfif",
-        },
-        { 
-            id: 7, 
-            gambar: "/V.jfif", 
-        },
-        { 
-            id: 8, 
-            gambar: "", 
-        },
-    ];
 
     const [isEdit, setIsEdit] = useState(false);
     const [draftGaleri, setDraftGaleri] = useState<Item_Galeri[]>([]);
@@ -95,7 +96,7 @@ export default function Card_Galeri_Beranda() {
         <section className="rounded-xl border border-[#d3a0b0] bg-white/40 p-5 shadow-sm">
             <div className="mb-4 flex items-center justify-between">
                 <div>
-                    <h3 className="text-xl font-semibold text-[#7D344B]">
+                    <h3 className="text-base font-semibold text-[#7D344B] sm:text-lg">
                         Galeri Studio
                     </h3>
                 </div>
@@ -142,7 +143,7 @@ export default function Card_Galeri_Beranda() {
                                 className="h-48 w-full rounded-md object-cover"
                             />
                         ) : (
-                            <div className="flex h-48 w-full items-center justify-center rounded-md bg-[#fff7fa] text-sm text-gray-400">
+                            <div className="flex h-48 w-full items-center justify-center rounded-md bg-[#fff7fa] text-xs sm:text-sm text-gray-400">
                                 Belum ada gambar
                             </div>
                         )}
