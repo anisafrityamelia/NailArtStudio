@@ -9,6 +9,7 @@ type Data_Kontak = {
   instagram: string;
   tiktok: string;
   whatsapp: string;
+  googleMaps: string;
 };
 
 export default function Card_Kontak_Beranda() {
@@ -23,6 +24,7 @@ export default function Card_Kontak_Beranda() {
   const [instagram, setInstagram] = useState("");
   const [tiktok, setTiktok] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
+  const [googleMaps, setGoogleMaps] = useState("");
 
   useEffect(() => {
     if (isEdit && dataKontak) {
@@ -31,6 +33,7 @@ export default function Card_Kontak_Beranda() {
       setInstagram(dataKontak.instagram);
       setTiktok(dataKontak.tiktok);
       setWhatsapp(dataKontak.whatsapp);
+      setGoogleMaps(dataKontak.googleMaps);
     }
   }, [isEdit, dataKontak]);
 
@@ -44,6 +47,7 @@ export default function Card_Kontak_Beranda() {
     setInstagram(dataKontak?.instagram || "");
     setTiktok(dataKontak?.tiktok || "");
     setWhatsapp(dataKontak?.whatsapp || "");
+    setGoogleMaps(dataKontak?.googleMaps || "");
     setIsEdit(false);
   }
 
@@ -56,6 +60,7 @@ export default function Card_Kontak_Beranda() {
       instagram: instagram.trim().replace(/^@/, ""),
       tiktok: tiktok.trim().replace(/^@/, ""),
       whatsapp: whatsapp.trim(),
+      googleMaps: googleMaps.trim(),
     };
 
     console.log("Payload kontak:", payload);
@@ -64,18 +69,6 @@ export default function Card_Kontak_Beranda() {
     setDataKontak(payload);
     setIsEdit(false);
   }
-
-  const instagramLink = dataKontak?.instagram
-    ? `https://instagram.com/${dataKontak.instagram}`
-    : "";
-
-  const tiktokLink = dataKontak?.tiktok
-    ? `https://tiktok.com/@${dataKontak.tiktok}`
-    : "";
-
-  const whatsappLink = dataKontak?.whatsapp
-    ? `https://wa.me/${dataKontak.whatsapp}`
-    : "";
 
   return (
     <section className="rounded-xl border border-[#d3a0b0] bg-white/40 p-5 shadow-sm">
@@ -113,24 +106,6 @@ export default function Card_Kontak_Beranda() {
 
       <form id="form-kontak-beranda" onSubmit={handleSimpanEdit}>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div className="flex flex-col gap-1 md:col-span-2">
-            <label className="text-xs font-semibold text-[#7D344B] sm:text-sm">
-              Alamat
-            </label>
-            <textarea
-              value={isEdit ? alamat : dataKontak?.alamat || ""}
-              onChange={(e) => setAlamat(e.target.value)}
-              readOnly={!isEdit}
-              rows={4}
-              placeholder={isEdit ? "Masukkan alamat" : ""}
-              className={`w-full rounded-md border border-[#dd98ad] px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text sm:text-sm ${
-                isEdit
-                  ? "bg-white focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0]"
-                  : "text-gray-400 bg-white/70"
-              }`}
-            />
-          </div>
-
           <div className="flex flex-col gap-1">
             <label className="text-xs font-semibold text-[#7D344B] sm:text-sm">
               Jam Operasional
@@ -195,6 +170,42 @@ export default function Card_Kontak_Beranda() {
               onChange={(e) => setWhatsapp(e.target.value)}
               readOnly={!isEdit}
               placeholder={isEdit ? "Contoh: 0812xxxxxxxx" : ""}
+              className={`w-full rounded-md border border-[#dd98ad] px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text sm:text-sm ${
+                isEdit
+                  ? "bg-white focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0]"
+                  : "text-gray-400 bg-white/70"
+              }`}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-semibold text-[#7D344B] sm:text-sm">
+              Alamat
+            </label>
+            <textarea
+              value={isEdit ? alamat : dataKontak?.alamat || ""}
+              onChange={(e) => setAlamat(e.target.value)}
+              readOnly={!isEdit}
+              rows={4}
+              placeholder={isEdit ? "Masukkan alamat" : ""}
+              className={`w-full rounded-md border border-[#dd98ad] px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text sm:text-sm ${
+                isEdit
+                  ? "bg-white focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0]"
+                  : "text-gray-400 bg-white/70"
+              }`}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-semibold text-[#7D344B] sm:text-sm">
+              Link Google Maps
+            </label>
+            <input
+              type="text"
+              value={isEdit ? googleMaps : dataKontak?.googleMaps || ""}
+              onChange={(e) => setGoogleMaps(e.target.value)}
+              readOnly={!isEdit}
+              placeholder={isEdit ? "Masukkan link google maps" : ""}
               className={`w-full rounded-md border border-[#dd98ad] px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text sm:text-sm ${
                 isEdit
                   ? "bg-white focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0]"
