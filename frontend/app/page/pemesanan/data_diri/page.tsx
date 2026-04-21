@@ -45,7 +45,7 @@ export default function HalamanPemesanan() {
 
             <div className="mt-2 flex justify-center">
               <img
-                src="/logo full alia oye (putih).png"
+                src="/logo full alia oye (burgundy).png"
                 alt="Alia Oye Studio"
                 className="h-auto w-[190px] object-contain sm:w-[250px]"
               />
