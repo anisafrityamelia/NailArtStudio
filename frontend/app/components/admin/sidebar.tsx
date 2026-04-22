@@ -27,7 +27,7 @@ type SidebarProps = {
 const menuItems = [
   {
     title: "Dasbor Admin",
-    href: "/admin",
+    href: "/page/admin/dasbor_admin",
     icon: LayoutDashboard,
   },
   {
