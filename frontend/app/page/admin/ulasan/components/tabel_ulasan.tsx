@@ -48,7 +48,17 @@ export default function Tabel_Ulasan({
                                 <td className="border border-[#e2b6c4] px-2 py-2 align-top break-words sm:px-3">{item.layanan}</td>
                                 <td className="border border-[#e2b6c4] px-2 py-2 align-top break-all sm:px-3">{item.ulasan || "-"}</td>
                                 <td className="border border-[#e2b6c4] px-2 py-2 text-center align-top break-words sm:px-3">{item.rating}</td>
-                                <td className="border border-[#e2b6c4] px-2 py-2 align-top break-all sm:px-3">{item.foto}</td>
+                                <td className="border border-[#e2b6c4] px-2 py-2 align-top sm:px-3">
+                                    {item.foto ? (
+                                        <img
+                                        src={item.foto}
+                                        alt={item.layanan}
+                                        className="mx-auto h-16 w-16 object-contain rounded bg-white"
+                                        />
+                                    ) : (
+                                        "-"
+                                    )}
+                                </td>
 
                                 <td className="border border-[#e2b6c4] px-2 py-2 align-top sm:px-2">
                                     <div className="flex justify-center">

@@ -26,7 +26,7 @@ export default function UlasanPage() {
             layanan: "Nail Art",
             ulasan: "bagus",
             rating: 4,
-            foto: "[IMG.jpg]",
+            foto: "/v.jfif",
         },
         {
             no: 2,
@@ -35,7 +35,7 @@ export default function UlasanPage() {
             layanan: "Eyelash",
             ulasan: "bagus",
             rating: 4,
-            foto: "[IMG.jpg]",
+            foto: "/v.jfif",
         },
         {
             no: 3,
@@ -44,7 +44,7 @@ export default function UlasanPage() {
             layanan: "Press On",
             ulasan: "bagus",
             rating: 4,
-            foto: "[IMG.jpg]",
+            foto: "/v.jfif",
         },
         {
             no: 4,
@@ -53,7 +53,7 @@ export default function UlasanPage() {
             layanan: "Nail Art",
             ulasan: "bagus",
             rating: 4,
-            foto: "[IMG.jpg]",
+            foto: "/v.jfif",
         },
         {
             no: 5,
@@ -62,7 +62,7 @@ export default function UlasanPage() {
             layanan: "Nail Art",
             ulasan: "bagus",
             rating: 4,
-            foto: "[IMG.jpg]",
+            foto: "/v.jfif",
         },
         {
             no: 6,
@@ -71,7 +71,7 @@ export default function UlasanPage() {
             layanan: "Nail Art",
             ulasan: "bagus",
             rating: 4,
-            foto: "[IMG.jpg]",
+            foto: "/v.jfif",
         },
         {
             no: 7,

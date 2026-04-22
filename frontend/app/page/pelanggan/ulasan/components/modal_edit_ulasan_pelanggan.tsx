@@ -26,21 +26,38 @@ export default function ModalEditUlasanPelanggan({
 }: PropsModalEditUlasanPelanggan) {
   const [rating, setRating] = useState(0);
   const [ulasan, setUlasan] = useState("");
-  const [gambar, setGambar] = useState<File | null>(null);
+  const [gambar, setGambar] = useState("");
+  const [fileGambar, setFileGambar] = useState<File | null>(null);
+  const [previewGambar, setPreviewGambar] = useState("");
 
    useEffect(() => {
     if (isOpen && data) {
       setRating(Number(data.rating) > 0 ? Number(data.rating) : 0);
       setUlasan(data.ulasan && data.ulasan !== "-" ? data.ulasan : "");
-      setGambar(null);
+      setGambar(data.gambar || "");
+      setFileGambar(null);
+      setPreviewGambar(data.gambar || "");
     } else {
       setRating(0);
       setUlasan("");
-      setGambar(null);
+      setGambar("");
+      setFileGambar(null);
+      setPreviewGambar("");
     }
   }, [isOpen, data]);
 
   if (!isOpen || !data) return null;
+
+  const handleChangeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setFileGambar(file);
+    setGambar(file.name);
+
+    const imageUrl = URL.createObjectURL(file);
+    setPreviewGambar(imageUrl);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,14 +70,11 @@ export default function ModalEditUlasanPelanggan({
         tanggal: data.tanggal,
         rating,
         ulasan,
-        gambar,
+        gambar: fileGambar,
     });
 
     onClose();
   };
-
-  const adaGambarLama =
-    !!data.gambar?.trim() && data.gambar !== "-";
 
    return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/40 px-4 py-6">
@@ -158,35 +172,29 @@ export default function ModalEditUlasanPelanggan({
 
                     <div className="flex flex-col gap-1">
                         <label className="text-xs font-semibold text-[#7D344B] sm:text-sm">
-                            Gambar Lama
-                        </label>
-
-                        {adaGambarLama ? (
-                            <div className="rounded-md border border-[#dd98ad] bg-white px-3 py-2 text-xs text-[#7D344B] shadow-soft-text break-all sm:text-sm">
-                                {data.gambar}
-                            </div>
-                        ) : (
-                            <div className="rounded-md border border-[#dd98ad] bg-white px-3 py-2 text-xs text-[#b07a8b] shadow-soft-text sm:text-sm">
-                                Tidak ada gambar lama
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="flex flex-col gap-1">
-                        <label className="text-xs font-semibold text-[#7D344B] sm:text-sm">
-                            Ganti Gambar
+                            Gambar
                         </label>
 
                         <input
                             type="file"
                             accept="image/*"
-                            onChange={(e) => {
-                                const file = e.target.files?.[0] || null;
-                                setGambar(file);
-                            }}
+                            onChange={handleChangeFile}
                             className="w-full rounded-md border border-[#dd98ad] bg-white px-3 py-1.5 text-xs text-[#7D344B] outline-none shadow-soft-text sm:text-sm file:mr-3 file:rounded-md file:border-0 file:bg-[#d88fa5] file:px-3 file:py-1 file:text-white file:bg-[#e6b1c2] hover:file:bg-[#d996ad] file:cursor-pointer"
                         />
-                        
+
+                        {gambar && (
+                            <p className="text-[11px] text-[#7D344B]/80">
+                                File dipilih: {gambar}
+                            </p>
+                        )}
+
+                        {previewGambar && (
+                            <img
+                                src={previewGambar}
+                                alt="Preview gambar ulasan"
+                                className="mt-2 h-24 w-24 rounded-md border border-[#dd98ad] object-cover"
+                            />
+                        )}
                     </div>
                     <div>
                         <button

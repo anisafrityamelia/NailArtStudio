@@ -16,7 +16,7 @@ export default function UlasanPage() {
             tanggal: "06-Jul-25",
             ulasan: "Good mantap",
             rating: 5,
-            gambar: "[IMG]",
+            gambar: "/V.jfif",
         },
         {
             no: 2,
