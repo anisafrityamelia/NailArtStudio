@@ -64,7 +64,9 @@ export default function Layanan() {
   }, []);
 
   useEffect(() => {
-    setIndexAktif((prev) => Math.min(prev, Math.max(daftarLayanan.length - jumlahTampil, 0)));
+    setIndexAktif((prev) =>
+      Math.min(prev, Math.max(daftarLayanan.length - jumlahTampil, 0)),
+    );
   }, [jumlahTampil]);
 
   const jalankanSlide = (arah: ArahAnimasi) => {
@@ -96,7 +98,10 @@ export default function Layanan() {
   const handleNext = () => jalankanSlide("next");
 
   const layananTampil = useMemo(() => {
-    return daftarLayanan.slice(indexTervalidasi, indexTervalidasi + jumlahTampil);
+    return daftarLayanan.slice(
+      indexTervalidasi,
+      indexTervalidasi + jumlahTampil,
+    );
   }, [indexTervalidasi, jumlahTampil]);
 
   const kelasAnimasi = useMemo(() => {
