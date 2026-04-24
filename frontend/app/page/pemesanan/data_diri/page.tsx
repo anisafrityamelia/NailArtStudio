@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Eye, EyeOff, ChevronDown } from "lucide-react";
 
 export default function HalamanPemesanan() {
@@ -9,18 +10,14 @@ export default function HalamanPemesanan() {
   const [email, setEmail] = useState("");
   const [noHp, setNoHp] = useState("");
   const [kataSandi, setKataSandi] = useState("");
-  const [layanan, setLayanan] = useState("Nail Art");
+  const [layanan, setLayanan] = useState("nail_art");
+
+  const router = useRouter();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    console.log({
-        nama,
-        email,
-        noHp,
-        kataSandi,
-        layanan,
-    });
+    router.push(`/page/pemesanan/pemesanan_layanan/${layanan}`);
   };
 
   return (
@@ -142,10 +139,10 @@ export default function HalamanPemesanan() {
                   className="w-full appearance-none cursor-pointer rounded-md border border-[#dd98ad] bg-white px-3 py-1.5 pr-10 text-xs text-[#7D344B] outline-none transition shadow-soft-text focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0] sm:text-sm"
                   required
                 >
-                  <option>Nail Art</option>
-                  <option>Press On</option>
-                  <option>Eyelash</option>
-                  <option>Remove</option>
+                  <option value="nail_art">Nail Art</option>
+                  <option value="presson">Press On</option>
+                  <option value="eyelash">Eyelash</option>
+                  <option value="remove">Remove</option>
                 </select>
 
                 <ChevronDown
@@ -158,7 +155,7 @@ export default function HalamanPemesanan() {
             <div>
               <button
                 type="submit"
-                className="w-full cursor-pointer rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-4 py-1.5 text-xs font-medium text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 sm:text-sm"
+                className="w-full cursor-pointer rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-4 py-1.5 text-xs font-medium text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 sm:text-sm mb-1"
               >
                 Lanjut Pemesanan
               </button>
