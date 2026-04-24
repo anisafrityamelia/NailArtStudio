@@ -18,7 +18,7 @@ export default function Card_Statistik({ data }: Props) {
                     <UserRound className="mt-0.5 h-[19px] w-[19px] text-[#7D344B]" />
                 </div>
                 <div className="mt-3 flex justify-end">
-                    <p className="text-[50px] font-bold leading-none tracking-tight text-[#8f3150] sm:text-[58px]">
+                    <p className="text-[50px] font-bold leading-none tracking-tight text-[#7D344B] sm:text-[58px]">
                         {data.jumlah_pelanggan}
                     </p>
                 </div>
@@ -33,7 +33,7 @@ export default function Card_Statistik({ data }: Props) {
                     <ShoppingCart className="mt-0.5 h-[19px] w-[19px] text-[#7D344B]" />
                 </div>
                 <div className="mt-3 flex justify-end">
-                    <p className="text-[50px] font-bold leading-none tracking-tight text-[#8f3150] sm:text-[58px]">
+                    <p className="text-[50px] font-bold leading-none tracking-tight text-[#7D344B] sm:text-[58px]">
                         {data.pesanan_masuk}
                     </p>
                 </div>
@@ -48,7 +48,7 @@ export default function Card_Statistik({ data }: Props) {
                     <BadgeCheck className="mt-0.5 h-[19px] w-[19px] text-[#7D344B]" />
                 </div>
                 <div className="mt-3 flex justify-end">
-                    <p className="text-[50px] font-bold leading-none tracking-tight text-[#8f3150] sm:text-[58px]">
+                    <p className="text-[50px] font-bold leading-none tracking-tight text-[#7D344B] sm:text-[58px]">
                         {data.pesanan_selesai}
                     </p>
                 </div>

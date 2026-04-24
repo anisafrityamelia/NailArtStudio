@@ -65,7 +65,7 @@ const menuItems = [
   },
   {
     title: "Laporan",
-    href: "/admin/laporan",
+    href: "/page/admin/laporan",
     icon: FileText,
   },
 ];
