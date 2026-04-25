@@ -4,12 +4,8 @@ import Image from "next/image";
 
 export default function Keunggulan() {
   return (
-    <section
-      id="keunggulan"
-      className="bg-[#f4f4f4] py-16 sm:py-20"
-    >
+    <section id="keunggulan" className="bg-[#f4f4f4] py-16 sm:py-20">
       <div className="container-landing px-4 sm:px-6">
-        
         {/* Judul */}
         <h2 className="text-center text-2xl font-bold text-[#7d344b] drop-shadow-sm sm:text-3xl md:text-4xl">
           Keunggulan dari Kami
@@ -17,7 +13,6 @@ export default function Keunggulan() {
 
         {/* Content */}
         <div className="mt-12 grid items-center gap-10 md:grid-cols-2">
-          
           {/* Gambar */}
           <div className="flex justify-center">
             <Image
@@ -25,8 +20,8 @@ export default function Keunggulan() {
               alt="Logo Alia Oye"
               width={420}
               height={420}
-              className="h-auto w-[220px] object-contain transition-all duration-300 ease-out hover:-translate-y-3 hover:scale-105 sm:w-[300px] md:w-[360px] lg:w-[420px]"
-            />
+              className="h-auto w-[220px] object-contain transition-all duration-300 ease-out hover:-translate-y-3 
+              hover:scale-105 sm:w-[300px] md:w-[360px] lg:w-[420px]"/>
           </div>
 
           {/* Teks */}
@@ -39,7 +34,6 @@ export default function Keunggulan() {
               memberikan pengalaman yang nyaman dan memuaskan.
             </p>
           </div>
-
         </div>
       </div>
     </section>

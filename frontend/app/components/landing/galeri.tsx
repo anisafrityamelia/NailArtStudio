@@ -89,8 +89,7 @@ export default function Galeri() {
   return (
     <section
       id="galeri"
-      className="scroll-mt-20 relative overflow-hidden py-[40px] md:py-[48px] lg:py-[72px]"
-    >
+      className="scroll-mt-20 relative overflow-hidden py-[40px] md:py-[48px] lg:py-[72px]">
       {/* Background blur */}
       <div
         className="absolute inset-[-10px] z-0 scale-[1.04] bg-cover bg-center bg-no-repeat blur-[10px]"
@@ -107,34 +106,17 @@ export default function Galeri() {
         </h2>
 
         <div
-          className="
-            grid
-            grid-cols-2
-            grid-rows-[105px_190px_145px_105px_105px]
-            gap-3
-
-            min-[421px]:grid-rows-[115px_205px_150px_110px_110px]
-            min-[421px]:gap-[14px]
-
-            md:grid-cols-3
-            md:grid-rows-[120px_180px_120px_120px]
-            md:gap-4
-
-            lg:grid-cols-[1.4fr_0.7fr_1.25fr_1.25fr]
-            lg:grid-rows-[110px_160px_110px]
-            lg:gap-[18px]
-          "
-        >
+          className="grid grid-cols-2 grid-rows-[105px_190px_145px_105px_105px] gap-3 
+          min-[421px]:grid-rows-[115px_205px_150px_110px_110px] min-[421px]:gap-[14px] md:grid-cols-3
+          md:grid-rows-[120px_180px_120px_120px] md:gap-4 lg:grid-cols-[1.4fr_0.7fr_1.25fr_1.25fr]
+          lg:grid-rows-[110px_160px_110px] lg:gap-[18px]">
           {daftarGaleri.map((item) => (
             <div
               key={item.id}
-              className={`
-                group relative overflow-hidden rounded-[16px] bg-white/10 shadow-[0_10px_24px_rgba(0,0,0,0.22)]
-                transition-all duration-300 ease-out
-                hover:-translate-y-[6px] hover:shadow-[0_18px_34px_rgba(0,0,0,0.3)]
-                md:rounded-[18px]
-                lg:rounded-[22px]
-                ${item.className}
+              className={`group relative overflow-hidden rounded-[16px] bg-white/10 shadow-[0_10px_24px_rgba(0,0,0,0.22)]
+              transition-all duration-300 ease-out hover:-translate-y-[6px] hover:shadow-[0_18px_34px_rgba(0,0,0,0.3)]
+              md:rounded-[18px] lg:rounded-[22px]
+              ${item.className}
               `}
             >
               <Image
@@ -144,7 +126,6 @@ export default function Galeri() {
                 className="object-cover transition-transform duration-[450ms] ease-out group-hover:scale-[1.06] group-hover:saturate-105"
                 sizes="(max-width: 768px) 100vw, 33vw"
               />
-
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/10 to-black/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
             </div>
           ))}

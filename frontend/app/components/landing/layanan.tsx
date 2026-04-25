@@ -123,63 +123,93 @@ export default function Layanan() {
   return (
     <section
       id="layanan"
-      className="overflow-hidden bg-[linear-gradient(180deg,#ffecf2_0%,#f7e9ee_60%,#dd98ad_100%)] py-[clamp(48px,7vw,72px)] max-[420px]:py-10"
+      className="overflow-hidden bg-[linear-gradient(180deg,#ffecf2_0%,#f7e9ee_60%,#dd98ad_100%)] 
+      py-[clamp(48px,7vw,72px)] max-[420px]:py-10"
     >
       <div className="container-landing px-4 sm:px-6 lg:px-10">
         <h2 className="mb-15 text-center text-2xl font-bold text-[#7d344b] drop-shadow-sm sm:text-3xl md:text-4xl">
           Layanan Kami
         </h2>
 
-        <div className="grid items-center gap-[18px] md:grid-cols-[56px_minmax(0,1fr)_56px] max-md:grid-cols-[40px_minmax(0,1fr)_40px] max-md:gap-[10px]">
+        <div
+          className="grid items-center gap-[18px] md:grid-cols-[56px_minmax(0,1fr)_56px] 
+          max-md:grid-cols-1 max-md:gap-[10px]"
+        >
           <button
             type="button"
             onClick={handlePrev}
             aria-label="Lihat layanan sebelumnya"
-            className="inline-flex h-9 w-9 items-center justify-center self-center rounded-full border-none bg-transparent text-[34px] leading-none text-[#7d344b] transition-all duration-200 active:scale-95 md:h-12 md:w-12 md:text-[42px] hover:opacity-85 [@media(hover:hover)_and_(pointer:fine)]:hover:-translate-y-0.5 [@media(hover:hover)_and_(pointer:fine)]:hover:scale-105 [@media(hover:hover)_and_(pointer:fine)]:hover:shadow-[0_14px_28px_rgba(0,0,0,0.16)]"
+            className="hidden h-9 w-9 items-center justify-center self-center rounded-full border-none 
+            bg-transparent text-[34px] leading-none text-[#7d344b] transition-all duration-200 active:scale-95 
+            md:inline-flex md:h-12 md:w-12 md:text-[42px] hover:opacity-85 [@media(hover:hover)_and_(pointer:fine)]:hover:-translate-y-0.5 
+            [@media(hover:hover)_and_(pointer:fine)]:hover:scale-105 
+            [@media(hover:hover)_and_(pointer:fine)]:hover:shadow-[0_14px_28px_rgba(0,0,0,0.16)]"
           >
             &#10094;
           </button>
 
           <div
-            className={`grid grid-cols-1 gap-[18px] transition-all duration-[220ms] ease-out will-change-transform will-change-opacity md:grid-cols-3 ${kelasAnimasi}`}
+            className={`max-md:flex max-md:gap-[18px] max-md:overflow-x-auto max-md:scroll-smooth max-md:snap-x max-md:snap-mandatory 
+            max-md:px-1 max-md:pb-4 max-md:[&::-webkit-scrollbar]:hidden max-md:[-ms-overflow-style:none] max-md:[scrollbar-width:none]
+            md:grid md:grid-cols-3 md:gap-[18px] md:transition-all md:duration-[220ms] 
+            md:ease-out md:will-change-transform md:will-change-opacity ${kelasAnimasi}`}
           >
-            {layananTampil.map((layanan) => (
-              <article
-                key={layanan.id}
-                className="w-full max-md:mx-auto max-md:max-w-[260px] origin-center rounded-2xl border border-[rgba(138,62,85,0.14)] bg-[rgba(221,152,173,0.2)] p-[18px] shadow-[0_6px_14px_rgba(0,0,0,0.18)] transition-all duration-[260ms] ease-out [@media(hover:hover)_and_(pointer:fine)]:hover:-translate-y-[10px] [@media(hover:hover)_and_(pointer:fine)]:hover:shadow-[0_18px_38px_rgba(0,0,0,0.2)] max-[420px]:p-3"
-              >
-                <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-white">
-                  <Image
-                    src={layanan.gambar}
-                    alt={layanan.alt}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                    className="object-cover transition-all duration-300 ease-out [@media(hover:hover)_and_(pointer:fine)]:group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 transition-all duration-300 ease-out [@media(hover:hover)_and_(pointer:fine)]:hover:[&+img]:scale-105" />
-                </div>
+            {(jumlahTampil === 1 ? daftarLayanan : layananTampil).map(
+              (layanan) => (
+                <article
+                  key={layanan.id}
+                  className="w-full max-md:mx-auto max-md:min-w-[260px] max-md:max-w-[260px] max-md:snap-center origin-center rounded-2xl border 
+                  border-[rgba(138,62,85,0.14)] bg-[rgba(221,152,173,0.2)] p-[18px] shadow-[0_6px_14px_rgba(0,0,0,0.18)] 
+                  transition-all duration-[260ms] ease-out [@media(hover:hover)_and_(pointer:fine)]:hover:-translate-y-[10px] 
+                  [@media(hover:hover)_and_(pointer:fine)]:hover:shadow-[0_18px_38px_rgba(0,0,0,0.2)] max-[420px]:p-3"
+                >
+                  <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-white">
+                    <Image
+                      src={layanan.gambar}
+                      alt={layanan.alt}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-cover transition-all duration-300 ease-out 
+                      [@media(hover:hover)_and_(pointer:fine)]:group-hover:scale-105"
+                    />
+                    <div
+                      className="absolute inset-0 transition-all duration-300 ease-out 
+                      [@media(hover:hover)_and_(pointer:fine)]:hover:[&+img]:scale-105"
+                    />
+                  </div>
 
-                <div className="flex flex-col gap-[14px] pt-[14px]">
-                  <h3 className="text-[17px] font-semibold text-[#7d344b] transition-all duration-200 md:text-[18px] [@media(hover:hover)_and_(pointer:fine)]:group-hover:-translate-y-px [@media(hover:hover)_and_(pointer:fine)]:group-hover:text-[#8a3e55]">
-                    {layanan.nama}
-                  </h3>
+                  <div className="flex flex-col gap-[14px] pt-[14px]">
+                    <h3
+                      className="text-[17px] font-semibold text-[#7d344b] transition-all duration-200 md:text-[18px] 
+                      [@media(hover:hover)_and_(pointer:fine)]:group-hover:-translate-y-px 
+                      [@media(hover:hover)_and_(pointer:fine)]:group-hover:text-[#8a3e55]"
+                    >
+                      {layanan.nama}
+                    </h3>
 
-                  <button
-                    type="button"
-                    className="cursor-pointer rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-2.5 py-1.5 sm:px-3 sm:py-1.5 sm:text-sm text-xs text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95"
-                  >
-                    Detail
-                  </button>
-                </div>
-              </article>
-            ))}
+                    <button
+                      type="button"
+                      className="cursor-pointer rounded-md bg-gradient-to-r from-[#E45082] 
+                      to-[#7D344B] px-2.5 py-1.5 sm:px-3 sm:py-1.5 sm:text-sm text-xs text-white shadow-soft-text 
+                      transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95"
+                    >
+                      Detail
+                    </button>
+                  </div>
+                </article>
+              ),
+            )}
           </div>
 
           <button
             type="button"
             onClick={handleNext}
             aria-label="Lihat layanan berikutnya"
-            className="inline-flex h-9 w-9 items-center justify-center self-center rounded-full border-none bg-transparent text-[34px] leading-none text-[#7d344b] transition-all duration-200 active:scale-95 md:h-12 md:w-12 md:text-[42px] hover:opacity-85 [@media(hover:hover)_and_(pointer:fine)]:hover:-translate-y-0.5 [@media(hover:hover)_and_(pointer:fine)]:hover:scale-105 [@media(hover:hover)_and_(pointer:fine)]:hover:shadow-[0_14px_28px_rgba(0,0,0,0.16)]"
+            className="hidden h-9 w-9 items-center justify-center self-center rounded-full 
+            border-none bg-transparent text-[34px] leading-none text-[#7d344b] transition-all duration-200 
+            active:scale-95 md:inline-flex md:h-12 md:w-12 md:text-[42px] hover:opacity-85 
+            [@media(hover:hover)_and_(pointer:fine)]:hover:-translate-y-0.5 [@media(hover:hover)_and_(pointer:fine)]:hover:scale-105 
+            [@media(hover:hover)_and_(pointer:fine)]:hover:shadow-[0_14px_28px_rgba(0,0,0,0.16)]"
           >
             &#10095;
           </button>
