@@ -1,8 +1,12 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+
 
 export default function NotifBerhasil() {
+  const router = useRouter();
+
   return (
     <main className="relative min-h-screen overflow-y-auto px-4 sm:px-6">
       {/* Background */}
@@ -43,6 +47,7 @@ export default function NotifBerhasil() {
           <div className="mt-6 sm:mt-7">
             <button
               type="button"
+              onClick={() => router.push("/page/pelanggan/pesanan")}
               className="w-full cursor-pointer rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-4 py-2 text-sm font-semibold text-white transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 shadow-soft-text"
             >
               Selesai

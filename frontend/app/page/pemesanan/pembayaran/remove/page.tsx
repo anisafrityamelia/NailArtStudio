@@ -83,6 +83,7 @@ export default function PembayaranRemove() {
 
                         <button
                             type="button"
+                            onClick={() => router.push("/page/pemesanan/notif_berhasil")}
                             className="mt-1 cursor-pointer w-full rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-4 py-1.5 text-xs font-medium text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 sm:text-sm mb-2"
                             >
                             Kirim

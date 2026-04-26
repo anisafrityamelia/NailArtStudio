@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const daftarLayanan = [
   {
@@ -9,30 +10,35 @@ const daftarLayanan = [
     nama: "Nail Art",
     gambar: "/galeri 1.jpeg",
     alt: "Layanan nail art",
+    detailUrl: "/page/pemesanan/detail_layanan/nail_art",
   },
   {
     id: 2,
     nama: "Press On Nails",
     gambar: "/galeri 2.jpeg",
     alt: "Layanan press on nails",
+    detailUrl: "/page/pemesanan/detail_layanan/presson",
   },
   {
     id: 3,
     nama: "Eyelash",
     gambar: "/galeri 5.jpeg",
     alt: "Layanan eyelash",
+    detailUrl: "/page/pemesanan/detail_layanan/eyelash",
   },
   {
     id: 4,
     nama: "Remove",
     gambar: "/galeri 10.jpeg",
     alt: "Layanan remove nail art",
+    detailUrl: "/page/pemesanan/detail_layanan/remove",
   },
   {
     id: 5,
     nama: "Kursus",
     gambar: "/galeri 11.jpeg",
     alt: "Layanan kursus nail art",
+    detailUrl: "/page/pemesanan/detail_layanan/course",
   },
 ];
 
@@ -120,6 +126,8 @@ export default function Layanan() {
       : "opacity-0 -translate-x-7 scale-[0.98] blur-[4px]";
   }, [statusAnimasi, arahAnimasi]);
 
+  const router = useRouter();
+
   return (
     <section
       id="layanan"
@@ -189,6 +197,7 @@ export default function Layanan() {
 
                     <button
                       type="button"
+                      onClick={() => router.push(layanan.detailUrl)}
                       className="cursor-pointer rounded-md bg-gradient-to-r from-[#E45082] 
                       to-[#7D344B] px-2.5 py-1.5 sm:px-3 sm:py-1.5 sm:text-sm text-xs text-white shadow-soft-text 
                       transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95"
