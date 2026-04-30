@@ -51,27 +51,27 @@ export default function PembayaranPressOn() {
                                 <InputReadonly label="Layanan" value="Press On" />
                                 <UploadPreviewReadonly
                                     label="Gambar Referensi"
-                                    src="/v.jfif"
+                                    src="/galeri 7.jpeg"
                                     alt="Gambar Referensi"
                                 />
                                 <UploadPreviewReadonly
                                     label="Foto Jari Kanan"
-                                    src="/v.jfif"
+                                    src="/galeri 7.jpeg"
                                     alt="Foto Jari Kanan"
                                 />
                                 <UploadPreviewReadonly
                                     label="Foto Jempol Kanan"
-                                    src="/v.jfif"
+                                    src="/galeri 7.jpeg"
                                     alt="Foto Jempol Kanan"
                                 />
                                 <UploadPreviewReadonly
                                     label="Foto Jari Kiri"
-                                    src="/v.jfif"
+                                    src="/galeri 7.jpeg"
                                     alt="Foto Jari Kiri"
                                 />
                                 <UploadPreviewReadonly
                                     label="Foto Jempol Kiri"
-                                    src="/v.jfif"
+                                    src="/galeri 7.jpeg"
                                     alt="Foto Jempol Kiri"
                                 />
                                 <InputReadonly label="Shape Kuku" value="Almond" />

@@ -11,31 +11,31 @@ type Item_Galeri = {
 const data: Item_Galeri[] = [
     { 
         id: 1, 
-        gambar: "/V.jfif",
+        gambar: "/galeri 1.jpeg",
     },
     { 
         id: 2, 
-        gambar: "/V1.jfif",
+        gambar: "/galeri 2.jpeg",
     },
     { 
         id: 3, 
-        gambar: "/V.jfif",
+        gambar: "/galeri 7.jpeg",
     },
     { 
         id: 4, 
-        gambar: "/V1.jfif",
+        gambar: "/galeri 6.jpeg",
     },
     { 
         id: 5, 
-        gambar: "/V.jfif",
+        gambar: "/galeri 5.jpeg",
     },
     { 
         id: 6, 
-        gambar: "/V1.jfif",
+        gambar: "/galeri 4.jpeg",
     },
     { 
         id: 7, 
-        gambar: "/V.jfif", 
+        gambar: "/galeri 8.jpeg", 
     },
     { 
         id: 8, 

@@ -54,41 +54,6 @@ export default function ManajemenPenggunaPage() {
             noHP: "081378780870",
             role: "pelanggan",
         },
-        {
-            no: 6,
-            nama: "Amelia",
-            email: "amel@gmail.com",
-            noHP: "081378780870",
-            role: "pelanggan",
-        },
-        {
-            no: 7,
-            nama: "Amelia",
-            email: "amel@gmail.com",
-            noHP: "081378780870",
-            role: "pelanggan",
-        },
-        {
-            no: 8,
-            nama: "Amelia",
-            email: "amel@gmail.com",
-            noHP: "081378780870",
-            role: "pelanggan",
-        },
-        {
-            no: 9,
-            nama: "Amelia",
-            email: "amel@gmail.com",
-            noHP: "081378780870",
-            role: "pelanggan",
-        },
-        {
-            no: 10,
-            nama: "Amelia",
-            email: "amel@gmail.com",
-            noHP: "081378780870",
-            role: "pelanggan",
-        },
     ];
 
     const [roleFilter, setRoleFilter] = useState("semua");

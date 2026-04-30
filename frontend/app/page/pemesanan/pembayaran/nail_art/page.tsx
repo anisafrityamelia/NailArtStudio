@@ -51,7 +51,7 @@ export default function PembayaranNailArt() {
                 <InputReadonly label="Jam" value="12:00" />
                 <UploadPreviewReadonly
                   label="Gambar Referensi"
-                  src="/v.jfif"
+                  src="/galeri 2.jpeg"
                   alt="Gambar Referensi"
                 />
                 <InputReadonly label="Bagian Kuku" value="Jari Tangan" />
