@@ -3,23 +3,43 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 
+type GambarLayanan = {
+    id_gambar: number;
+    id_layanan: number;
+    path_gambar: string;
+    url_gambar: string;
+};
+
 type DataLayanan = {
+    id_layanan: number;
     layanan: string;
+    kategori_layanan: string;
     deskripsi: string;
     estimasiHarga: number;
     durasi: number;
-    gambar1: string;
-    gambar2: string;
-    gambar3: string;
-    gambar4: string;
+    gambar: GambarLayanan[];
     statusLayanan: string;
-}
+};
+
+export type PayloadEditLayanan = {
+  id_layanan: number;
+  layanan: string;
+  kategori_layanan: string;
+  deskripsi: string;
+  estimasiHarga: number;
+  durasi: number;
+  statusLayanan: string;
+  fileGambar1: File | null;
+  fileGambar2: File | null;
+  fileGambar3: File | null;
+  fileGambar4: File | null;
+};
 
 type PropsModalEditLayanan = {
     isOpen: boolean;
     onClose: () => void;
     data: DataLayanan | null;
-    onSubmit: (payload: DataLayanan) => void;
+    onSubmit: (payload: PayloadEditLayanan) => void;
 };
 
 export default function PropsModalEditLayanan({
@@ -29,6 +49,7 @@ export default function PropsModalEditLayanan({
     onSubmit,
 }: PropsModalEditLayanan) {
     const [layanan, setLayanan] = useState("");
+    const [kategoriLayanan, setKategoriLayanan] = useState("");
     const [deskripsi, setDeskripsi] = useState("");
     const [estimasiHarga, setEstimasiHarga] = useState("");
     const [durasi, setDurasi] = useState("");
@@ -36,9 +57,13 @@ export default function PropsModalEditLayanan({
     const [gambar2, setGambar2] = useState("");
     const [gambar3, setGambar3] = useState("");
     const [gambar4, setGambar4] = useState("");
+
+    const [fileGambar1, setFileGambar1] = useState<File | null>(null);
+    const [fileGambar2, setFileGambar2] = useState<File | null>(null);
+    const [fileGambar3, setFileGambar3] = useState<File | null>(null);
+    const [fileGambar4, setFileGambar4] = useState<File | null>(null);
     const [statusLayanan, setStatusLayanan] = useState("Aktif");
 
-    const [fileGambar, setFileGambar] = useState<File | null>(null);
     const [previewGambar1, setPreviewGambar1] = useState("");
     const [previewGambar2, setPreviewGambar2] = useState("");
     const [previewGambar3, setPreviewGambar3] = useState("");
@@ -46,85 +71,84 @@ export default function PropsModalEditLayanan({
 
     useEffect(() => {
         if (isOpen && data) {
-            setLayanan(data.layanan);
-            setDeskripsi(data.deskripsi);
-            setEstimasiHarga(String(data.estimasiHarga));;
-            setDurasi(String(data.durasi));
-            setGambar1(data.gambar1);
-            setGambar2(data.gambar2);
-            setGambar3(data.gambar3);
-            setGambar4(data.gambar4);
-            setStatusLayanan(data.statusLayanan);
-            setFileGambar(null);
-            setPreviewGambar1(data.gambar1 || "");
-            setPreviewGambar2(data.gambar2 || "");
-            setPreviewGambar3(data.gambar3 || "");
-            setPreviewGambar4(data.gambar4 || "");
+        setLayanan(data.layanan);
+        setKategoriLayanan(data.kategori_layanan);
+        setDeskripsi(data.deskripsi);
+        setEstimasiHarga(String(data.estimasiHarga));
+        setDurasi(String(data.durasi));
+        setStatusLayanan(data.statusLayanan);
+
+        setFileGambar1(null);
+        setFileGambar2(null);
+        setFileGambar3(null);
+        setFileGambar4(null);
+
+        setGambar1(data.gambar[0]?.path_gambar || "");
+        setGambar2(data.gambar[1]?.path_gambar || "");
+        setGambar3(data.gambar[2]?.path_gambar || "");
+        setGambar4(data.gambar[3]?.path_gambar || "");
+
+        setPreviewGambar1(data.gambar[0]?.url_gambar || "");
+        setPreviewGambar2(data.gambar[1]?.url_gambar || "");
+        setPreviewGambar3(data.gambar[2]?.url_gambar || "");
+        setPreviewGambar4(data.gambar[3]?.url_gambar || "");
         }
     }, [isOpen, data]);
-
+    
     if (!isOpen || !data) return null;
 
     const handleChangeFile1 = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        setFileGambar(file);
+        setFileGambar1(file);
         setGambar1(file.name);
-
-        const imageUrl = URL.createObjectURL(file);
-        setPreviewGambar1(imageUrl);
+        setPreviewGambar1(URL.createObjectURL(file));
     };
 
     const handleChangeFile2 = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        setFileGambar(file);
+        setFileGambar2(file);
         setGambar2(file.name);
-
-        const imageUrl = URL.createObjectURL(file);
-        setPreviewGambar2(imageUrl);
+        setPreviewGambar2(URL.createObjectURL(file));
     };
 
     const handleChangeFile3 = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        setFileGambar(file);
+        setFileGambar3(file);
         setGambar3(file.name);
-
-        const imageUrl = URL.createObjectURL(file);
-        setPreviewGambar3(imageUrl);
+        setPreviewGambar3(URL.createObjectURL(file));
     };
 
     const handleChangeFile4 = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        setFileGambar(file);
+        setFileGambar4(file);
         setGambar4(file.name);
-
-        const imageUrl = URL.createObjectURL(file);
-        setPreviewGambar4(imageUrl);
+        setPreviewGambar4(URL.createObjectURL(file));
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
         onSubmit({
+            id_layanan: data.id_layanan,
             layanan,
+            kategori_layanan: kategoriLayanan,
             deskripsi,
             estimasiHarga: Number(estimasiHarga),
             durasi: Number(durasi),
-            gambar1,
-            gambar2,
-            gambar3,
-            gambar4,
             statusLayanan,
+            fileGambar1,
+            fileGambar2,
+            fileGambar3,
+            fileGambar4,
         });
-
-        onClose();
     };
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-6">
@@ -176,10 +200,7 @@ export default function PropsModalEditLayanan({
                             type="text"
                             inputMode="numeric"
                             value={estimasiHarga}
-                            onChange={(e) => {
-                                const value = e.target.value.replace(/\D/g, "");
-                                setEstimasiHarga(value);
-                            }}
+                            onChange={(e) => setEstimasiHarga(e.target.value.replace(/\D/g, ""))}
                             className="w-full rounded-md border border-[#dd98ad] bg-white px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0] sm:text-sm"
                         />
                     </div>
@@ -192,121 +213,44 @@ export default function PropsModalEditLayanan({
                             type="text"
                             inputMode="numeric"
                             value={durasi}
-                            onChange={(e) => {
-                                const value = e.target.value.replace(/\D/g, "");
-                                setDurasi(value);
-                            }}
+                            onChange={(e) => setDurasi(e.target.value.replace(/\D/g, ""))}
                             className="w-full rounded-md border border-[#dd98ad] bg-white px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0] sm:text-sm"
                         />
                     </div>
 
-                    <div className="flex flex-col gap-1">
+                    {[
+                        { label: "Gambar1", gambar: gambar1, preview: previewGambar1, onChange: handleChangeFile1 },
+                        { label: "Gambar2", gambar: gambar2, preview: previewGambar2, onChange: handleChangeFile2 },
+                        { label: "Gambar3", gambar: gambar3, preview: previewGambar3, onChange: handleChangeFile3 },
+                        { label: "Gambar4", gambar: gambar4, preview: previewGambar4, onChange: handleChangeFile4 },
+                    ].map((item) => (
+                        <div key={item.label} className="flex flex-col gap-1">
                         <label className="text-xs font-semibold text-[#7D344B] sm:text-sm">
-                            Gambar1
+                            {item.label}
                         </label>
 
                         <input
                             type="file"
                             accept="image/*"
-                            onChange={handleChangeFile1}
-                            className="w-full rounded-md border border-[#dd98ad] bg-white px-3 py-1.5 text-xs text-[#7D344B] outline-none shadow-soft-text sm:text-sm file:mr-3 file:rounded-md file:border-0 file:bg-[#d88fa5] file:px-3 file:py-1 file:text-white file:bg-[#e6b1c2] hover:file:bg-[#d996ad] file:cursor-pointer"
+                            onChange={item.onChange}
+                            className="w-full rounded-md border border-[#dd98ad] bg-white px-3 py-1.5 text-xs text-[#7D344B] outline-none shadow-soft-text sm:text-sm file:mr-3 file:rounded-md file:border-0 file:px-3 file:py-1 file:text-white file:bg-[#e6b1c2] hover:file:bg-[#d996ad] file:cursor-pointer"
                         />
 
-                        {gambar1 && (
+                        {item.gambar && (
                             <p className="text-[11px] text-[#7D344B]/80">
-                                File dipilih: {gambar1}
+                            File: {item.gambar}
                             </p>
                         )}
 
-                        {previewGambar1 && (
+                        {item.preview && (
                             <img
-                                src={previewGambar1}
-                                alt="Preview gambar1"
-                                className="mt-2 h-24 w-24 rounded-md border border-[#dd98ad] object-cover"
+                            src={item.preview}
+                            alt={`Preview ${item.label}`}
+                            className="mt-2 h-24 w-24 rounded-md border border-[#dd98ad] object-cover"
                             />
                         )}
-                    </div>
-
-                    <div className="flex flex-col gap-1">
-                        <label className="text-xs font-semibold text-[#7D344B] sm:text-sm">
-                            Gambar2
-                        </label>
-
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleChangeFile2}
-                            className="w-full rounded-md border border-[#dd98ad] bg-white px-3 py-1.5 text-xs text-[#7D344B] outline-none shadow-soft-text sm:text-sm file:mr-3 file:rounded-md file:border-0 file:bg-[#d88fa5] file:px-3 file:py-1 file:text-white file:bg-[#e6b1c2] hover:file:bg-[#d996ad] file:cursor-pointer"
-                        />
-
-                        {gambar2 && (
-                            <p className="text-[11px] text-[#7D344B]/80">
-                                File dipilih: {gambar2}
-                            </p>
-                        )}
-
-                        {previewGambar2 && (
-                            <img
-                                src={previewGambar2}
-                                alt="Preview gambar2"
-                                className="mt-2 h-24 w-24 rounded-md border border-[#dd98ad] object-cover"
-                            />
-                        )}
-                    </div>
-
-                    <div className="flex flex-col gap-1">
-                        <label className="text-xs font-semibold text-[#7D344B] sm:text-sm">
-                            Gambar3
-                        </label>
-
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleChangeFile3}
-                            className="w-full rounded-md border border-[#dd98ad] bg-white px-3 py-1.5 text-xs text-[#7D344B] outline-none shadow-soft-text sm:text-sm file:mr-3 file:rounded-md file:border-0 file:bg-[#d88fa5] file:px-3 file:py-1 file:text-white file:bg-[#e6b1c2] hover:file:bg-[#d996ad] file:cursor-pointer"
-                        />
-
-                        {gambar3 && (
-                            <p className="text-[11px] text-[#7D344B]/80">
-                                File dipilih: {gambar3}
-                            </p>
-                        )}
-
-                        {previewGambar3 && (
-                            <img
-                                src={previewGambar3}
-                                alt="Preview gambar3"
-                                className="mt-2 h-24 w-24 rounded-md border border-[#dd98ad] object-cover"
-                            />
-                        )}
-                    </div>
-
-                    <div className="flex flex-col gap-1">
-                        <label className="text-xs font-semibold text-[#7D344B] sm:text-sm">
-                            Gambar4
-                        </label>
-
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleChangeFile4}
-                            className="w-full rounded-md border border-[#dd98ad] bg-white px-3 py-1.5 text-xs text-[#7D344B] outline-none shadow-soft-text sm:text-sm file:mr-3 file:rounded-md file:border-0 file:bg-[#d88fa5] file:px-3 file:py-1 file:text-white file:bg-[#e6b1c2] hover:file:bg-[#d996ad] file:cursor-pointer"
-                        />
-
-                        {gambar4 && (
-                            <p className="text-[11px] text-[#7D344B]/80">
-                                File dipilih: {gambar4}
-                            </p>
-                        )}
-
-                        {previewGambar4 && (
-                            <img
-                                src={previewGambar4}
-                                alt="Preview gambar4"
-                                className="mt-2 h-24 w-24 rounded-md border border-[#dd98ad] object-cover"
-                            />
-                        )}
-                    </div>
+                        </div>
+                    ))}
 
                     <div className="flex flex-col gap-2">
                         <label className="text-xs font-semibold text-[#7D344B] sm:text-sm">

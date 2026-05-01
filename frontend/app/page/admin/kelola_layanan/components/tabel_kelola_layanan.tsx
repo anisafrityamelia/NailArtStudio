@@ -2,17 +2,23 @@
 
 import { Pencil } from "lucide-react";
 
+export type Gambar_Layanan = {
+  id_gambar: number;
+  id_layanan: number;
+  path_gambar: string;
+  url_gambar: string;
+};
+
 export type Baris_Kelola_Layanan = {
+  id_layanan: number;
   no: number;
-  layanan: string,
-  deskripsi: string,
-  estimasiHarga: number,
-  durasi: number,
-  gambar1: string,
-  gambar2: string,
-  gambar3: string,
-  gambar4: string,
-  statusLayanan: string,
+  layanan: string;
+  kategori_layanan: string;
+  deskripsi: string;
+  estimasiHarga: number;
+  durasi: number;
+  gambar: Gambar_Layanan[];
+  statusLayanan: string;
 };
 
 type Props_Tabel_Kelola_Layanan = {
@@ -54,17 +60,30 @@ export default function Tabel_Kelola_Layanan({
 
                     <tbody className="bg-white/70 text-[#7d344b] font-medium">
                         {data.map((item) => (
-                            <tr key={item.no}>
+                             <tr key={item.id_layanan}>
                                 <td className="border border-[#e2b6c4] px-2 py-2 text-center align-top break-words sm:px-3">{item.no}</td>
                                 <td className="border border-[#e2b6c4] px-2 py-2 align-top break-words sm:px-3">{item.layanan}</td>
                                 <td className="border border-[#e2b6c4] px-2 py-2 align-top break-words sm:px-3">{item.deskripsi}</td>
                                 <td className="border border-[#e2b6c4] px-2 py-2 text-center align-top break-words sm:px-3">{formatRupiah(item.estimasiHarga)}</td>
                                 <td className="border border-[#e2b6c4] px-2 py-2 text-center align-top break-all sm:px-3">{item.durasi}</td>
-                                <td className="border border-[#e2b6c4] px-2 py-2 align-top break-words sm:px-3"> <img src={item.gambar1} alt={item.layanan} className="mx-auto h-14 w-14 object-contain rounded bg-white"/></td>
-                                <td className="border border-[#e2b6c4] px-2 py-2 align-top break-words sm:px-3"> <img src={item.gambar2} alt={item.layanan} className="mx-auto h-14 w-14 object-contain rounded bg-white"/></td>
-                                <td className="border border-[#e2b6c4] px-2 py-2 align-top break-words sm:px-3"> <img src={item.gambar3} alt={item.layanan} className="mx-auto h-14 w-14 object-contain rounded bg-white"/></td>
-                                <td className="border border-[#e2b6c4] px-2 py-2 align-top break-words sm:px-3"> <img src={item.gambar4} alt={item.layanan} className="mx-auto h-14 w-14 object-contain rounded bg-white"/></td>
-                                <td className="border border-[#e2b6c4] px-2 py-2 text-center align-top break-all sm:px-3">{item.statusLayanan}</td>
+                                {[0, 1, 2, 3].map((index) => (
+                                <td
+                                    key={index}
+                                    className="border border-[#e2b6c4] px-2 py-2 align-top break-words sm:px-3"
+                                >
+                                    {item.gambar[index]?.url_gambar ? (
+                                    <img
+                                        src={item.gambar[index].url_gambar}
+                                        alt={item.layanan}
+                                        className="mx-auto h-14 w-14 object-cover rounded bg-white"
+                                    />
+                                    ) : (
+                                    <span className="block text-center text-[11px] text-[#7D344B]/60">
+                                        Tidak ada
+                                    </span>
+                                    )}
+                                </td>
+                                ))}<td className="border border-[#e2b6c4] px-2 py-2 text-center align-top break-all sm:px-3">{item.statusLayanan}</td>
 
                                 <td className="border border-[#e2b6c4] px-2 py-2 align-top sm:px-2">
                                     <div className="flex justify-center">

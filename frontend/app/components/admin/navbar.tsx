@@ -5,6 +5,8 @@ import { Bell, KeyRound, LogOut, Menu, MoreVertical } from "lucide-react";
 import ModalGantiPassword from "@/app/components/ui/modal-ganti-password";
 import Image from "next/image";
 import Link from "next/link";
+import { logout } from "@/app/lib/auth";
+import { getUser } from "@/app/lib/auth";
 
 type NavbarProps = {
   onMenuClick: () => void;
@@ -14,7 +16,16 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
   // Mengatur buka tutup dropdown dari ikon titik tiga
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [userName, setUserName] = useState("");
   const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const user = getUser();
+
+    if (user) {
+      setUserName(user.nama_pengguna);
+    }
+  }, []);
 
   // Menutup dropdown saat klik di luar area menu
   useEffect(() => {
@@ -80,7 +91,7 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
               <div className="absolute right-0 top-12 z-50 w-45 overflow-hidden rounded-2xl border border-[#dd98ad] bg-[#ffecf2] text-[#7d344b] shadow-soft-text">
                 <div className="border-b border-[#efcfd8] px-4 py-2">
                   <p className="beark-words text-[15px] font-semibold leading-snug">
-                    Anisa Frity Amelia
+                    {userName || "User"}
                   </p>
                 </div>
 
@@ -96,13 +107,17 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
                     <span className="shadow-soft-text">Ubah Sandi</span>
                   </button>
 
-                  <Link
-                    href="/auth/login"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-[15px] font-medium transition hover:bg-[#f2dce3] cursor-pointer">
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      setIsMenuOpen(false);
+                      await logout();
+                    }}
+                    className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-[15px] font-medium transition hover:bg-[#f2dce3] cursor-pointer"
+                  >
                     <LogOut size={18} />
                     <span className="shadow-soft-text">Keluar</span>
-                  </Link>
+                  </button>
                 </div>
               </div>
             )}

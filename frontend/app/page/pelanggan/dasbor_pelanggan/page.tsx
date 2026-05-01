@@ -1,23 +1,45 @@
 "use client";
 
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Pencil, Save } from "lucide-react";
 import Judul_Halaman from "@/app/components/ui/judul_halaman";
+import { getCurrentUser } from "@/app/lib/auth";
 
 export default function DashboardPelangganPage() {
-  const dataDummy = {
-    nama: "Anisa Frity Amelia",
-    noHp: "081234567890",
-    email: "anisafrityamelia@gmail.com",
-    fotoProfil: "",
-  };
+  const router = useRouter();
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
-  const [nama, setNama] = useState(dataDummy.nama);
-  const [noHp, setNoHp] = useState(dataDummy.noHp);
-  const [email, setEmail] = useState(dataDummy.email);
-  const [fotoProfil, setFotoProfil] = useState(dataDummy.fotoProfil);
+  const [nama, setNama] = useState("");
+  const [noHp, setNoHp] = useState("");
+  const [email, setEmail] = useState("");
+  const [fotoProfil, setFotoProfil] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+
+  useEffect(() => {
+    const cekAuthPelanggan = async () => {
+      const user = await getCurrentUser();
+
+      if (!user) {
+        router.push("/auth/login");
+        return;
+      }
+
+      if (user.role !== "pelanggan") {
+        router.push("/auth/login");
+        return;
+      }
+      setNama(user.nama_pengguna || "");
+      setNoHp(user.no_hp || "");
+      setEmail(user.email || "");
+      setFotoProfil(user.profil_foto || "");
+      
+      setIsCheckingAuth(false);
+    };
+
+    cekAuthPelanggan();
+  }, [router]);
 
   const handleButtonClick = () => {
     if (isEditing) {
@@ -40,6 +62,16 @@ export default function DashboardPelangganPage() {
 
     reader.readAsDataURL(file);
   };
+
+  if (isCheckingAuth) {
+    return (
+            <section className="flex min-h-screen items-center justify-center">
+                <p className="text-sm font-semibold text-[#7D344B]">
+                    Memeriksa akses...
+                </p>
+            </section>
+        );
+  }
 
   return (
     <section className="w-full">

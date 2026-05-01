@@ -1,78 +1,71 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Judul_Halaman from "@/app/components/ui/judul_halaman";
-import Tabel_Kelola_Layanan, {type Baris_Kelola_Layanan} from "./components/tabel_kelola_layanan";
-import ModalEditLayanan from "./components/modal_edit_layanan";
+import Tabel_Kelola_Layanan, {
+  type Baris_Kelola_Layanan,
+} from "./components/tabel_kelola_layanan";
+import ModalEditLayanan, {
+  type PayloadEditLayanan,
+} from "./components/modal_edit_layanan";
 import Card_Keunggulan_Beranda from "./components/card_keunggulan_beranda";
 import Card_Galeri_Beranda from "./components/card_galeri_beranda";
 import Card_Kontak_Beranda from "./components/card_kontak_beranda";
+import API_BASE_URL from "@/app/lib/api";
+import { getToken } from "@/app/lib/auth";
 
 export default function KelolaLayananPage() {
-    const data: Baris_Kelola_Layanan[] = [
-        {
-            no: 1,
-            layanan: "Nail Art",
-            deskripsi: "Layanan nail art dengan desain cantik dan stylish yang bisa disesuaikan dengan keinginanmu. Dikerjakan dengan detail dan bahan berkualitas untuk hasil yang tahan lama dan cocok untuk berbagai acara.",
-            estimasiHarga: 80000,
-            durasi: 120,
-            gambar1: "/galeri 1.jpeg",
-            gambar2: "/galeri 6.jpeg",
-            gambar3: "/galeri 9.jpeg",
-            gambar4: "/galeri 8.jpeg",
-            statusLayanan: "Aktif",
-        },
-        {
-            no: 2,
-            layanan: "Press On",
-            deskripsi: "Press-on nails praktis dengan desain menarik dan bisa custom sesuai style kamu. Mudah dipakai dan tetap memberikan tampilan kuku yang cantik tanpa perlu ke salon.",
-            estimasiHarga: 75000,
-            durasi: 60,
-            gambar1: "/galeri 2.jpeg",
-            gambar2: "/galeri 3.jpeg",
-            gambar3: "/galeri 7.jpeg",
-            gambar4: "/galeri 8.jpeg",
-            statusLayanan: "Aktif",
-        },
-        {
-            no: 3,
-            layanan: "Eyelash",
-            deskripsi: "Layanan remove untuk melepas nail art, gel, atau eyelash extension dengan aman tanpa merusak kuku.",
-            estimasiHarga: 85000,
-            durasi: 120,
-            gambar1: "/galeri 5.jpeg",
-            gambar2: "/galeri 5.jpeg",
-            gambar3: "/galeri 4.jpeg",
-            gambar4: "/galeri 4.jpeg",
-            statusLayanan: "Aktif",
-        },
-        {
-            no: 4,
-            layanan: "Remove",
-            deskripsi: "Layanan eyelash extension untuk tampilan mata yang lebih cantik dan on point. Tersedia berbagai style mulai dari natural hingga bold, dengan hasil ringan, nyaman, dan tahan lama.",
-            estimasiHarga: 50000,
-            durasi: 60,
-            gambar1: "/galeri 10.jpeg",
-            gambar2: "/galeri 10.jpeg",
-            gambar3: "/galeri 10.jpeg",
-            gambar4: "/galeri 10.jpeg",
-            statusLayanan: "Aktif",
-        },
-        {
-            no: 5,
-            layanan: "Course",
-            deskripsi: "Lorem ipsum",
-            estimasiHarga: 250000,
-            durasi: 240,
-            gambar1: "/galeri 11.jpeg",
-            gambar2: "/galeri 11.jpeg",
-            gambar3: "/galeri 11.jpeg",
-            gambar4: "/galeri 11.jpeg",
-            statusLayanan: "Nonaktif",
-        },
-    ];
+    const [data, setData] = useState<Baris_Kelola_Layanan[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);
     const [dataEdit, setDataEdit] = useState<Baris_Kelola_Layanan | null>(null);
+    async function fetchLayanan() {
+        try {
+            setLoading(true);
+
+            const token = getToken();
+
+            const response = await fetch(`${API_BASE_URL}/admin/layanan`, {
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                setError(result.message || "Gagal mengambil data layanan");
+                return;
+            }
+
+            const mappedData: Baris_Kelola_Layanan[] = result.data.map(
+                (item: any, index: number) => ({
+                    id_layanan: item.id_layanan,
+                    no: index + 1,
+                    layanan: item.nama_layanan,
+                    kategori_layanan: item.kategori_layanan,
+                    deskripsi: item.deskripsi_layanan,
+                    estimasiHarga: item.harga_dasar,
+                    durasi: item.durasi_menit,
+                    gambar: item.gambar || [],
+                    statusLayanan:
+                        item.status_layanan === "aktif" ? "Aktif" : "Nonaktif",
+                })
+            );
+
+            setData(mappedData);
+        } catch (error) {
+            setError("Gagal terhubung ke server");
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        fetchLayanan();
+    }, []);
 
     function handleBukaModalEdit(item: Baris_Kelola_Layanan) {
         setDataEdit(item);
@@ -84,17 +77,87 @@ export default function KelolaLayananPage() {
         setDataEdit(null);
     }
 
+    async function handleUpdateLayanan(payload: any) {
+        try {
+            const token = getToken();
+
+            const response = await fetch(
+                `${API_BASE_URL}/admin/layanan/${payload.id_layanan}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                        nama_layanan: payload.layanan,
+                        harga_dasar: payload.estimasiHarga,
+                        deskripsi_layanan: payload.deskripsi,
+                        kategori_layanan: payload.kategori_layanan,
+                        durasi_menit: payload.durasi,
+                        status_layanan:
+                            payload.statusLayanan === "Aktif" ? "aktif" : "nonaktif",
+                    }),
+                }
+            );
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                alert(result.message || "Gagal update layanan");
+                return;
+            }
+
+            const files = [
+                payload.fileGambar1,
+                payload.fileGambar2,
+                payload.fileGambar3,
+                payload.fileGambar4,
+            ];
+
+            for (const file of files) {
+                if (file) {
+                    const formData = new FormData();
+                    formData.append("gambar", file);
+
+                    await fetch(
+                        `${API_BASE_URL}/admin/layanan/${payload.id_layanan}/gambar`,
+                        {
+                            method: "POST",
+                            headers: {
+                                Accept: "application/json",
+                                Authorization: `Bearer ${token}`,
+                            },
+                            body: formData,
+                        }
+                    );
+                }
+            }
+
+            await fetchLayanan();
+            handleTutupModalEdit();
+            alert("Layanan berhasil diperbarui");
+        } catch (error) {
+            alert("Gagal terhubung ke server");
+        }
+    }
+
     return (
         <>
             <section>
                 {/* Judul halaman */}
                 <Judul_Halaman title="Kelola Layanan" />
 
-                {/* Tabel kelola layanan */}
-                <Tabel_Kelola_Layanan
-                    data={data}
-                    onEdit={handleBukaModalEdit}
-                />
+                {loading && (
+                <p className="text-sm text-[#7D344B]">Memuat data layanan...</p>
+                )}
+
+                {error && <p className="text-sm text-red-500">{error}</p>}
+
+                {!loading && !error && (
+                <Tabel_Kelola_Layanan data={data} onEdit={handleBukaModalEdit} />
+                )}
             </section>
 
             <section className="mt-10 space-y-5">
@@ -109,7 +172,7 @@ export default function KelolaLayananPage() {
                 isOpen={isModalEditOpen}
                 onClose={handleTutupModalEdit}
                 data={dataEdit}
-                onSubmit={() => handleTutupModalEdit()}
+                onSubmit={handleUpdateLayanan}
             />
         </>
     );
