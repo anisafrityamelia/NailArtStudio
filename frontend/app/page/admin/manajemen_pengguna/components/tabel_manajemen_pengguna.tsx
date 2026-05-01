@@ -3,6 +3,7 @@
 import { Pencil, Trash2 } from "lucide-react";
 
 export type Baris_Manajemen_Pengguna = {
+  id_pengguna: number;
   no: number;
   nama: string,
   email: string,
@@ -39,7 +40,7 @@ export default function Tabel_Manajemen_Pengguna({
 
                     <tbody className="bg-white/70 text-[#7d344b] font-medium">
                         {data.map((item) => (
-                            <tr key={item.no}>
+                            <tr key={item.id_pengguna}>
                                 <td className="border border-[#e2b6c4] px-2 py-2 text-center align-top break-words sm:px-3">{item.no}</td>
                                 <td className="border border-[#e2b6c4] px-2 py-2 align-top break-words sm:px-3">{item.nama}</td>
                                 <td className="border border-[#e2b6c4] px-2 py-2 align-top break-all sm:px-3">{item.email}</td>

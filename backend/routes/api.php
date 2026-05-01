@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\LayananController;
 use App\Http\Controllers\Api\GambarLayananController;
+use App\Http\Controllers\Api\ManajemenPenggunaController;
 
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -27,6 +28,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/layanan/{id_layanan}/gambar', [GambarLayananController::class, 'store']);
         Route::post('/gambar-layanan/{id_gambar}/replace', [GambarLayananController::class, 'replace']);
         Route::delete('/gambar-layanan/{id_gambar}', [GambarLayananController::class, 'destroy']);
+
+        Route::get('/pengguna', [ManajemenPenggunaController::class, 'index']);
+        Route::post('/pengguna', [ManajemenPenggunaController::class, 'store']);
     });
 
     Route::middleware('role:pelanggan')->prefix('pelanggan')->group(function () {

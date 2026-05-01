@@ -3,15 +3,17 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 
+export type PayloadTambahManajemenPengguna = {
+    nama: string,
+    email: string,
+    noHP: string,
+    role: string,
+};
+
 type PropsModalTambahManajemenPengguna = {
     isOpen: boolean;
     onClose: () => void;
-    onSubmit: (payload: {
-        nama: string,
-        email: string,
-        noHP: string,
-        role: string,
-    }) => void;
+    onSubmit: (payload: PayloadTambahManajemenPengguna) => void;
 };
 
 export default function ModalTambahManajemenPengguna({
@@ -44,8 +46,6 @@ export default function ModalTambahManajemenPengguna({
             noHP,
             role,
         });
-
-        onClose();
     };
 
     return (
@@ -103,10 +103,7 @@ export default function ModalTambahManajemenPengguna({
                                 type="text"
                                 inputMode="numeric"
                                 value={noHP}
-                                onChange={(e) => {
-                                    const value = e.target.value.replace(/\D/g, "");
-                                    setNoHP(value);
-                                }}
+                                onChange={(e) => setNoHP(e.target.value.replace(/\D/g, ""))}
                                 placeholder="Masukkan nomor HP"
                                 required
                                 className="w-full cursor-text rounded-md border border-[#dd98ad] bg-white px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0] sm:text-sm"

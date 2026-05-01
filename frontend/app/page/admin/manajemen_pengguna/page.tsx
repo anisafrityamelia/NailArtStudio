@@ -1,70 +1,112 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import Judul_Halaman from "@/app/components/ui/judul_halaman";
-import Tabel_Manajemen_Pengguna from "./components/tabel_manajemen_pengguna";
-import ModalTambahManajemenPengguna from "./components/modal_tambah_manajemen_pengguna";
+import Tabel_Manajemen_Pengguna, {
+    type Baris_Manajemen_Pengguna,
+} from "./components/tabel_manajemen_pengguna";
+import ModalTambahManajemenPengguna, {
+    type PayloadTambahManajemenPengguna,
+} from "./components/modal_tambah_manajemen_pengguna";
 import ModalEditManajemenPengguna from "./components/modal_edit_manajemen_pengguna";
 import Modal_Hapus from "@/app/components/ui/modal_hapus";
-
-type ManajemenPengguna = {
-  no: number;
-  nama: string,
-  email: string,
-  noHP: string,
-  role: string,
-};
+import API_BASE_URL from "@/app/lib/api";
+import { getToken } from "@/app/lib/auth";
 
 export default function ManajemenPenggunaPage() {
-  // Data sementara untuk isi tabel manajemen pengguna
-    const data: ManajemenPengguna[] = [
-        {
-            no: 1,
-            nama: "Admin",
-            email: "aliaoye@gmail.com",
-            noHP: "081378780866",
-            role: "admin",
-        },
-        {
-            no: 2,
-            nama: "Ahyun",
-            email: "ahyun@gmail.com",
-            noHP: "081378780867",
-            role: "pelanggan",
-        },
-        {
-            no: 3,
-            nama: "Anisa Frity Amelia",
-            email: "anisa@gmail.com",
-            noHP: "081378780868",
-            role: "pelanggan",
-        },
-        {
-            no: 4,
-            nama: "widayy",
-            email: "widay@gmail.com",
-            noHP: "081378780869",
-            role: "pelanggan",
-        },
-        {
-            no: 5,
-            nama: "Amelia",
-            email: "amel@gmail.com",
-            noHP: "081378780870",
-            role: "pelanggan",
-        },
-    ];
+    const [data, setData] = useState<Baris_Manajemen_Pengguna[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
 
     const [roleFilter, setRoleFilter] = useState("semua");
     const [isModalTambahOpen, setIsModalTambahOpen] = useState(false);
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);
     const [isModalHapusOpen, setIsModalHapusOpen] = useState(false);
 
-    const [dataEdit, setDataEdit] = useState<ManajemenPengguna | null>(null);
-    const [dataHapus, setDataHapus] = useState<ManajemenPengguna | null>(null);
+    const [dataEdit, setDataEdit] = useState<Baris_Manajemen_Pengguna | null>(null);
+    const [dataHapus, setDataHapus] = useState<Baris_Manajemen_Pengguna | null>(null);
 
-    function handleBukaModalEdit(item: ManajemenPengguna) {
+    async function fetchPengguna() {
+        try {
+            setLoading(true);
+            setError("");
+
+            const token = getToken();
+
+            const response = await fetch(`${API_BASE_URL}/admin/pengguna`, {
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                setError(result.message || "Gagal mengambil data pengguna");
+                return;
+            }
+
+            const mappedData: Baris_Manajemen_Pengguna[] = result.data.map(
+                (item: any, index: number) => ({
+                    id_pengguna: item.id_pengguna,
+                    no: index + 1,
+                    nama: item.nama_pengguna,
+                    email: item.email,
+                    noHP: item.no_hp || "-",
+                    role: item.role,
+                })
+            );
+
+            setData(mappedData);
+        } catch (error) {
+            setError("Gagal terhubung ke server");
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    async function handleTambahPengguna(payload: PayloadTambahManajemenPengguna) {
+        try {
+            const token = getToken();
+
+            const response = await fetch(`${API_BASE_URL}/admin/pengguna`, {
+                method: "POST",
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    nama_pengguna: payload.nama,
+                    email: payload.email,
+                    no_hp: payload.noHP,
+                    role: payload.role,
+                }),
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                alert(result.message || "Gagal menambahkan pengguna");
+                return;
+            }
+
+            await fetchPengguna();
+            setIsModalTambahOpen(false);
+
+            alert("Pengguna berhasil ditambahkan");
+        } catch (error) {
+            alert("Gagal terhubung ke server");
+        }
+    }
+
+    useEffect(() => {
+        fetchPengguna();
+    }, []);
+
+    function handleBukaModalEdit(item: Baris_Manajemen_Pengguna) {
         setDataEdit(item);
         setIsModalEditOpen(true);
     }
@@ -74,7 +116,7 @@ export default function ManajemenPenggunaPage() {
         setDataEdit(null);
     }
         
-    function handleBukaModalHapus(item: ManajemenPengguna) {
+    function handleBukaModalHapus(item: Baris_Manajemen_Pengguna) {
         setDataHapus(item);
         setIsModalHapusOpen(true);
     }
@@ -88,10 +130,15 @@ export default function ManajemenPenggunaPage() {
         handleTutupModalHapus();
     }
 
-    const dataTampil =
+    const dataFiltered =
         roleFilter === "semua"
             ? data
             : data.filter((item) => item.role === roleFilter);
+
+    const dataTampil = dataFiltered.map((item, index) => ({
+        ...item,
+        no: index + 1,
+    }));
 
     return (
         <>
@@ -120,19 +167,26 @@ export default function ManajemenPenggunaPage() {
                         <Plus size={15} /> Tambah
                     </button>
                 </div>
-    
-                {/* Tabel daftar manajemen pengguna */}
-                <Tabel_Manajemen_Pengguna 
-                    data={dataTampil} 
-                    onEdit={handleBukaModalEdit}
-                    onDelete={handleBukaModalHapus}
-                />
+
+                {loading && (
+                    <p className="text-sm text-[#7D344B]">Memuat data pengguna...</p>
+                )}
+                
+                {error && <p className="text-sm text-red-500">{error}</p>}
+                
+                {!loading && !error && (
+                    <Tabel_Manajemen_Pengguna 
+                        data={dataTampil} 
+                        onEdit={handleBukaModalEdit}
+                        onDelete={handleBukaModalHapus} 
+                    />
+                )}
             </section>
 
             <ModalTambahManajemenPengguna
                 isOpen={isModalTambahOpen}
                 onClose={() => setIsModalTambahOpen(false)}
-                onSubmit={() => setIsModalTambahOpen(false)}
+                onSubmit={handleTambahPengguna}
             />
 
             <ModalEditManajemenPengguna
