@@ -25,6 +25,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/layanan/{id}', [LayananController::class, 'destroy']);
         
         Route::post('/layanan/{id_layanan}/gambar', [GambarLayananController::class, 'store']);
+        Route::post('/gambar-layanan/{id_gambar}/replace', [GambarLayananController::class, 'replace']);
         Route::delete('/gambar-layanan/{id_gambar}', [GambarLayananController::class, 'destroy']);
     });
 

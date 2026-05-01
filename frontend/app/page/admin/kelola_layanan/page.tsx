@@ -77,7 +77,7 @@ export default function KelolaLayananPage() {
         setDataEdit(null);
     }
 
-    async function handleUpdateLayanan(payload: any) {
+    async function handleUpdateLayanan(payload: PayloadEditLayanan) {
         try {
             const token = getToken();
 
@@ -109,18 +109,46 @@ export default function KelolaLayananPage() {
                 return;
             }
 
-            const files = [
-                payload.fileGambar1,
-                payload.fileGambar2,
-                payload.fileGambar3,
-                payload.fileGambar4,
+            const gambarLama = dataEdit?.gambar || [];
+
+            const daftarGambar = [
+                {
+                    file: payload.fileGambar1,
+                    id_gambar: gambarLama[0]?.id_gambar,
+                },
+                {
+                    file: payload.fileGambar2,
+                    id_gambar: gambarLama[1]?.id_gambar,
+                },
+                {
+                    file: payload.fileGambar3,
+                    id_gambar: gambarLama[2]?.id_gambar,
+                },
+                {
+                    file: payload.fileGambar4,
+                    id_gambar: gambarLama[3]?.id_gambar,
+                },
             ];
 
-            for (const file of files) {
-                if (file) {
-                    const formData = new FormData();
-                    formData.append("gambar", file);
+            for (const item of daftarGambar) {
+                if (!item.file) continue;
 
+                const formData = new FormData();
+                formData.append("gambar", item.file);
+
+                if (item.id_gambar) {
+                    await fetch(
+                        `${API_BASE_URL}/admin/gambar-layanan/${item.id_gambar}/replace`,
+                        {
+                            method: "POST",
+                            headers: {
+                                Accept: "application/json",
+                                Authorization: `Bearer ${token}`,
+                            },
+                            body: formData,
+                        }
+                    );
+                } else {
                     await fetch(
                         `${API_BASE_URL}/admin/layanan/${payload.id_layanan}/gambar`,
                         {
@@ -134,7 +162,6 @@ export default function KelolaLayananPage() {
                     );
                 }
             }
-
             await fetchLayanan();
             handleTutupModalEdit();
             alert("Layanan berhasil diperbarui");
