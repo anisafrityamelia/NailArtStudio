@@ -31,6 +31,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/pengguna', [ManajemenPenggunaController::class, 'index']);
         Route::post('/pengguna', [ManajemenPenggunaController::class, 'store']);
+        Route::put('/pengguna/{id}', [ManajemenPenggunaController::class, 'update']);
+        Route::post('/pengguna/{id}/reset-password', [ManajemenPenggunaController::class, 'resetPassword']);
+        Route::delete('/pengguna/{id}', [ManajemenPenggunaController::class, 'destroy']);
+
     });
 
     Route::middleware('role:pelanggan')->prefix('pelanggan')->group(function () {

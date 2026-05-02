@@ -4,17 +4,26 @@ import { useEffect, useState } from "react";
 import { X, Eye, EyeOff } from "lucide-react";
 
 type DataPengguna = {
+    id_pengguna: number;
     nama: string;
     email: string;
     noHP: string;
     role: string;
 }
 
+export type PayloadEditManajemenPengguna = {
+    id_pengguna: number,
+    nama: string,
+    email: string,
+    noHP: string,
+};
+
 type PropsModalEditManajemenPengguna = {
     isOpen: boolean;
     onClose: () => void;
     data: DataPengguna | null;
-    onSubmit: (payload: DataPengguna) => void;
+    onSubmit: (payload: PayloadEditManajemenPengguna) => void;
+    onResetPassword: (id_pengguna: number) => void;
 };
 
 export default function ModalEditManajemenPengguna({
@@ -22,11 +31,12 @@ export default function ModalEditManajemenPengguna({
     onClose,
     data,
     onSubmit,
+    onResetPassword,
 }: PropsModalEditManajemenPengguna) {
     const [nama, setNama] = useState("");
     const [email, setEmail] = useState("");
     const [noHP, setNoHP] = useState("");
-    const [role, setRole] = useState("pelanggan");
+    const [role, setRole] = useState("");
 
     const [isPasswordReset, setIsPasswordReset] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -50,13 +60,16 @@ export default function ModalEditManajemenPengguna({
         e.preventDefault();
 
         onSubmit({
+            id_pengguna: data.id_pengguna,
             nama,
             email,
             noHP,
-            role,
         });
+    };
 
-        onClose();
+    const handleResetPassword = () => {
+        onResetPassword(data.id_pengguna);
+        setIsPasswordReset(true);
     };
 
     return (
@@ -86,7 +99,7 @@ export default function ModalEditManajemenPengguna({
                             value={nama}
                             onChange={(e) => setNama(e.target.value)}
                             readOnly={isPelanggan}
-                            className={`w-full cursor-text rounded-md border border-[#dd98ad] bg-white px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text sm:text-sm cursor-not-allowed
+                            className={`w-full cursor-text rounded-md border border-[#dd98ad] bg-white px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text sm:text-sm
                                 ${
                                     isPelanggan
                                     ? ""
@@ -105,7 +118,7 @@ export default function ModalEditManajemenPengguna({
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             readOnly={isPelanggan}
-                            className={`w-full cursor-text rounded-md border border-[#dd98ad] bg-white px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text sm:text-sm cursor-not-allowed
+                            className={`w-full cursor-text rounded-md border border-[#dd98ad] bg-white px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text sm:text-sm
                                 ${
                                     isPelanggan
                                     ? ""
@@ -124,10 +137,7 @@ export default function ModalEditManajemenPengguna({
                                 type="text"
                                 inputMode="numeric"
                                 value={noHP}
-                                onChange={(e) => {
-                                    const value = e.target.value.replace(/\D/g, "");
-                                    setNoHP(value);
-                                }}
+                                onChange={(e) => setNoHP(e.target.value.replace(/\D/g, ""))}
                                 readOnly={isPelanggan}
                                 className={`w-full cursor-text rounded-md border border-[#dd98ad] bg-white px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text sm:text-sm
                                     ${
@@ -143,15 +153,12 @@ export default function ModalEditManajemenPengguna({
                             <label className="text-xs font-semibold text-[#7D344B] sm:text-sm">
                                 Role
                             </label>
-                            <select
+                            <input
+                                type="text"
                                 value={role}
-                                onChange={(e) => setRole(e.target.value)}
-                                disabled={isPelanggan}
-                                className="h-[38px] w-full cursor-pointer rounded-md border border-[#dd98ad] bg-white px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0] sm:text-sm"
-                            >
-                                <option value="admin">Admin</option>
-                                <option value="pelanggan">Pelanggan</option>
-                            </select>
+                                readOnly
+                                className="h-[38px] w-full rounded-md border border-[#dd98ad] bg-white px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text sm:text-sm"
+                            />
                         </div>
                     </div>
 
@@ -168,7 +175,7 @@ export default function ModalEditManajemenPengguna({
 
                             <button
                                 type="button"
-                                onClick={() => setIsPasswordReset(true)}
+                                onClick={handleResetPassword}
                                 className="shrink-0 rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-3 py-1.5 text-[10px] text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 sm:px-4 sm:py-2 sm:text-sm cursor-pointer"
                             >
                                 Reset Kata Sandi
@@ -203,14 +210,14 @@ export default function ModalEditManajemenPengguna({
                         </div>
                     </div>        
 
-                    <div>
+                    {!isPelanggan && (
                         <button
                             type="submit"
                             className="w-full cursor-pointer rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-4 py-2 text-xs font-medium text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 sm:text-sm"
                         >
                             Simpan
                         </button>
-                    </div>
+                    )}
                 </form>
             </div>
         </div>

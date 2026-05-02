@@ -9,7 +9,9 @@ import Tabel_Manajemen_Pengguna, {
 import ModalTambahManajemenPengguna, {
     type PayloadTambahManajemenPengguna,
 } from "./components/modal_tambah_manajemen_pengguna";
-import ModalEditManajemenPengguna from "./components/modal_edit_manajemen_pengguna";
+import ModalEditManajemenPengguna, {
+    type PayloadEditManajemenPengguna,
+} from "./components/modal_edit_manajemen_pengguna";
 import Modal_Hapus from "@/app/components/ui/modal_hapus";
 import API_BASE_URL from "@/app/lib/api";
 import { getToken } from "@/app/lib/auth";
@@ -102,6 +104,102 @@ export default function ManajemenPenggunaPage() {
         }
     }
 
+    async function handleEditPengguna(payload: PayloadEditManajemenPengguna) {
+        try {
+            const token = getToken();
+
+            const response = await fetch(
+                `${API_BASE_URL}/admin/pengguna/${payload.id_pengguna}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                        nama_pengguna: payload.nama,
+                        email: payload.email,
+                        no_hp: payload.noHP,
+                    }),
+                }
+            );
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                alert(result.message || "Gagal update pengguna");
+                return;
+            }
+
+            await fetchPengguna();
+            handleTutupModalEdit();
+
+            alert("Berhasil update pengguna");
+        } catch (error) {
+            alert("Gagal terhubung ke server");
+        }
+    }
+
+    async function handleResetPassword(id_pengguna: number) {
+        try {
+            const token = getToken();
+
+            const response = await fetch(
+                `${API_BASE_URL}/admin/pengguna/${id_pengguna}/reset-password`,
+                {
+                    method: "POST",
+                    headers: {
+                        Accept: "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                alert(result.message || "Gagal reset password");
+                return;
+            }
+
+            alert("Password direset ke 123456");
+        } catch (error) {
+            alert("Gagal terhubung ke server");
+        }
+    }
+
+    async function handleHapusPengguna(id_pengguna: number) {
+        try {
+            const token = getToken();
+
+            const response = await fetch(
+                `${API_BASE_URL}/admin/pengguna/${id_pengguna}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        Accept: "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                alert(result.message || "Gagal menghapus pengguna");
+                return;
+            }
+
+            await fetchPengguna();
+            handleTutupModalHapus();
+
+            alert("Pengguna berhasil dihapus");
+        } catch (error) {
+            alert("Gagal terhubung ke server");
+        }
+    }
+
     useEffect(() => {
         fetchPengguna();
     }, []);
@@ -127,7 +225,9 @@ export default function ManajemenPenggunaPage() {
     }
         
     function handleKonfirmasiHapus() {
-        handleTutupModalHapus();
+        if (!dataHapus) return;
+
+        handleHapusPengguna(dataHapus.id_pengguna);
     }
 
     const dataFiltered =
@@ -192,10 +292,11 @@ export default function ManajemenPenggunaPage() {
             <ModalEditManajemenPengguna
                 isOpen={isModalEditOpen}
                 onClose={handleTutupModalEdit}
-                data={dataEdit}
-                onSubmit={() => handleTutupModalEdit()}
+                data={dataEdit} 
+                onSubmit={handleEditPengguna}
+                onResetPassword={handleResetPassword}
             />
-
+            
             <Modal_Hapus
                 isOpen={isModalHapusOpen}
                 onClose={handleTutupModalHapus}

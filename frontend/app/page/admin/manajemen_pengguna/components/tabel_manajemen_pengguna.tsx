@@ -30,7 +30,7 @@ export default function Tabel_Manajemen_Pengguna({
                     <thead className="bg-[#dd98ad] text-[#7d344b]">
                         <tr className="text-center">
                             <th className="w-[6%] border border-[#c88ca1] px-2 py-2 sm:w-[4%] sm:px-3">No</th>
-                            <th className="w-[18%] border border-[#c88ca1] px-2 py-2 sm:w-[17%] sm:px-3">Nama Pelanggan</th>
+                            <th className="w-[18%] border border-[#c88ca1] px-2 py-2 sm:w-[17%] sm:px-3">Nama Pengguna</th>
                             <th className="w-[18%] border border-[#c88ca1] px-2 py-2 sm:w-[17%] sm:px-3">Email</th>
                             <th className="w-[11%] border border-[#c88ca1] px-2 py-2 sm:w-[11%] sm:px-3">No HP</th>
                             <th className="w-[11%] border border-[#c88ca1] px-2 py-2 sm:w-[11%] sm:px-3">Role</th>
