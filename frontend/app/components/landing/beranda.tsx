@@ -5,7 +5,7 @@ import { Sparkles } from "lucide-react";
 
 export default function Beranda() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-[#DD98AD] to-[#F7D8DE]">
+    <section id="beranda" className="relative overflow-hidden bg-gradient-to-br from-[#DD98AD] to-[#F7D8DE]">
       {/* Blur */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
         <div className="absolute left-[-80px] top-[-60px] h-56 w-56 animate-pulse rounded-full bg-white/20 blur-3xl sm:h-72 sm:w-72" />

@@ -9,7 +9,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   const menuItems = [
-    { label: "Beranda", href: "/" },
+    { label: "Beranda", href: "#beranda" },
     { label: "Keunggulan", href: "#keunggulan" },
     { label: "Galeri", href: "#galeri" },
     { label: "Layanan", href: "#layanan" },

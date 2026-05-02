@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import Reveal from "./reveal";
 
 const daftarLayanan = [
   {
@@ -135,28 +136,33 @@ export default function Layanan() {
       py-[clamp(48px,7vw,72px)] max-[420px]:py-10"
     >
       <div className="container-landing px-4 sm:px-6 lg:px-10">
-        <h2 className="mb-15 text-center text-2xl font-bold text-[#7d344b] drop-shadow-sm sm:text-3xl md:text-4xl">
-          Layanan Kami
-        </h2>
+        <Reveal>
+          <h2 className="mb-15 text-center text-2xl font-bold text-[#7d344b] drop-shadow-sm sm:text-3xl md:text-4xl">
+            Layanan Kami
+          </h2>
+        </Reveal>
 
         <div
           className="grid items-center gap-[18px] md:grid-cols-[56px_minmax(0,1fr)_56px] 
           max-md:grid-cols-1 max-md:gap-[10px]"
         >
-          <button
-            type="button"
-            onClick={handlePrev}
-            aria-label="Lihat layanan sebelumnya"
-            className="hidden h-9 w-9 items-center justify-center self-center rounded-full border-none 
+          <Reveal delay={0.3}>
+            <button
+              type="button"
+              onClick={handlePrev}
+              aria-label="Lihat layanan sebelumnya"
+              className="hidden h-9 w-9 items-center justify-center self-center rounded-full border-none 
             bg-transparent text-[34px] leading-none text-[#7d344b] transition-all duration-200 active:scale-95 
             md:inline-flex md:h-12 md:w-12 md:text-[42px] hover:opacity-85 [@media(hover:hover)_and_(pointer:fine)]:hover:-translate-y-0.5 
             [@media(hover:hover)_and_(pointer:fine)]:hover:scale-105 
             [@media(hover:hover)_and_(pointer:fine)]:hover:shadow-[0_14px_28px_rgba(0,0,0,0.16)]"
-          >
-            &#10094;
-          </button>
+            >
+              &#10094;
+            </button>
+          </Reveal>
 
-          <div
+          <Reveal
+            delay={0.3}
             className={`max-md:flex max-md:gap-[18px] max-md:overflow-x-auto max-md:scroll-smooth max-md:snap-x max-md:snap-mandatory 
             max-md:px-1 max-md:pb-4 max-md:[&::-webkit-scrollbar]:hidden max-md:[-ms-overflow-style:none] max-md:[scrollbar-width:none]
             md:grid md:grid-cols-3 md:gap-[18px] md:transition-all md:duration-[220ms] 
@@ -208,20 +214,22 @@ export default function Layanan() {
                 </article>
               ),
             )}
-          </div>
+          </Reveal>
 
-          <button
-            type="button"
-            onClick={handleNext}
-            aria-label="Lihat layanan berikutnya"
-            className="hidden h-9 w-9 items-center justify-center self-center rounded-full 
+          <Reveal delay={0.3}>
+            <button
+              type="button"
+              onClick={handleNext}
+              aria-label="Lihat layanan berikutnya"
+              className="hidden h-9 w-9 items-center justify-center self-center rounded-full 
             border-none bg-transparent text-[34px] leading-none text-[#7d344b] transition-all duration-200 
             active:scale-95 md:inline-flex md:h-12 md:w-12 md:text-[42px] hover:opacity-85 
             [@media(hover:hover)_and_(pointer:fine)]:hover:-translate-y-0.5 [@media(hover:hover)_and_(pointer:fine)]:hover:scale-105 
             [@media(hover:hover)_and_(pointer:fine)]:hover:shadow-[0_14px_28px_rgba(0,0,0,0.16)]"
-          >
-            &#10095;
-          </button>
+            >
+              &#10095;
+            </button>
+          </Reveal>
         </div>
       </div>
     </section>

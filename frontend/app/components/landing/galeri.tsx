@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Reveal from "./reveal";
 
 const daftarGaleri = [
   {
@@ -101,17 +102,19 @@ export default function Galeri() {
 
       {/* Content */}
       <div className="container-landing relative z-[2] px-5 sm:px-8 lg:px-12 xl:px-20">
-        <h2 className="mb-5 text-left text-[28px] font-bold text-white drop-shadow-sm md:mb-7 md:text-[36px] lg:text-[41px]">
-          Galeri Studio
-        </h2>
+        <Reveal>
+          <h2 className="mb-5 text-left text-[28px] font-bold text-white drop-shadow-sm md:mb-7 md:text-[36px] lg:text-[41px]">
+            Galeri Studio
+          </h2>
+        </Reveal>
 
-        <div
+        <Reveal delay={0.3}
           className="grid grid-cols-2 grid-rows-[105px_190px_145px_105px_105px] gap-3 
           min-[421px]:grid-rows-[115px_205px_150px_110px_110px] min-[421px]:gap-[14px] md:grid-cols-3
           md:grid-rows-[120px_180px_120px_120px] md:gap-4 lg:grid-cols-[1.4fr_0.7fr_1.25fr_1.25fr]
           lg:grid-rows-[110px_160px_110px] lg:gap-[18px]">
           {daftarGaleri.map((item) => (
-            <div
+            <Reveal delay={0.1}
               key={item.id}
               className={`group relative overflow-hidden rounded-[16px] bg-white/10 shadow-[0_10px_24px_rgba(0,0,0,0.22)]
               transition-all duration-300 ease-out hover:-translate-y-[6px] hover:shadow-[0_18px_34px_rgba(0,0,0,0.3)]
@@ -127,9 +130,9 @@ export default function Galeri() {
                 sizes="(max-width: 768px) 100vw, 33vw"
               />
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/10 to-black/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-            </div>
+            </Reveal>
           ))}
-        </div>
+        </Reveal>
       </div>
     </section>
   );
