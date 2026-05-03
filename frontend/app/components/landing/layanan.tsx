@@ -1,56 +1,114 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Reveal from "./reveal";
+import API_BASE_URL from "@/app/lib/api";
 
-const daftarLayanan = [
-  {
-    id: 1,
-    nama: "Nail Art",
-    gambar: "/galeri 1.jpeg",
-    alt: "Layanan nail art",
-    detailUrl: "/page/pemesanan/detail_layanan/nail_art",
-  },
-  {
-    id: 2,
-    nama: "Press On Nails",
-    gambar: "/galeri 2.jpeg",
-    alt: "Layanan press on nails",
-    detailUrl: "/page/pemesanan/detail_layanan/presson",
-  },
-  {
-    id: 3,
-    nama: "Eyelash",
-    gambar: "/galeri 5.jpeg",
-    alt: "Layanan eyelash",
-    detailUrl: "/page/pemesanan/detail_layanan/eyelash",
-  },
-  {
-    id: 4,
-    nama: "Remove",
-    gambar: "/galeri 10.jpeg",
-    alt: "Layanan remove nail art",
-    detailUrl: "/page/pemesanan/detail_layanan/remove",
-  },
-  {
-    id: 5,
-    nama: "Kursus",
-    gambar: "/galeri 11.jpeg",
-    alt: "Layanan kursus nail art",
-    detailUrl: "/page/pemesanan/detail_layanan/course",
-  },
-];
+type GambarLayanan = {
+  id_gambar: number;
+  id_layanan: number;
+  path_gambar: string;
+  url_gambar: string | null;
+};
+
+type LayananBackend = {
+  id_layanan: number;
+  nama_layanan: string;
+  harga_dasar: number;
+  deskripsi_layanan: string | null;
+  kategori_layanan: string;
+  durasi_menit: number;
+  status_layanan: string;
+  gambar: GambarLayanan[];
+};
+
+type LayananLanding = {
+  id: number;
+  nama: string;
+  gambar: string;
+  alt: string;
+  detailUrl: string;
+};
+
+const getDetailUrl = (kategori: string) => {
+  const kategoriLower = kategori.toLowerCase();
+
+  if (kategoriLower === "nail_art") {
+    return "/page/pemesanan/detail_layanan/nail_art";
+  }
+
+  if (kategoriLower === "presson") {
+    return "/page/pemesanan/detail_layanan/presson";
+  }
+
+  if (kategoriLower === "eyelash") {
+    return "/page/pemesanan/detail_layanan/eyelash";
+  }
+
+  if (kategoriLower === "remove") {
+    return "/page/pemesanan/detail_layanan/remove";
+  }
+
+  if (kategoriLower === "course") {
+    return "/page/pemesanan/detail_layanan/course";
+  }
+
+  return "/page/pemesanan";
+};
 
 type ArahAnimasi = "next" | "prev";
 type StatusAnimasi = "idle" | "keluar" | "masuk";
 
 export default function Layanan() {
+  const [daftarLayanan, setDaftarLayanan] = useState<LayananLanding[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
   const [jumlahTampil, setJumlahTampil] = useState(3);
   const [indexAktif, setIndexAktif] = useState(0);
   const [arahAnimasi, setArahAnimasi] = useState<ArahAnimasi>("next");
   const [statusAnimasi, setStatusAnimasi] = useState<StatusAnimasi>("idle");
+
+  async function fetchLayanan() {
+    try {
+      setLoading(true);
+      setError("");
+
+      const response = await fetch(`${API_BASE_URL}/layanan`, {
+        headers: {
+          Accept: "application/json",
+        },
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        setError(result.message || "Gagal mengambil data layanan");
+        return;
+      }
+
+      const mappedData: LayananLanding[] = result.data.map(
+        (item: LayananBackend) => ({
+          id: item.id_layanan,
+          nama: item.nama_layanan,
+          gambar: item.gambar?.[0]?.url_gambar || "/galeri 1.jpeg",
+          alt: `Layanan ${item.nama_layanan}`,
+          detailUrl: getDetailUrl(item.kategori_layanan),
+        }),
+      );
+
+      setDaftarLayanan(mappedData);
+    } catch (error) {
+      setError("Gagal terhubung ke server");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchLayanan();
+  }, []);
 
   const maxIndex = Math.max(daftarLayanan.length - jumlahTampil, 0);
   const indexTervalidasi = Math.min(indexAktif, maxIndex);
@@ -74,42 +132,45 @@ export default function Layanan() {
     setIndexAktif((prev) =>
       Math.min(prev, Math.max(daftarLayanan.length - jumlahTampil, 0)),
     );
-  }, [jumlahTampil]);
+  }, [jumlahTampil, daftarLayanan.length]);
 
   const jalankanSlide = (arah: ArahAnimasi) => {
-    if (statusAnimasi !== "idle") return;
+    if (statusAnimasi !== "idle" || daftarLayanan.length === 0) return;
 
     setArahAnimasi(arah);
     setStatusAnimasi("keluar");
 
     window.setTimeout(() => {
       setIndexAktif((prev) => {
-        const prevTervalidasi = Math.min(prev, maxIndex);
-
         if (arah === "prev") {
-          return prevTervalidasi === 0 ? maxIndex : prevTervalidasi - 1;
+          return (
+            (prev - jumlahTampil + daftarLayanan.length) %
+            daftarLayanan.length
+          );
         }
 
-        return prevTervalidasi >= maxIndex ? 0 : prevTervalidasi + 1;
+        return (prev + jumlahTampil) % daftarLayanan.length;
       });
 
       setStatusAnimasi("masuk");
 
       window.setTimeout(() => {
         setStatusAnimasi("idle");
-      }, 220);
-    }, 180);
+      }, 260);
+    }, 260);
   };
 
   const handlePrev = () => jalankanSlide("prev");
   const handleNext = () => jalankanSlide("next");
 
   const layananTampil = useMemo(() => {
-    return daftarLayanan.slice(
-      indexTervalidasi,
-      indexTervalidasi + jumlahTampil,
+    if (daftarLayanan.length === 0) return [];
+
+    return Array.from(
+      { length: Math.min(jumlahTampil, daftarLayanan.length) },
+      (_, index) => daftarLayanan[(indexAktif + index) % daftarLayanan.length],
     );
-  }, [indexTervalidasi, jumlahTampil]);
+  }, [daftarLayanan, indexAktif, jumlahTampil]);
 
   const kelasAnimasi = useMemo(() => {
     if (statusAnimasi === "idle") {
@@ -118,13 +179,13 @@ export default function Layanan() {
 
     if (statusAnimasi === "keluar") {
       return arahAnimasi === "next"
-        ? "opacity-0 -translate-x-7 scale-[0.98] blur-[4px]"
-        : "opacity-0 translate-x-7 scale-[0.98] blur-[4px]";
+        ? "opacity-0 -translate-x-14 scale-[0.98] blur-[5px]"
+        : "opacity-0 translate-x-14 scale-[0.98] blur-[5px]";
     }
 
     return arahAnimasi === "next"
-      ? "opacity-0 translate-x-7 scale-[0.98] blur-[4px]"
-      : "opacity-0 -translate-x-7 scale-[0.98] blur-[4px]";
+      ? "opacity-0 translate-x-14 scale-[0.98] blur-[5px]"
+      : "opacity-0 -translate-x-14 scale-[0.98] blur-[5px]";
   }, [statusAnimasi, arahAnimasi]);
 
   const router = useRouter();
@@ -165,25 +226,42 @@ export default function Layanan() {
             delay={0.3}
             className={`max-md:flex max-md:gap-[18px] max-md:overflow-x-auto max-md:scroll-smooth max-md:snap-x max-md:snap-mandatory 
             max-md:px-1 max-md:pb-4 max-md:[&::-webkit-scrollbar]:hidden max-md:[-ms-overflow-style:none] max-md:[scrollbar-width:none]
-            md:grid md:grid-cols-3 md:gap-[18px] md:transition-all md:duration-[220ms] 
-            md:ease-out md:will-change-transform md:will-change-opacity ${kelasAnimasi}`}
+            md:grid md:grid-cols-3 md:gap-[18px] md:transition-all md:duration-[520ms] 
+            md:ease-[cubic-bezier(0.22,1,0.36,1)] md:will-change-transform md:will-change-opacity ${kelasAnimasi}`}
           >
-            {(jumlahTampil === 1 ? daftarLayanan : layananTampil).map(
-              (layanan) => (
+            {loading && (
+              <p className="text-center text-sm font-medium text-[#7d344b]">
+                Memuat layanan...
+              </p>
+            )}
+
+            {error && (
+              <p className="text-center text-sm font-medium text-red-500">
+                {error}
+              </p>
+            )}
+
+            {!loading && !error && daftarLayanan.length === 0 && (
+              <p className="text-center text-sm font-medium text-[#7d344b]">
+                Belum ada layanan aktif.
+              </p>
+            )}
+
+            {!loading &&
+              !error &&
+              (jumlahTampil === 1 ? daftarLayanan : layananTampil).map((layanan) => (
                 <article
-                  key={layanan.id}
+                  key={jumlahTampil === 1 ? layanan.id : `${layanan.id}-${indexAktif}`}
                   className="w-full max-md:mx-auto max-md:min-w-[260px] max-md:max-w-[260px] max-md:snap-center origin-center rounded-2xl border 
                   border-[rgba(138,62,85,0.14)] bg-[rgba(221,152,173,0.2)] p-[18px] shadow-[0_6px_14px_rgba(0,0,0,0.18)] 
                   transition-all duration-[260ms] ease-out [@media(hover:hover)_and_(pointer:fine)]:hover:-translate-y-[10px] 
                   [@media(hover:hover)_and_(pointer:fine)]:hover:shadow-[0_18px_38px_rgba(0,0,0,0.2)] max-[420px]:p-3"
                 >
                   <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-white">
-                    <Image
+                    <img
                       src={layanan.gambar}
                       alt={layanan.alt}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 33vw"
-                      className="object-cover transition-all duration-300 ease-out 
+                      className="h-full w-full object-cover transition-all duration-300 ease-out 
                       [@media(hover:hover)_and_(pointer:fine)]:group-hover:scale-105"
                     />
                     <div
@@ -212,8 +290,7 @@ export default function Layanan() {
                     </button>
                   </div>
                 </article>
-              ),
-            )}
+              ))}
           </Reveal>
 
           <Reveal delay={0.3}>
