@@ -77,4 +77,29 @@ class AuthController extends Controller
             'message' => 'Logout berhasil',
         ]);
     }
+
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'sandi_lama' => 'required|string',
+            'sandi_baru' => 'required|string|min:6|confirmed',
+        ]);
+
+        $user = $request->user();
+
+        // cek password lama
+        if (!Hash::check($request->sandi_lama, $user->password)) {
+            return response()->json([
+                'message' => 'Sandi lama tidak sesuai'
+            ], 422);
+        }
+
+        // update password baru
+        $user->password = Hash::make($request->sandi_baru);
+        $user->save();
+
+        return response()->json([
+            'message' => 'Kata sandi berhasil diubah',
+        ]);
+    }
 }

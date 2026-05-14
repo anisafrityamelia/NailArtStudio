@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { Eye, EyeOff, X } from "lucide-react";
+import API_BASE_URL from "@/app/lib/api";
+import { getToken } from "@/app/lib/auth";
 
 type Props = {
   isOpen: boolean;
@@ -33,16 +35,46 @@ export default function ModalGantiPassword({ isOpen, onClose }: Props) {
     onClose();
   }
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (sandiBaru !== konfirmasiSandi) {
-      alert("Konfirmasi sandi tidak cocok");
+      alert("Konfirmasi kata sandi tidak cocok");
       return;
     }
 
-    alert("Password berhasil diubah");
-    handleCloseAndReset();
+    try {
+      const token = getToken();
+
+      const response = await fetch(
+        `${API_BASE_URL}/change-password`,
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            sandi_lama: sandiLama,
+            sandi_baru: sandiBaru,
+            sandi_baru_confirmation: konfirmasiSandi,
+          }),
+        }
+      );
+      const result = await response.json();
+
+      if (!response.ok) {
+        alert(result.message || "Gagal mengubah kata sandi");
+        return;
+      }
+
+      alert(result.message || "Kata sandi berhasil diubah");
+
+      handleCloseAndReset();
+    } catch (error) {
+      alert("Gagal terhubung ke server");
+    }
   };
 
   return (
@@ -171,7 +203,7 @@ export default function ModalGantiPassword({ isOpen, onClose }: Props) {
           <div className="pt-3">
             <button
               type="submit"
-              className="w-full rounded-lg bg-gradient-to-r from-[#E45082] to-[#7D344B] px-5 py-2 text-sm font-semibold text-white shadow-md transition duration-200 hover:-translate-y-[2px] transition hover:opacity-95 cursor-pointer shadow-soft-text"
+              className="w-full rounded-lg bg-gradient-to-r from-[#E45082] to-[#7D344B] px-5 py-2 text-sm font-semibold text-white shadow-md transition duration-200 hover:-translate-y-[2px] hover:opacity-95 cursor-pointer shadow-soft-text"
             >
               Simpan
             </button>
