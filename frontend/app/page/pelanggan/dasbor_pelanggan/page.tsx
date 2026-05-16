@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Pencil, Save } from "lucide-react";
 import Judul_Halaman from "@/app/components/ui/judul_halaman";
-import { getCurrentUser } from "@/app/lib/auth";
+import { getCurrentUser, updateProfile, updateFotoProfil, } from "@/app/lib/auth";
 
 export default function DashboardPelangganPage() {
   const router = useRouter();
@@ -33,7 +33,7 @@ export default function DashboardPelangganPage() {
       setNama(user.nama_pengguna || "");
       setNoHp(user.no_hp || "");
       setEmail(user.email || "");
-      setFotoProfil(user.profil_foto || "");
+      setFotoProfil(user.url_profil_foto || "");
       
       setIsCheckingAuth(false);
     };
@@ -41,26 +41,47 @@ export default function DashboardPelangganPage() {
     cekAuthPelanggan();
   }, [router]);
 
-  const handleButtonClick = () => {
-    if (isEditing) {
-      alert("Perubahan berhasil disimpan");
-      setIsEditing(false);
-    } else {
+  const handleButtonClick = async () => {
+    if (!isEditing) {
       setIsEditing(true);
+      return;
+    }
+
+    try {
+      const updatedUser = await updateProfile({
+        nama_pengguna: nama,
+        email,
+        no_hp: noHp,
+      });
+
+      setNama(updatedUser.nama_pengguna || "");
+      setEmail(updatedUser.email || "");
+      setNoHp(updatedUser.no_hp || "");
+
+      alert("Profil berhasil diperbarui");
+
+      setIsEditing(false);
+    } catch (error: any) {
+      alert(error.message || "Gagal memperbarui profil");
     }
   };
 
-  const handleFotoChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFotoChange = async (
+    e: ChangeEvent<HTMLInputElement>
+  ) => {
     const file = e.target.files?.[0];
+
     if (!file) return;
 
-    const reader = new FileReader();
+    try {
+      const result = await updateFotoProfil(file);
 
-    reader.onloadend = () => {
-      setFotoProfil(reader.result as string);
-    };
+      setFotoProfil(result.url_foto);
 
-    reader.readAsDataURL(file);
+      alert("Foto profil berhasil diperbarui");
+    } catch (error: any) {
+      alert(error.message || "Gagal upload foto profil");
+    }
   };
 
   if (isCheckingAuth) {
@@ -93,6 +114,7 @@ export default function DashboardPelangganPage() {
               src={fotoProfil || "/profile-default.jfif"}
               alt="Foto Profil Pelanggan"
               fill
+              unoptimized
               className="object-cover"
             />
           </div>

@@ -44,6 +44,9 @@ Route::middleware('auth:sanctum')->group(function () {
                 'message' => 'Ini dashboard pelanggan'
             ]);
         });
+
+        Route::put('/profile', [AuthController::class, 'updateProfile']);
+        Route::post('/profile/foto', [AuthController::class, 'updateFotoProfil']);
     });
 });
 

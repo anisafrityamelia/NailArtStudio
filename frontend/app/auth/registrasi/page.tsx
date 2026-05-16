@@ -1,35 +1,74 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function RegistrasiPage() {
+  const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [nama, setNama] = useState("");
   const [noHp, setNoHp] = useState("");
   const [kataSandi, setKataSandi] = useState("");
   const [konfirmasiKataSandi, setKonfirmasiKataSandi] = useState("");
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError("");
 
     if (kataSandi !== konfirmasiKataSandi) {
-        alert("Kata sandi dan konfirmasi sandi tidak sama!");
-        return;
+      setError("Kata sandi dan konfirmasi sandi tidak sama!");
+      return;
     }
 
-    console.log("Data registrasi:", {
-      email,
-      nama,
-      noHp,
-      kataSandi,
-      konfirmasiKataSandi,
-    });
+    try {
+      setLoading(true);
+
+      const response = await fetch("http://localhost:8000/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          nama_pengguna: nama,
+          email: email,
+          no_hp: noHp,
+          password: kataSandi,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        if (result.errors) {
+          const firstError = Object.values(result.errors)[0] as string[];
+          setError(firstError[0]);
+        } else {
+          setError(result.message || "Registrasi gagal.");
+        }
+        return;
+      }
+
+      localStorage.setItem("token", result.token);
+      localStorage.setItem("user", JSON.stringify(result.user));
+
+      alert("Registrasi berhasil!");
+      router.push("/auth/login");
+    } catch (error) {
+      setError("Tidak bisa terhubung ke server. Pastikan backend Laravel sudah berjalan.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -149,11 +188,18 @@ export default function RegistrasiPage() {
                   </div>
                 </div>
 
+                {error && (
+                  <p className="rounded-md bg-red-100 px-3 py-2 text-xs font-medium text-red-700">
+                    {error}
+                  </p>
+                )}
+
                 <button
                   type="submit"
+                  disabled={loading}
                   className="mt-4 flex h-9 w-full items-center justify-center rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] text-sm font-semibold text-white shadow-md transition duration-200 hover:-translate-y-[1px] hover:brightness-110 hover:shadow-[0_12px_24px_rgba(125,52,75,0.28)] focus:outline-none focus:shadow-[0_0_0_4px_rgba(255,255,255,0.2)] active:translate-y-0 text-shadow-soft cursor-pointer"
                 >
-                  Buat Akun
+                  {loading ? "Memproses..." : "Buat Akun"}
                 </button>
               </form>
 

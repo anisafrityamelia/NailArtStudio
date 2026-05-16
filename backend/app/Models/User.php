@@ -22,6 +22,10 @@ class User extends Authenticatable
         'role',
     ];
 
+    protected $appends = [
+        'url_profil_foto',
+    ];
+
     protected $hidden = [
         'password',
         'remember_token',
@@ -32,5 +36,12 @@ class User extends Authenticatable
         return [
             'password' => 'hashed',
         ];
+    }
+
+    public function getUrlProfilFotoAttribute()
+    {
+        return $this->profil_foto
+            ? asset('storage/' . $this->profil_foto)
+            : null;
     }
 }

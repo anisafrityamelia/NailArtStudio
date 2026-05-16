@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { Bell, KeyRound, LogOut, Menu, MoreVertical } from "lucide-react";
 import ModalGantiPassword from "@/app/components/ui/modal-ganti-password";
 import Image from "next/image";
-import Link from "next/link";
 import { logout } from "@/app/lib/auth";
 import { getUser } from "@/app/lib/auth";
 
@@ -17,15 +16,15 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [userName, setUserName] = useState("");
+  const [fotoProfil, setFotoProfil] = useState("");
   const menuRef = useRef<HTMLDivElement>(null);
-  // nanti ini ambil dari database
-  const fotoProfil = "";
 
   useEffect(() => {
     const user = getUser();
 
     if (user) {
-      setUserName(user.nama_pengguna);
+      setUserName(user.nama_pengguna || "");
+      setFotoProfil(user.url_profil_foto || "");
     }
   }, []);
 
@@ -80,9 +79,10 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
           {/* Foto profil pelanggan */}
           <div className="relative ml-1 h-6 w-6 overflow-hidden rounded-full sm:h-7 sm:w-7">
             <Image
-                src={fotoProfil ? fotoProfil : "/profile-default.jfif"}
+                src={fotoProfil || "/profile-default.jfif"}
                 alt="Foto Profil Pelanggan"
                 fill
+                unoptimized
                 className="object-cover"
             />
           </div>

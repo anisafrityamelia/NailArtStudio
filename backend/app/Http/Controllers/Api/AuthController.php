@@ -7,6 +7,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
@@ -66,6 +68,60 @@ class AuthController extends Controller
     {
         return response()->json([
             'user' => $request->user(),
+        ]);
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+
+        $request->validate([
+            'nama_pengguna' => 'required|string|max:255',
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('users', 'email')->ignore($user->id_pengguna, 'id_pengguna'),
+            ],
+            'no_hp' => 'nullable|string|max:20',
+        ]);
+
+        $user->update([
+            'nama_pengguna' => $request->nama_pengguna,
+            'email' => $request->email,
+            'no_hp' => $request->no_hp,
+        ]);
+
+        return response()->json([
+            'message' => 'Profil berhasil diperbarui',
+            'user' => $user->fresh(),
+        ]);
+    }
+
+    public function updateFotoProfil(Request $request)
+    {
+        $user = $request->user();
+
+        $request->validate([
+            'profil_foto' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        if (
+            $user->profil_foto &&
+            Storage::disk('public')->exists($user->profil_foto)
+        ) {
+            Storage::disk('public')->delete($user->profil_foto);
+        }
+
+        $path = $request->file('profil_foto')->store('foto-profil', 'public');
+
+        $user->update([
+            'profil_foto' => $path,
+        ]);
+
+        return response()->json([
+            'message' => 'Foto profil berhasil diperbarui',
+            'user' => $user->fresh(),
+            'url_foto' => asset('storage/' . $path),
         ]);
     }
 

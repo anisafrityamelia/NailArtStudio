@@ -51,6 +51,61 @@ export const getCurrentUser = async () => {
   return data.user;
 };
 
+export const updateProfile = async (data: {
+  nama_pengguna: string;
+  email: string;
+  no_hp: string;
+}) => {
+  const token = getToken();
+
+  const response = await fetch(`${API_BASE_URL}/pelanggan/profile`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "Gagal memperbarui profil");
+  }
+
+  saveUser(result.user);
+
+  return result.user;
+};
+
+export const updateFotoProfil = async (file: File) => {
+  const token = getToken();
+
+  const formData = new FormData();
+
+  formData.append("profil_foto", file);
+
+  const response = await fetch(`${API_BASE_URL}/pelanggan/profile/foto`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "Gagal upload foto profil");
+  }
+
+  saveUser(result.user);
+
+  return result;
+};
+
 export const logout = async () => {
   const token = getToken();
 
