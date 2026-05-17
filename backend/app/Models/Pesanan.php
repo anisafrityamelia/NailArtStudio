@@ -20,6 +20,7 @@ class Pesanan extends Model
         'status',
         'tanggal_konfirmasi',
         'dikonfirmasi_oleh',
+        'catatan_admin',
         'status_selesai_otomatis',
     ];
 

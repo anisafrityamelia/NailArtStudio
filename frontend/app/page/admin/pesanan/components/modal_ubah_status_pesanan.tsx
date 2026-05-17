@@ -11,6 +11,8 @@ type DataPesanan = {
   tanggal?: string;
   jam?: string;
   status?: string;
+  hargaFinal?: string | number;
+  catatanAdmin?: string;
 };
 
 type PropsModalUbahStatusPesanan = {
@@ -18,6 +20,7 @@ type PropsModalUbahStatusPesanan = {
   onClose: () => void;
   data?: DataPesanan | null;
   radioOptions: string[];
+  isReadonlyHargaFinal?: boolean;
   onSubmit?: (payload: {
     kode?: string;
     hargaFinal: string;
@@ -53,6 +56,7 @@ export default function ModalUbahStatusPesanan({
   onClose,
   data,
   radioOptions,
+  isReadonlyHargaFinal = false,
   onSubmit,
 }: PropsModalUbahStatusPesanan) {
   const currentStatus = data?.status?.trim();
@@ -69,10 +73,10 @@ export default function ModalUbahStatusPesanan({
 
   useEffect(() => {
     if (isOpen) {
-      setHargaFinal("");
+      setHargaFinal(String(data?.hargaFinal ?? ""));
       setStatusPesanan(data?.status ?? "");
       setStatusAwal(data?.status ?? "");
-      setCatatanAdmin("");
+      setCatatanAdmin(data?.catatanAdmin === "-" ? "" : data?.catatanAdmin ?? "");
     }
   }, [isOpen, data]);
 
@@ -144,14 +148,24 @@ export default function ModalUbahStatusPesanan({
                 <label className="text-xs font-medium text-[#7D344B] sm:text-sm">
                   Harga Final
                 </label>
-                <input
-                  type="text"
-                  value={hargaFinal}
-                  onChange={(e) => setHargaFinal(e.target.value)}
-                  placeholder="Masukkan harga final"
-                  required
-                  className="w-full rounded-md border border-[#dd98ad] shadow-soft-text bg-white px-3 py-2 text-xs text-[#7D344B] outline-none transition focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0] sm:text-sm cursor-text"
-                />
+
+                {isReadonlyHargaFinal ? (
+                  <input
+                    type="text"
+                    value={hargaFinal}
+                    readOnly
+                    className="w-full rounded-md border border-[#dd98ad] shadow-soft-text bg-white px-3 py-2 text-xs text-[#7D344B] outline-none transition focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0] sm:text-sm cursor-text"
+                  />
+                ) : (
+                  <input
+                    type="text"
+                    value={hargaFinal}
+                    onChange={(e) => setHargaFinal(e.target.value)}
+                    placeholder="Masukkan harga final"
+                    required
+                    className="w-full rounded-md border border-[#dd98ad] shadow-soft-text bg-white px-3 py-2 text-xs text-[#7D344B] outline-none transition focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0] sm:text-sm cursor-text"
+                  />
+                )}
               </div>
 
               <div className="flex flex-col gap-2">

@@ -37,6 +37,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/pengguna/{id}/reset-password', [ManajemenPenggunaController::class, 'resetPassword']);
         Route::delete('/pengguna/{id}', [ManajemenPenggunaController::class, 'destroy']);
 
+        Route::get('/pesanan/masuk', [PesananController::class, 'pesananMasukAdmin']);
+        Route::put('/pesanan/{id}/status', [PesananController::class, 'updateStatus']);
+
+        Route::get('/pesanan/aktif', [PesananController::class, 'pesananAktifAdmin']);
+        Route::put('/pesanan/{id}/status-aktif', [PesananController::class, 'updateStatusAktif']);
+
+        Route::get('/pesanan/riwayat', [PesananController::class, 'riwayatPesananAdmin']);
     });
 
     Route::middleware('role:pelanggan')->prefix('pelanggan')->group(function () {

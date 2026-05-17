@@ -76,3 +76,145 @@ export const getPesananSaya = async () => {
 
   return result.data;
 };
+
+export const getPesananMasukAdmin = async () => {
+  const token = getToken();
+
+  const response = await fetch(
+    `${API_BASE_URL}/admin/pesanan/masuk`,
+    {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      result.message || "Gagal mengambil data pesanan masuk"
+    );
+  }
+
+  return result.data;
+};
+
+export const updateStatusPesanan = async (
+  id: number,
+  payload: {
+    status: string;
+    harga_final: string;
+    catatan_admin: string;
+  }
+) => {
+  const token = getToken();
+
+  const response = await fetch(
+    `${API_BASE_URL}/admin/pesanan/${id}/status`,
+    {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    }
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      result.message || "Gagal mengubah status pesanan masuk"
+    );
+  }
+
+  return result.data;
+};
+
+export const getPesananAktifAdmin = async () => {
+  const token = getToken();
+
+  const response = await fetch(
+    `${API_BASE_URL}/admin/pesanan/aktif`,
+    {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      result.message || "Gagal mengambil data pesanan aktif"
+    );
+  }
+
+  return result.data;
+};
+
+export const updateStatusPesananAktif = async (
+  id: number,
+  payload: {
+    status: string;
+    catatan_admin: string;
+  }
+) => {
+  const token = getToken();
+
+  const response = await fetch(
+    `${API_BASE_URL}/admin/pesanan/${id}/status-aktif`,
+    {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    }
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      result.message || "Gagal mengubah status pesanan aktif"
+    );
+  }
+
+  return result.data;
+};
+
+export const getRiwayatPesananAdmin = async () => {
+  const token = getToken();
+
+  const response = await fetch(
+    `${API_BASE_URL}/admin/pesanan/riwayat`,
+    {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      result.message || "Gagal mengambil data riwayat pesanan"
+    );
+  }
+
+  return result.data;
+};

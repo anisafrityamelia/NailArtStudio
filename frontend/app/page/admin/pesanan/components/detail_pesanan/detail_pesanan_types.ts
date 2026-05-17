@@ -1,4 +1,5 @@
 export type DetailPesanan = {
+  id_pesanan?: number;
   no?: number;
   kode?: string;
   pelanggan?: string;
@@ -26,6 +27,7 @@ export type DetailPesanan = {
 
   // Umum
   catatan?: string;
+  catatanAdmin?: string;
 
   // Pembayaran
   kodePembayaran?: string;

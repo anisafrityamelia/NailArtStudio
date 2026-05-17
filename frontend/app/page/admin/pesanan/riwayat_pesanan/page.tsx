@@ -1,117 +1,178 @@
 "use client";
 
-import { useState } from "react";
-import { Eye, Pencil } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Eye } from "lucide-react";
 import Tabel_Pesanan from "../components/tabel_pesanan";
 import Judul_Halaman from "@/app/components/ui/judul_halaman";
 import Filter_Pesanan from "../components/filter_pesanan";
 import ModalDetailPesanan from "../components/modal_detail_pesanan";
+import { getRiwayatPesananAdmin } from "@/app/lib/pesanan";
+import { DetailPesanan } from "../components/detail_pesanan/detail_pesanan_types";
+
+const formatStatus = (status: string) => {
+  const statusMap: Record<string, string> = {
+    menunggu_konfirmasi: "Menunggu Konfirmasi",
+    terjadwal: "Terjadwal",
+    diproses: "Diproses",
+    selesai: "Selesai",
+    dibatalkan: "Dibatalkan",
+  };
+
+  return statusMap[status] || status;
+};
 
 export default function RiwayatPesananPage() {
-  // Data sementara untuk isi tabel riwayat pesanan
-  const data = [
-    {
-      no: 1,
-      kode: "ORD01023",
-      pelanggan: "widayy",
-      layanan: "Nail Art",
-      tanggal: "06-Nov-25",
-      jam: "11:00",
-      status: "Selesai",
-      gambarReferensi: "/galeri 6.jpeg",
-      bagianKuku: "Jari tangan",
-      layananTambahan: "Extension",
-      catatan: "Warna pink nude",
-      kodePembayaran: "DP01023",
-      nominalPembayaran: "Rp50.000",
-      hargaFinal: "Rp150.000",
-      statusPembayaran: "Valid",
-      tanggalPembayaran: "05-Nov-25",
-      tanggalVerifikasi: "07-Nov-25",
-      catatanPembayaran: "-",
-      buktiTransfer: "/bukti-transfer.jfif",
-    },
-    {
-      no: 2,
-      kode: "ORD03024",
-      pelanggan: "anann",
-      layanan: "Eyelash",
-      tanggal: "06-Nov-25",
-      jam: "15:00",
-      status: "Dibatalkan",
-      jenisLash: "Korean Lash",
-      catatan: "-",
-      kodePembayaran: "DP01024",
-      nominalPembayaran: "Rp50.000",
-      hargaFinal: "Rp100.000",
-      statusPembayaran: "Valid",
-      tanggalPembayaran: "06-Nov-25",
-      tanggalVerifikasi: "07-Nov-25",
-      catatanPembayaran: "-",
-      buktiTransfer: "/bukti-transfer.jfif",
-    },
-    {
-      no: 3,
-      kode: "ORD02025",
-      pelanggan: "Rani",
-      layanan: "Press On",
-      tanggal: "-",
-      jam: "-",
-      status: "Selesai",
-      gambarReferensi: "/galeri 2.jpeg",
-      fotoJariKanan: "/galeri 2.jpeg",
-      fotoJempolKanan: "/galeri 2.jpeg",
-      fotoJariKiri: "/galeri 2.jpeg",
-      fotoJempolKiri: "/galeri 2.jpeg",
-      alamatPengiriman: "Nusa Jaya",
-      shapeKuku: "Almond",
-      metodePengambilan: "Diantar ke rumah",
-      catatan: "-",
-      kodePembayaran: "DP01025",
-      nominalPembayaran: "Rp50.000",
-      hargaFinal: "Rp150.000",
-      statusPembayaran: "Valid",
-      tanggalPembayaran: "06-Nov-25",
-      tanggalVerifikasi: "07-Nov-25",
-      catatanPembayaran: "-",
-      buktiTransfer: "/bukti-transfer.jfif",
-    },
-    {
-      no: 4,
-      kode: "ORD01026",
-      pelanggan: "anisa fitriy amelia",
-      layanan: "Remove",
-      tanggal: "10-Nov-25",
-      jam: "17:00",
-      status: "Selesai",
-      bagianKuku: "Jari Tangan",
-      catatan: "-",
-      kodePembayaran: "DP01026",
-      nominalPembayaran: "Rp50.000",
-      hargaFinal: "Rp80.000",
-      statusPembayaran: "Valid",
-      tanggalPembayaran: "06-Nov-25",
-      tanggalVerifikasi: "07-Nov-25",
-      catatanPembayaran: "-",
-      buktiTransfer: "/bukti-transfer.jfif",
-    },
-  ];
-  const statusOptions = ["Status"];
+  const [dataPesanan, setDataPesanan] = useState<DetailPesanan[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const [filter, setFilter] = useState({ layanan: "Layanan", status: "Status"});
   const [openModal, setOpenModal] = useState(false);
-  const [selectedPesanan, setSelectedPesanan] = useState<any>(null);
+  
+  const [selectedPesanan, setSelectedPesanan] = useState<DetailPesanan | null>(null);
+
+  useEffect(() => {
+    const fetchRiwayatPesanan = async () => {
+      try {
+        setLoading(true);
+    
+        const result = await getRiwayatPesananAdmin();
+    
+        const mappedData: DetailPesanan[] = result.map(
+          (item: any, index: number) => ({
+            no: index + 1,
+            id_pesanan: item.id_pesanan,
+    
+            kode: item.kode_pesanan,
+    
+            pelanggan:
+              item.pengguna?.nama_pengguna || "-",
+    
+            layanan:
+              item.layanan?.nama_layanan || "-",
+    
+            tanggal:
+              item.tanggal_pesanan || "-",
+    
+            jam:
+              item.jam_pesanan || "-",
+    
+            status: formatStatus(item.status),
+    
+            // Detail Nail Art
+            bagianKuku:
+              item.detail_nail_art?.bagian_kuku || "-",
+    
+            layananTambahan:
+              item.detail_nail_art?.layanan_tambahan || "-",
+    
+            gambarReferensi:
+              item.detail_nail_art?.gambar_inspo
+                ? `http://localhost:8000/storage/${item.detail_nail_art.gambar_inspo}`
+                : undefined,
+    
+            catatan:
+              item.detail_nail_art?.catatan || "-",
+    
+            // Pembayaran
+            kodePembayaran:
+              item.pembayaran?.kode_pembayaran || "-",
+    
+            nominalPembayaran:
+              item.pembayaran?.nominal_pembayaran || "-",
+    
+            hargaFinal:
+              item.harga_final || "-",
+    
+            statusPembayaran:
+              item.pembayaran?.status_verifikasi
+                ? item.pembayaran.status_verifikasi
+                    .replaceAll("_", " ")
+                    .replace(/\b\w/g, (char: string) =>
+                      char.toUpperCase()
+                    )
+                : "-",
+    
+            tanggalPembayaran:
+              item.pembayaran?.tanggal_pembayaran
+                ? item.pembayaran.tanggal_pembayaran.split(" ")[0]
+                : "-",
+              
+            tanggalVerifikasi:
+              item.pembayaran?.tanggal_verifikasi
+                ? item.pembayaran.tanggal_verifikasi.split(" ")[0]
+                : "-",
+              
+            catatanAdmin:
+              item.catatan_admin || "-",
+  
+            buktiTransfer:
+              item.pembayaran?.url_bukti_pembayaran || undefined,
+          })
+        );
+    
+        setDataPesanan(mappedData);
+      } catch (err: any) {
+        setError(
+          err.message || "Gagal memuat data riwayat pesanan"
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchRiwayatPesanan();
+  }, []);
+
+  const filteredData = dataPesanan.filter((item) => {
+    const matchLayanan =
+      filter.layanan === "Layanan" ||
+      item.layanan === filter.layanan;
+
+    const matchStatus =
+      filter.status === "Status" ||
+      item.status === filter.status;
+
+    return matchLayanan && matchStatus;
+  })
+  .map((item, index) => ({
+    ...item,
+    no: index + 1,
+  }));
 
   return (
     <>
       <section>
+        {loading && (
+          <p className="mb-4 text-sm text-gray-500">
+            Memuat data pesanan...
+          </p>
+        )}
+
+        {error && (
+          <p className="mb-4 text-sm text-red-500">
+            {error}
+          </p>
+        )}
+
         {/* Judul halaman */}
         <Judul_Halaman title="Riwayat Pesanan" />
 
         {/* Filter data */}
-        <Filter_Pesanan statusOptions={statusOptions} />
+        <Filter_Pesanan 
+          layananOptions={["Layanan", "Nail Art", "Press On", "Remove", "Eyelash"]}
+          statusOptions={["Status", "Selesai", "Dibatalkan"]}
+          onFilterChange={(newFilter) =>
+            setFilter((prev) => ({
+              ...prev,
+              ...newFilter,
+            }))
+          }
+        />
 
         {/* Tabel daftar riwayat pesanan */}
         <Tabel_Pesanan
-          data={data}
+          data={filteredData}
           renderActions={(item) => (
             <div className="flex justify-center">
               <button

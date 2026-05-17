@@ -7,6 +7,7 @@ use App\Models\Pesanan;
 use App\Models\DetailNailArt;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class PesananController extends Controller
 {
@@ -113,6 +114,160 @@ class PesananController extends Controller
 
         return response()->json([
             'message' => 'Daftar pesanan berhasil diambil',
+            'data' => $pesanan,
+        ]);
+    }
+
+    // pesanan masuk admin
+    public function pesananMasukAdmin()
+    {
+        $pesanan = Pesanan::with([
+            'pengguna',
+            'layanan',
+            'detailNailArt',
+            'pembayaran',
+        ])
+        ->where('status', 'menunggu_konfirmasi')
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+        return response()->json([
+            'message' => 'Daftar pesanan masuk berhasil diambil',
+            'data' => $pesanan,
+        ]);
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|string',
+            'harga_final' => 'required',
+            'catatan_admin' => 'nullable|string',
+        ]);
+
+        $pesanan = Pesanan::with('pembayaran')
+        ->find($id);
+
+        if (! $pesanan) {
+            return response()->json([
+                'message' => 'Pesanan tidak ditemukan',
+            ], 404);
+        }
+
+        $statusMap = [
+            'Terjadwal' => 'terjadwal',
+            'Diproses' => 'diproses',
+            'Dibatalkan' => 'dibatalkan',
+            'Selesai' => 'selesai',
+        ];
+
+        $statusDatabase =
+            $statusMap[$request->status]
+            ?? $request->status;
+        
+        $pesanan->update([
+            'status' => $statusDatabase,
+            'harga_final' => $request->harga_final,
+            'tanggal_konfirmasi' => now(),
+            'dikonfirmasi_oleh' => $request->user()->id_pengguna,
+            'catatan_admin' => $request->catatan_admin,
+        ]);
+
+        if ($pesanan->pembayaran) {
+            $pesanan->pembayaran->update([
+                'status_verifikasi' => 'terverifikasi',
+                'tanggal_verifikasi' => Carbon::now(),
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Status pesanan berhasil diperbarui',
+            'data' => $pesanan->load([
+                'pengguna',
+                'layanan',
+                'detailNailArt',
+                'pembayaran',
+            ]),
+        ]);
+    }
+
+    // pesanan aktif admin
+    public function pesananAktifAdmin()
+    {
+        $pesanan = Pesanan::with([
+            'pengguna',
+            'layanan',
+            'detailNailArt',
+            'pembayaran',
+        ])
+        ->whereIn('status', ['terjadwal', 'diproses'])
+        ->orderBy('tanggal_konfirmasi', 'desc')
+        ->get();
+
+        return response()->json([
+            'message' => 'Daftar pesanan aktif berhasil diambil',
+            'data' => $pesanan,
+        ]);
+    }
+
+    public function updateStatusAktif(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|string',
+            'catatan_admin' => 'nullable|string',
+        ]);
+
+        $pesanan = Pesanan::find($id);
+
+        if (! $pesanan) {
+            return response()->json([
+                'message' => 'Pesanan tidak ditemukan',
+            ], 404);
+        }
+
+        $statusMap = [
+            'Terjadwal' => 'terjadwal',
+            'Diproses' => 'diproses',
+            'Dibatalkan' => 'dibatalkan',
+            'Selesai' => 'selesai',
+        ];
+
+        $statusDatabase =
+            $statusMap[$request->status]
+            ?? $request->status;
+        
+        $pesanan->update([
+            'status' => $statusDatabase,
+            'catatan_admin' => $request->catatan_admin,
+        ]);
+
+        return response()->json([
+            'message' => 'Status pesanan aktif berhasil diperbarui',
+            'data' => $pesanan->load([
+                'pengguna',
+                'layanan',
+                'detailNailArt',
+                'pembayaran',
+            ]),
+        ]);
+    }
+
+
+    // riwayat pesanan admin
+    public function riwayatPesananAdmin()
+    {
+        $pesanan = Pesanan::with([
+            'pengguna',
+            'layanan',
+            'detailNailArt',
+            'pembayaran',
+        ])
+        ->whereIn('status', ['selesai', 'dibatalkan'])
+        ->orderBy('updated_at', 'desc')
+        ->get();
+
+        return response()->json([
+            'message' => 'Daftar riwayat pesanan berhasil diambil',
             'data' => $pesanan,
         ]);
     }

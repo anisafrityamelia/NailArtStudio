@@ -122,7 +122,7 @@ export default function ModalDetailPesanan({
               />
 
               {(variant === "aktif" || variant === "riwayat") && (
-                <TextareaReadonly label="Catatan Pembayaran" value={data?.catatanPembayaran} rows={5} />
+                <TextareaReadonly label="Catatan Admin" value={data?.catatanAdmin} rows={5} />
               )}
             </div>
           </div>
