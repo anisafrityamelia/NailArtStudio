@@ -5,7 +5,8 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\LayananController;
 use App\Http\Controllers\Api\GambarLayananController;
 use App\Http\Controllers\Api\ManajemenPenggunaController;
-
+use App\Http\Controllers\Api\PesananController;
+use App\Http\Controllers\Api\PembayaranController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -47,6 +48,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::put('/profile', [AuthController::class, 'updateProfile']);
         Route::post('/profile/foto', [AuthController::class, 'updateFotoProfil']);
+        Route::post('/pesanan/nail-art', [PesananController::class, 'storeNailArt']);
+        Route::post('/pembayaran', [PembayaranController::class, 'store']);
+        Route::get('/pesanan/{id}', [PesananController::class, 'show']);
     });
 });
 

@@ -38,6 +38,15 @@ class User extends Authenticatable
         ];
     }
 
+    public function pesanan()
+    {
+        return $this->hasMany(
+            Pesanan::class,
+            'id_pengguna',
+            'id_pengguna'
+        );
+    }
+
     public function getUrlProfilFotoAttribute()
     {
         return $this->profil_foto

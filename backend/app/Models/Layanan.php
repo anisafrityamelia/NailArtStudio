@@ -23,4 +23,13 @@ class Layanan extends Model
     {
         return $this->hasMany(GambarLayanan::class, 'id_layanan', 'id_layanan');
     }
+
+    public function pesanan()
+    {
+        return $this->hasMany(
+            Pesanan::class,
+            'id_layanan',
+            'id_layanan'
+        );
+    }
 }

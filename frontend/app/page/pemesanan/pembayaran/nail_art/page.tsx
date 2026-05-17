@@ -1,15 +1,81 @@
-"use client"; 
+"use client";
 
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import {
-  InputReadonly,
-  TextareaReadonly,
-  UploadPreviewReadonly,
-} from "../components/detail_pesanan_fields";
+import { InputReadonly, TextareaReadonly, UploadPreviewReadonly } from "../components/detail_pesanan_fields";
+import { getDetailPesanan } from "@/app/lib/pesanan";
+import { uploadPembayaran } from "@/app/lib/pembayaran";
 
 export default function PembayaranNailArt() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const idPesanan = searchParams.get("id");
+  const [pesanan, setPesanan] = useState<any>(null);
+  const [buktiPembayaran, setBuktiPembayaran] =
+    useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+
+    if (!idPesanan) return;
+
+    const fetchPesanan = async () => {
+
+      try {
+
+        const data = await getDetailPesanan(idPesanan);
+
+        setPesanan(data);
+
+      } catch (err: any) {
+
+        setError(err.message);
+      }
+    };
+
+    fetchPesanan();
+
+  }, [idPesanan]);
+
+
+  const handleSubmitPembayaran = async () => {
+
+    if (!buktiPembayaran) {
+      setError("Bukti pembayaran wajib diunggah");
+      return;
+    }
+
+    try {
+
+      setLoading(true);
+
+      const formData = new FormData();
+
+      formData.append(
+        "id_pesanan",
+        String(idPesanan)
+      );
+
+      formData.append(
+        "bukti_pembayaran",
+        buktiPembayaran
+      );
+
+      await uploadPembayaran(formData);
+
+      router.push("/page/pemesanan/notif_berhasil");
+
+    } catch (err: any) {
+
+      setError(err.message);
+
+    } finally {
+
+      setLoading(false);
+    }
+  };
 
   return (
     <main className="relative min-h-screen overflow-y-auto px-4 sm:px-6">
@@ -44,19 +110,21 @@ export default function PembayaranNailArt() {
               </h2>
 
               <div className="space-y-3">
-                <InputReadonly label="Kode Pesanan" value="ORD001" />
-                <InputReadonly label="Nama Pelanggan" value="Anisa" />
-                <InputReadonly label="Layanan" value="Nail Art" />
-                <InputReadonly label="Tanggal" value="30 November 2025" />
-                <InputReadonly label="Jam" value="12:00" />
+                <InputReadonly label="Kode Pesanan" value={pesanan?.kode_pesanan || "-"} />
+                <InputReadonly label="Nama Pelanggan" value={pesanan?.user?.nama_pengguna || "-"} />
+                <InputReadonly label="Layanan" value={pesanan?.layanan?.nama_layanan || "-"} />
+                <InputReadonly label="Tanggal" value={pesanan?.tanggal_pesanan || "-"} />
+                <InputReadonly label="Jam" value={pesanan?.jam_pesanan || "-"} />
                 <UploadPreviewReadonly
                   label="Gambar Referensi"
-                  src="/galeri 2.jpeg"
+                  src={
+                    pesanan?.detail_nail_art?.url_gambar_inspo
+                  }
                   alt="Gambar Referensi"
                 />
-                <InputReadonly label="Bagian Kuku" value="Jari Tangan" />
-                <InputReadonly label="Layanan Tambahan" value="Remove, Extension" />
-                <TextareaReadonly label="Catatan" value="Simple pink" />
+                <InputReadonly label="Bagian Kuku" value={pesanan?.detail_nail_art?.bagian_kuku || "-"} />
+                <InputReadonly label="Layanan Tambahan" value={pesanan?.detail_nail_art?.layanan_tambahan || "-"} />
+                <TextareaReadonly label="Catatan" value={pesanan?.detail_nail_art?.catatan || "-"} />
               </div>
             </div>
 
@@ -84,16 +152,34 @@ export default function PembayaranNailArt() {
 
               <input
                 type="file"
+                accept="image/*"
+                onChange={(e) => {
+
+                  if (
+                    e.target.files &&
+                    e.target.files[0]
+                  ) {
+                    setBuktiPembayaran(
+                      e.target.files[0]
+                    );
+                  }
+                }}
                 className="w-full rounded-md border border-[#dd98ad] bg-white px-3 py-1.5 text-xs text-[#7D344B] outline-none shadow-soft-text sm:text-sm file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-[#e6b1c2] file:px-3 file:py-1 file:text-white hover:file:bg-[#dd98ad]"
               />
             </div>
 
+            {error && (
+              <p className="text-center text-sm text-red-600">
+                {error}
+              </p>
+            )}
+            
             <button
               type="button"
-              onClick={() => router.push("/page/pemesanan/notif_berhasil")}
+              onClick={handleSubmitPembayaran}
               className="mt-1 cursor-pointer w-full rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-4 py-1.5 text-xs font-medium text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 sm:text-sm mb-2"
             >
-              Kirim
+              {loading ? "Memproses..." : "Kirim"}
             </button>
           </div>
         </section>
