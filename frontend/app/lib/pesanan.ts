@@ -51,3 +51,28 @@ export const getDetailPesanan = async (
 
   return result.data;
 };
+
+export const getPesananSaya = async () => {
+  const token = getToken();
+
+  const response = await fetch(
+    `${API_BASE_URL}/pelanggan/pesanan`,
+    {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      result.message || "Gagal mengambil data pesanan"
+    );
+  }
+
+  return result.data;
+};

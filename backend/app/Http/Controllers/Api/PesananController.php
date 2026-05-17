@@ -96,6 +96,27 @@ class PesananController extends Controller
         }
     }
 
+    public function index(Request $request)
+    {
+        // Ambil user yang sedang login
+        $user = $request->user(); // otomatis dari token Sanctum
+
+        // Ambil semua pesanan milik user tersebut
+        $pesanan = Pesanan::with([
+            'layanan',
+            'detailNailArt',
+            'pembayaran',
+        ])
+        ->where('id_pengguna', $user->id_pengguna)
+        ->orderBy('created_at', 'desc')
+        ->get(); // gunakan get(), bukan paginate()
+
+        return response()->json([
+            'message' => 'Daftar pesanan berhasil diambil',
+            'data' => $pesanan,
+        ]);
+    }
+
     public function show($id)
     {
         $pesanan = Pesanan::with([

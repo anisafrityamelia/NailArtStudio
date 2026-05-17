@@ -156,7 +156,7 @@ export default function DetailLayananPage() {
               type="button"
               onClick={() =>
                 router.push(
-                  `/page/pemesanan/pemesanan_layanan/${layanan.kategori_layanan}`
+                  `/page/pemesanan/pemesanan_layanan/${layanan.kategori_layanan}?id_layanan=${layanan.id_layanan}`
                 )
               }
               className="mb-2 mt-1 w-full cursor-pointer rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-4 py-1.5 text-xs font-medium text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 sm:text-sm"

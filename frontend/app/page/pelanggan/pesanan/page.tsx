@@ -1,89 +1,82 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Eye } from "lucide-react";
 import Judul_Halaman from "@/app/components/ui/judul_halaman";
 import TabPesanan from "./components/tab_pesanan_pelanggan";
 import TabelPesananPelanggan from "./components/tabel_pesanan_pelanggan";
 import ModalDetailPesananPelanggan from "./components/modal_detail_pesanan_pelanggan";
 import { DetailPesananPelanggan } from "./components/detail_pesanan_pelanggan/detail_pesanan_types";
+import { getPesananSaya } from "@/app/lib/pesanan";
 
-const statusAktif = ["Menunggu Konfirmasi", "Terbooking", "Diproses"];
+const statusAktif = ["Menunggu Konfirmasi", "Terjadwal", "Diproses"];
 const statusRiwayat = ["Selesai", "Dibatalkan"];
 
-const dataPesanan: DetailPesananPelanggan[] = [
-    {
-        no: 1,
-        kode: "ORD001",
-        layanan: "Nail Art",
-        tanggal: "10-Nov-25",
-        jam: "10:00",
-        status: "Menunggu Konfirmasi",
-        bagianKuku: "Jari tangan",
-        layananTambahan: "Extension",
-        gambarReferensi: "/galeri 6.jpeg",
-        catatan: "Warna pink nude",
-        buktiTransfer: "/bukti-transfer.jfif",
-    },
-    {
-        no: 2,
-        kode: "ORD002",
-        layanan: "Press On",
-        tanggal: "-",
-        jam: "-",
-        status: "Diproses",
-        gambarReferensi: "/galeri 2.jpeg",
-        fotoJariKanan: "/galeri 2.jpeg",
-        fotoJempolKanan: "/galeri 2.jpeg",
-        fotoJariKiri: "/galeri 2.jpeg",
-        fotoJempolKiri: "/galeri 2.jpeg",
-        alamatPengiriman: "Nusa Jaya",
-        shapeKuku: "Almond",
-        metodePengambilan: "Diantar ke rumah",
-        catatan: "-",
-        buktiTransfer: "/bukti-transfer.jfif",
-    },
-    {
-        no: 3,
-        kode: "ORD003",
-        layanan: "Eyelash",
-        tanggal: "11-Nov-25",
-        jam: "13:00",
-        status: "Terbooking",
-        jenisLash: "Korean Lash",
-        catatan: "-",
-        buktiTransfer: "/bukti-transfer.jfif",
-    },
-    {
-        no: 4,
-        kode: "ORD004",
-        layanan: "Nail Art",
-        tanggal: "05-Nov-25",
-        jam: "09:00",
-        status: "Selesai",
-        bagianKuku: "Jari tangan",
-        layananTambahan: "Extension",
-        gambarReferensi: "/galeri 6.jpeg",
-        catatan: "Warna pink nude",
-        buktiTransfer: "/bukti-transfer.jfif",
-    },
-    {
-        no: 5,
-        kode: "ORD005",
-        layanan: "Remove",
-        tanggal: "06-Nov-25",
-        jam: "14:00",
-        status: "Dibatalkan",
-        bagianKuku: "Jari Tangan",
-        catatan: "-",
-        buktiTransfer: "/bukti-transfer.jfif",
-    },
-];
+const formatStatus = (status: string) => {
+  const statusMap: Record<string, string> = {
+    menunggu_konfirmasi: "Menunggu Konfirmasi",
+    terjadwal: "Terjadwal",
+    diproses: "Diproses",
+    selesai: "Selesai",
+    dibatalkan: "Dibatalkan",
+  };
+
+  return statusMap[status] || status;
+};
 
 export default function PesananSayaPage() {
     const [activeTab, setActiveTab] = useState<"aktif" | "riwayat">("aktif");
     const [openModalDetail, setOpenModalDetail] = useState(false);
     const [selectedPesanan, setSelectedPesanan] = useState<DetailPesananPelanggan | null>(null);
+    const [dataPesanan, setDataPesanan] = useState<DetailPesananPelanggan[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+
+    useEffect(() => {
+        const fetchPesanan = async () => {
+            try {
+            setLoading(true);
+
+            const result = await getPesananSaya();
+
+            const mappedData: DetailPesananPelanggan[] = result.map(
+                (item: any, index: number) => ({
+                no: index + 1,
+                id_pesanan: item.id_pesanan,
+                kode: item.kode_pesanan,
+                layanan: item.layanan?.nama_layanan || "-",
+                tanggal: item.tanggal_pesanan || "-",
+                jam: item.jam_pesanan || "-",
+                status: formatStatus(item.status),
+
+                // Detail Nail Art
+                bagianKuku:
+                    item.detail_nail_art?.bagian_kuku || "-",
+                layananTambahan:
+                    item.detail_nail_art?.layanan_tambahan || "-",
+                gambarReferensi:
+                    item.detail_nail_art?.gambar_inspo
+                    ? `http://localhost:8000/storage/${item.detail_nail_art.gambar_inspo}`
+                    : undefined,
+                catatan:
+                    item.detail_nail_art?.catatan || "-",
+
+                // Pembayaran
+                buktiTransfer:
+                    item.pembayaran?.url_bukti_pembayaran || undefined,
+                })
+            );
+
+            setDataPesanan(mappedData);
+        } catch (err: any) {
+            setError(err.message || "Gagal memuat data pesanan");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    fetchPesanan();
+    }, []);
 
     const filteredData = dataPesanan.filter((item) => {
         if (activeTab === "aktif") {
@@ -96,6 +89,17 @@ export default function PesananSayaPage() {
     return (
         <>
             <section>
+                {loading && (
+                    <p className="mb-4 text-sm text-gray-500">
+                        Memuat data pesanan...
+                    </p>
+                )}
+
+                {error && (
+                    <p className="mb-4 text-sm text-red-500">
+                        {error}
+                    </p>
+                )}
                 {/* Judul halaman */}
                 <Judul_Halaman title="Pesanan Saya" />
 

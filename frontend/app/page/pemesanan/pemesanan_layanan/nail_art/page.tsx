@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { bookingNailArt } from "@/app/lib/pesanan";
@@ -48,7 +48,8 @@ function generateSlotJam(
 
 export default function PemesananNailArt() {
   const router = useRouter();
-
+  const searchParams = useSearchParams();
+  const idLayanan = searchParams.get("id_layanan");
   const [tanggal, setTanggal] = useState("");
   const [jamDipilih, setJamDipilih] = useState("");
   const [catatan, setCatatan] = useState("");
@@ -80,6 +81,11 @@ export default function PemesananNailArt() {
     Number(jadwalAdminDummy.durasiSlot)
   );
 
+  if (!idLayanan) {
+    setError("ID layanan tidak ditemukan");
+    return;
+  }
+
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>
   ) => {
@@ -92,7 +98,7 @@ export default function PemesananNailArt() {
       const formData = new FormData();
 
       // id layanan nail art
-      formData.append("id_layanan", "1");
+      formData.append("id_layanan", idLayanan);
 
       formData.append("tanggal_pesanan", tanggal);
 

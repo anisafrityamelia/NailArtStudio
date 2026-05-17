@@ -50,6 +50,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/profile/foto', [AuthController::class, 'updateFotoProfil']);
         Route::post('/pesanan/nail-art', [PesananController::class, 'storeNailArt']);
         Route::post('/pembayaran', [PembayaranController::class, 'store']);
+        Route::get('/pesanan', [PesananController::class, 'index']);
         Route::get('/pesanan/{id}', [PesananController::class, 'show']);
     });
 });
