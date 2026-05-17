@@ -5,6 +5,7 @@ export type DetailPesananPelanggan = {
   tanggal?: string;
   jam?: string;
   status?: string;
+  id_pesanan: number;
 
   // Nail Art
   gambarReferensi?: string | null;

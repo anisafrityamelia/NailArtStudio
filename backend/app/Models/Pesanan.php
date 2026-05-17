@@ -48,6 +48,15 @@ class Pesanan extends Model
         );
     }
 
+    public function detailPressOn()
+    {
+        return $this->hasOne(
+            DetailPressOn::class,
+            'id_pesanan',
+            'id_pesanan'
+        );
+    }
+    
     public function pembayaran()
     {
         return $this->hasOne(Pembayaran::class, 'id_pesanan', 'id_pesanan');

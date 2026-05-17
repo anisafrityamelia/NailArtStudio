@@ -42,6 +42,10 @@ class PembayaranController extends Controller
             'status_verifikasi' => 'menunggu_verifikasi',
         ]);
 
+        $pesanan->update([
+            'status' => 'menunggu_konfirmasi',
+        ]);
+
         return response()->json([
             'message' => 'Pembayaran berhasil dikirim',
             'data' => $pembayaran,

@@ -1,8 +1,9 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, X } from "lucide-react";
 import { useState } from "react";
+import { bookingPressOn } from "@/app/lib/pesanan";
 
 function PanduanPreview({
     label,
@@ -40,16 +41,76 @@ function PanduanPreview({
 
 export default function PemesananPressOn() {
     const router = useRouter();
-
+    const searchParams = useSearchParams();
+    const idLayanan = searchParams.get("id_layanan");
+    const [gambarInspo, setGambarInspo] = useState<File | null>(null);
+    const [fotoJariKanan, setFotoJariKanan] = useState<File | null>(null);
+    const [fotoJempolKanan, setFotoJempolKanan] = useState<File | null>(null);
+    const [fotoJariKiri, setFotoJariKiri] = useState<File | null>(null);
+    const [fotoJempolKiri, setFotoJempolKiri] = useState<File | null>(null);
     const [shapeKuku, setShapeKuku] = useState("Almond");
     const [metode, setMetode] = useState("antar");
     const [alamat, setAlamat] = useState("");
     const [catatan, setCatatan] = useState("");
     const [previewGambar, setPreviewGambar] = useState<string | null>(null);
+    
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (
+        e: React.FormEvent<HTMLFormElement>
+    ) => {
         e.preventDefault();
-        router.push("/page/pemesanan/pembayaran/presson");
+
+        setError("");
+
+        if (!idLayanan) {
+            setError("ID layanan tidak ditemukan");
+            return;
+        }
+
+        if (!fotoJariKanan || !fotoJempolKanan || !fotoJariKiri || !fotoJempolKiri) {
+            setError("Semua foto jari wajib diunggah");
+            return;
+        }
+
+        if (metode === "antar" && !alamat) {
+            setError("Alamat pengiriman wajib diisi");
+            return;
+        }
+
+        try {
+            setLoading(true);
+
+            const formData = new FormData();
+
+            formData.append("id_layanan", idLayanan);
+
+            if (gambarInspo) {
+                formData.append("gambar_inspo", gambarInspo);
+            }
+
+            formData.append("foto_jari_kanan", fotoJariKanan);
+            formData.append("foto_jempol_kanan", fotoJempolKanan);
+            formData.append("foto_jari_kiri", fotoJariKiri);
+            formData.append("foto_jempol_kiri", fotoJempolKiri);
+
+            formData.append("shape_kuku", shapeKuku);
+            formData.append("metode_pengambilan", metode);
+            formData.append("alamat_pengiriman", alamat);
+            formData.append("catatan", catatan);
+
+            const result = await bookingPressOn(formData);
+
+            const idPesanan = result.data.id_pesanan;
+
+            router.push(`/page/pemesanan/pembayaran?id=${idPesanan}`);
+
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -97,6 +158,12 @@ export default function PemesananPressOn() {
                             <div className="mt-2 flex">
                                 <input
                                     type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                        if (e.target.files && e.target.files[0]) {
+                                            setGambarInspo(e.target.files[0]);
+                                        }
+                                    }}
                                     className="w-full rounded-md border border-[#dd98ad] bg-white px-3 py-1.5 text-xs text-[#7D344B] outline-none shadow-soft-text sm:text-sm file:mr-3 file:rounded-md file:border-0 file:bg-[#d88fa5] file:px-3 file:py-1 file:text-white file:bg-[#e6b1c2] hover:file:bg-[#dd98ad] file:cursor-pointer"
                                 />
                             </div>
@@ -114,6 +181,12 @@ export default function PemesananPressOn() {
                             <div className="mt-2 flex">
                                 <input
                                     type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                        if (e.target.files && e.target.files[0]) {
+                                            setFotoJariKanan(e.target.files[0]);
+                                        }
+                                    }}
                                     className="w-full rounded-md border border-[#dd98ad] bg-white px-3 py-1.5 text-xs text-[#7D344B] outline-none shadow-soft-text sm:text-sm file:mr-3 file:rounded-md file:border-0 file:bg-[#d88fa5] file:px-3 file:py-1 file:text-white file:bg-[#e6b1c2] hover:file:bg-[#dd98ad] file:cursor-pointer"
                                 />
                             </div>
@@ -124,6 +197,12 @@ export default function PemesananPressOn() {
                             <div className="mt-2 flex">
                                 <input
                                     type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                        if (e.target.files && e.target.files[0]) {
+                                            setFotoJempolKanan(e.target.files[0]);
+                                        }
+                                    }}
                                     className="w-full rounded-md border border-[#dd98ad] bg-white px-3 py-1.5 text-xs text-[#7D344B] outline-none shadow-soft-text sm:text-sm file:mr-3 file:rounded-md file:border-0 file:bg-[#d88fa5] file:px-3 file:py-1 file:text-white file:bg-[#e6b1c2] hover:file:bg-[#dd98ad] file:cursor-pointer"
                                 />
                             </div>
@@ -134,6 +213,12 @@ export default function PemesananPressOn() {
                             <div className="mt-2 flex">
                                 <input
                                     type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                        if (e.target.files && e.target.files[0]) {
+                                            setFotoJariKiri(e.target.files[0]);
+                                        }
+                                    }}
                                     className="w-full rounded-md border border-[#dd98ad] bg-white px-3 py-1.5 text-xs text-[#7D344B] outline-none shadow-soft-text sm:text-sm file:mr-3 file:rounded-md file:border-0 file:bg-[#d88fa5] file:px-3 file:py-1 file:text-white file:bg-[#e6b1c2] hover:file:bg-[#dd98ad] file:cursor-pointer"
                                 />
                             </div>
@@ -144,6 +229,12 @@ export default function PemesananPressOn() {
                             <div className="mt-2 flex">
                                 <input
                                     type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                        if (e.target.files && e.target.files[0]) {
+                                            setFotoJempolKiri(e.target.files[0]);
+                                        }
+                                    }}
                                     className="w-full rounded-md border border-[#dd98ad] bg-white px-3 py-1.5 text-xs text-[#7D344B] outline-none shadow-soft-text sm:text-sm file:mr-3 file:rounded-md file:border-0 file:bg-[#d88fa5] file:px-3 file:py-1 file:text-white file:bg-[#e6b1c2] hover:file:bg-[#dd98ad] file:cursor-pointer"
                                 />
                             </div>
@@ -225,8 +316,17 @@ export default function PemesananPressOn() {
                             />
                         </div>
 
-                        <button className="mt-1 cursor-pointer w-full rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-4 py-1.5 text-xs font-medium text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 sm:text-sm mb-2">
-                            Pesan
+                        {error && (
+                            <p className="text-center text-sm font-medium text-red-600">
+                                {error}
+                            </p>
+                        )}
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="mt-1 cursor-pointer w-full rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-4 py-1.5 text-xs font-medium text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 sm:text-sm mb-2 disabled:opacity-60"
+                        >
+                            {loading ? "Memproses..." : "Pesan"}
                         </button>
                     </form>
                 </section>

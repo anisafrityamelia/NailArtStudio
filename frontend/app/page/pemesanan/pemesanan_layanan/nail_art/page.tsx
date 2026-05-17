@@ -125,7 +125,7 @@ export default function PemesananNailArt() {
       const idPesanan = result.data.id_pesanan;
 
       router.push(
-        `/page/pemesanan/pembayaran/nail_art?id=${idPesanan}`
+        `/page/pemesanan/pembayaran?id=${idPesanan}`
       );
 
     } catch (err: any) {

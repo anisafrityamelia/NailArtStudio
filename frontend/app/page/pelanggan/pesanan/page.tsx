@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Eye } from "lucide-react";
+import { Eye, CreditCard  } from "lucide-react";
 import Judul_Halaman from "@/app/components/ui/judul_halaman";
 import TabPesanan from "./components/tab_pesanan_pelanggan";
 import TabelPesananPelanggan from "./components/tabel_pesanan_pelanggan";
@@ -9,11 +9,12 @@ import ModalDetailPesananPelanggan from "./components/modal_detail_pesanan_pelan
 import { DetailPesananPelanggan } from "./components/detail_pesanan_pelanggan/detail_pesanan_types";
 import { getPesananSaya } from "@/app/lib/pesanan";
 
-const statusAktif = ["Menunggu Konfirmasi", "Terjadwal", "Diproses"];
+const statusAktif = ["Menunggu Pembayaran", "Menunggu Konfirmasi", "Terjadwal", "Diproses"];
 const statusRiwayat = ["Selesai", "Dibatalkan"];
 
 const formatStatus = (status: string) => {
   const statusMap: Record<string, string> = {
+    menunggu_pembayaran: "Menunggu Pembayaran",
     menunggu_konfirmasi: "Menunggu Konfirmasi",
     terjadwal: "Terjadwal",
     diproses: "Diproses",
@@ -54,13 +55,43 @@ export default function PesananSayaPage() {
                     item.detail_nail_art?.bagian_kuku || "-",
                 layananTambahan:
                     item.detail_nail_art?.layanan_tambahan || "-",
-                gambarReferensi:
-                    item.detail_nail_art?.gambar_inspo
-                    ? `http://localhost:8000/storage/${item.detail_nail_art.gambar_inspo}`
-                    : undefined,
+
                 catatan:
                     item.detail_nail_art?.catatan || "-",
 
+                
+                // Gambar Inspo untuk Nail Art & Press ON
+                    gambarReferensi:
+                    item.detail_nail_art?.url_gambar_inspo ||
+                    item.detail_press_on?.url_gambar_inspo ||
+                    undefined,
+                
+                // Detail Press On
+                fotoJariKanan:
+                    item.detail_press_on?.url_foto_jari_kanan || undefined,
+
+                fotoJempolKanan:
+                    item.detail_press_on?.url_foto_jempol_kanan || undefined,
+
+                fotoJariKiri:
+                    item.detail_press_on?.url_foto_jari_kiri || undefined,
+
+                fotoJempolKiri:
+                    item.detail_press_on?.url_foto_jempol_kiri || undefined,
+
+                shapeKuku:
+                    item.detail_press_on?.shape_kuku || "-",
+
+                metodePengambilan:
+                    item.detail_press_on?.metode_pengambilan === "antar"
+                    ? "Diantar ke rumah"
+                    : item.detail_press_on?.metode_pengambilan === "ambil"
+                    ? "Ambil ke studio"
+                    : "-",
+
+                alamatPengiriman:
+                    item.detail_press_on?.alamat_pengiriman || "-",
+                    
                 // Pembayaran
                 buktiTransfer:
                     item.pembayaran?.url_bukti_pembayaran || undefined,
@@ -108,19 +139,32 @@ export default function PesananSayaPage() {
                 <TabelPesananPelanggan
                     data={filteredData}
                     renderActions={(item) => (
-                        <div className="flex justify-center">
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setSelectedPesanan(item);
-                                    setOpenModalDetail(true);
-                                }}
-                                className="flex shrink-0 items-center gap-1 whitespace-nowrap rounded bg-gradient-to-r from-[#E45082] to-[#7D344B] px-1.5 py-1 text-[10px] text-white transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 cursor-pointer sm:px-2 sm:text-sm shadow-soft-text"
-                            >
-                                <Eye size={15} />
-                                Detail
-                            </button>
-                        </div>
+                    <div className="flex justify-center gap-2">
+                        {item.status === "Menunggu Pembayaran" && (
+                        <button
+                            type="button"
+                            onClick={() =>
+                            window.location.href = `/page/pemesanan/pembayaran?id=${item.id_pesanan}`
+                            }
+                            className="flex shrink-0 items-center gap-1 whitespace-nowrap rounded bg-gradient-to-r from-[#E45082] to-[#7D344B] px-1.5 py-1 text-[10px] text-white transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 cursor-pointer sm:px-2 sm:text-sm shadow-soft-text"
+                        >
+                            <CreditCard size={15} />
+                            Bayar
+                        </button>
+                        )}
+
+                        <button
+                        type="button"
+                        onClick={() => {
+                            setSelectedPesanan(item);
+                            setOpenModalDetail(true);
+                        }}
+                        className="flex shrink-0 items-center gap-1 whitespace-nowrap rounded bg-gradient-to-r from-[#E45082] to-[#7D344B] px-1.5 py-1 text-[10px] text-white transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 cursor-pointer sm:px-2 sm:text-sm shadow-soft-text"
+                        >
+                        <Eye size={15} />
+                        Detail
+                        </button>
+                    </div>
                     )}
                 />
             </section>

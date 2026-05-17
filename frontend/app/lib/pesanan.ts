@@ -25,6 +25,30 @@ export const bookingNailArt = async (formData: FormData) => {
   return result;
 };
 
+export const bookingPressOn = async (formData: FormData) => {
+  const token = getToken();
+
+  const response = await fetch(
+    `${API_BASE_URL}/pelanggan/pesanan/press-on`,
+    {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    }
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "Booking press on gagal");
+  }
+
+  return result;
+};
+
 export const getDetailPesanan = async (
   id: string
 ) => {
