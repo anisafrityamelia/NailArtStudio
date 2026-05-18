@@ -61,22 +61,56 @@ export default function PesananMasukPage() {
 
             status: formatStatus(item.status),
 
-            // Detail Nail Art
+            // detail nail art
             bagianKuku:
               item.detail_nail_art?.bagian_kuku || "-",
 
             layananTambahan:
               item.detail_nail_art?.layanan_tambahan || "-",
 
+            // gambar referensi (nail art, press on)
             gambarReferensi:
-              item.detail_nail_art?.gambar_inspo
-                ? `http://localhost:8000/storage/${item.detail_nail_art.gambar_inspo}`
-                : undefined,
+              item.detail_nail_art?.url_gambar_inspo ||
+              item.detail_press_on?.url_gambar_inspo ||
+              undefined,
 
+            // detail press on 
+            fotoJariKanan:
+              item.detail_press_on?.url_foto_jari_kanan ||
+              undefined,
+
+            fotoJempolKanan:
+              item.detail_press_on?.url_foto_jempol_kanan ||
+              undefined,
+
+            fotoJariKiri:
+              item.detail_press_on?.url_foto_jari_kiri ||
+              undefined,
+
+            fotoJempolKiri:
+              item.detail_press_on?.url_foto_jempol_kiri ||
+              undefined,
+
+            shapeKuku:
+              item.detail_press_on?.shape_kuku || "-",
+
+            metodePengambilan:
+              item.detail_press_on?.metode_pengambilan === "antar"
+                ? "Diantar ke rumah"
+                : item.detail_press_on?.metode_pengambilan === "ambil"
+                ? "Ambil ke studio"
+                : "-",
+
+            alamatPengiriman:
+              item.detail_press_on?.alamat_pengiriman || "-",
+
+            // catatan(nail art, press on)
             catatan:
-              item.detail_nail_art?.catatan || "-",
+              item.detail_nail_art?.catatan ||
+              item.detail_press_on?.catatan ||
+              "-",
 
-            // Pembayaran
+            // pembayaran
             kodePembayaran:
               item.pembayaran?.kode_pembayaran || "-",
 
