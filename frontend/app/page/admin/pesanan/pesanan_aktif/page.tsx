@@ -7,7 +7,10 @@ import Judul_Halaman from "@/app/components/ui/judul_halaman";
 import Filter_Pesanan from "../components/filter_pesanan";
 import ModalDetailPesanan from "../components/modal_detail_pesanan";
 import ModalUbahStatusPesanan from "../components/modal_ubah_status_pesanan";
-import { getPesananAktifAdmin, updateStatusPesananAktif } from "@/app/lib/pesanan";
+import {
+  getPesananAktifAdmin,
+  updateStatusPesananAktif,
+} from "@/app/lib/pesanan";
 import { DetailPesanan } from "../components/detail_pesanan/detail_pesanan_types";
 
 const formatStatus = (status: string) => {
@@ -22,76 +25,96 @@ const formatStatus = (status: string) => {
   return statusMap[status] || status;
 };
 
+const getRadioOptions = (
+  status?: string,
+  layanan?: string
+) => {
+  if (status === "Menunggu Konfirmasi") {
+    return layanan === "Press On"
+      ? ["Diproses", "Dibatalkan"]
+      : ["Terjadwal", "Dibatalkan"];
+  }
+
+  if (status === "Terjadwal") {
+    return ["Selesai", "Dibatalkan"];
+  }
+
+  if (status === "Diproses") {
+    return ["Selesai", "Dibatalkan"];
+  }
+
+  return [];
+};
+
 export default function PesananAktifPage() {
   const [dataPesanan, setDataPesanan] = useState<DetailPesanan[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const [filter, setFilter] = useState({ layanan: "Layanan"});
+  const [filter, setFilter] = useState({ layanan: "Layanan", status: "Status" });
+
   const [openModalDetail, setOpenModalDetail] = useState(false);
   const [openModalEdit, setOpenModalEdit] = useState(false);
-
   const [selectedPesanan, setSelectedPesanan] = useState<DetailPesanan | null>(null);
 
   useEffect(() => {
     const fetchPesananAktif = async () => {
       try {
         setLoading(true);
-  
+
         const result = await getPesananAktifAdmin();
-  
+
         const mappedData: DetailPesanan[] = result.map(
           (item: any, index: number) => ({
             no: index + 1,
             id_pesanan: item.id_pesanan,
-  
+
             kode: item.kode_pesanan,
-  
-            pelanggan:
+
+            pelanggan: 
               item.pengguna?.nama_pengguna || "-",
-  
-            layanan:
+
+            layanan: 
               item.layanan?.nama_layanan || "-",
-  
-            tanggal:
+
+            tanggal: 
               item.tanggal_pesanan || "-",
-  
-            jam:
+
+            jam: 
               item.jam_pesanan || "-",
-  
+
             status: formatStatus(item.status),
-  
+
             // detail nail art
-            bagianKuku:
+            bagianKuku: 
               item.detail_nail_art?.bagian_kuku || "-",
-  
             layananTambahan:
               item.detail_nail_art?.layanan_tambahan || "-",
-  
+
             // gambar referensi (nail art, press on)
             gambarReferensi:
               item.detail_nail_art?.url_gambar_inspo ||
               item.detail_press_on?.url_gambar_inspo ||
               undefined,
 
-            // detail press on 
+            // detail press on
             fotoJariKanan:
-              item.detail_press_on?.url_foto_jari_kanan ||
+              item.detail_press_on?.url_foto_jari_kanan || 
               undefined,
 
             fotoJempolKanan:
-              item.detail_press_on?.url_foto_jempol_kanan ||
+              item.detail_press_on?.url_foto_jempol_kanan || 
               undefined,
 
             fotoJariKiri:
-              item.detail_press_on?.url_foto_jari_kiri ||
+              item.detail_press_on?.url_foto_jari_kiri || 
               undefined,
 
             fotoJempolKiri:
-              item.detail_press_on?.url_foto_jempol_kiri ||
+              item.detail_press_on?.url_foto_jempol_kiri || 
               undefined,
 
-            shapeKuku:
+            shapeKuku: 
               item.detail_press_on?.shape_kuku || "-",
 
             metodePengambilan:
@@ -103,24 +126,24 @@ export default function PesananAktifPage() {
 
             alamatPengiriman:
               item.detail_press_on?.alamat_pengiriman || "-",
-  
-            // catatan(nail art, press on)
+
+            // catatan (nail art, press on)
             catatan:
               item.detail_nail_art?.catatan ||
               item.detail_press_on?.catatan ||
               "-",
-  
+
             // pembayaran
-            kodePembayaran:
+            kodePembayaran: 
               item.pembayaran?.kode_pembayaran || "-",
-  
+
             nominalPembayaran:
               item.pembayaran?.nominal_pembayaran || "-",
-  
-            hargaFinal:
-              item.harga_final || "-",
-  
-            statusPembayaran:
+
+            hargaFinal: 
+              item.harga_final || "",
+
+            statusPembayaran: 
               item.pembayaran?.status_verifikasi
                 ? item.pembayaran.status_verifikasi
                     .replaceAll("_", " ")
@@ -128,35 +151,33 @@ export default function PesananAktifPage() {
                       char.toUpperCase()
                     )
                 : "-",
-  
-            tanggalPembayaran:
+
+            tanggalPembayaran: 
               item.pembayaran?.tanggal_pembayaran
                 ? item.pembayaran.tanggal_pembayaran.split(" ")[0]
                 : "-",
-            
-            tanggalVerifikasi:
+
+            tanggalVerifikasi: 
               item.pembayaran?.tanggal_verifikasi
                 ? item.pembayaran.tanggal_verifikasi.split(" ")[0]
                 : "-",
-            
-            catatanAdmin:
+
+            catatanAdmin: 
               item.catatan_admin || "-",
 
             buktiTransfer:
               item.pembayaran?.url_bukti_pembayaran || undefined,
           })
         );
-  
+
         setDataPesanan(mappedData);
       } catch (err: any) {
-        setError(
-          err.message || "Gagal memuat data pesanan aktif"
-        );
+        setError(err.message || "Gagal memuat data pesanan aktif");
       } finally {
         setLoading(false);
       }
     };
-  
+
     fetchPesananAktif();
   }, []);
 
@@ -165,7 +186,11 @@ export default function PesananAktifPage() {
       filter.layanan === "Layanan" ||
       item.layanan === filter.layanan;
 
-    return matchLayanan;
+    const matchStatus =
+      filter.status === "Status" ||
+      item.status === filter.status;
+
+    return matchLayanan && matchStatus;
   })
   .map((item, index) => ({
     ...item,
@@ -182,38 +207,38 @@ export default function PesananAktifPage() {
         )}
 
         {error && (
-          <p className="mb-4 text-sm text-red-500">
-            {error}
-          </p>
+          <p className="mb-4 text-sm text-red-500">{error}</p>
         )}
 
         {/* Judul halaman */}
         <Judul_Halaman title="Pesanan Aktif" />
 
         {/* Filter data */}
-        <Filter_Pesanan 
+        <Filter_Pesanan
           layananOptions={["Layanan", "Nail Art", "Press On", "Remove", "Eyelash"]}
-            onFilterChange={(newFilter) =>
-              setFilter((prev) => ({
-                ...prev,
-                ...newFilter,
+          statusOptions={["Status", "Menunggu Konfirmasi", "Terjadwal", "Diproses"]}
+          onFilterChange={(newFilter) =>
+            setFilter((prev) => ({
+              ...prev,
+              ...newFilter,
             }))
           }
         />
 
         {/* Tabel daftar pesanan aktif */}
-        <Tabel_Pesanan 
-          data={filteredData} 
+        <Tabel_Pesanan
+          data={filteredData}
           renderActions={(item) => (
             <div className="flex flex-nowrap items-center justify-center gap-1 sm:gap-2">
-              <button 
+              <button
                 type="button"
                 onClick={() => {
                   setSelectedPesanan(item);
                   setOpenModalDetail(true);
                 }}
-                className="flex shrink-0 items-center gap-1 whitespace-nowrap rounded bg-gradient-to-r from-[#E45082] to-[#7D344B] px-1.5 py-1 text-[10px] text-white transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 cursor-pointer sm:px-2 sm:text-sm shadow-soft-text">
-                <Eye size={15} /> Detail 
+                className="flex shrink-0 items-center gap-1 whitespace-nowrap rounded bg-gradient-to-r from-[#E45082] to-[#7D344B] px-1.5 py-1 text-[10px] text-white transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 cursor-pointer sm:px-2 sm:text-sm shadow-soft-text"
+              >
+                <Eye size={15} /> Detail
               </button>
 
               <button
@@ -222,51 +247,98 @@ export default function PesananAktifPage() {
                   setSelectedPesanan(item);
                   setOpenModalEdit(true);
                 }}
-                className="flex shrink-0 items-center gap-1 whitespace-nowrap rounded bg-gradient-to-r from-[#E45082] to-[#7D344B] px-1.5 py-1 text-[10px] text-white transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 cursor-pointer sm:px-2 sm:text-sm shadow-soft-text">
-                <Pencil size={15} /> Edit 
+                className="flex shrink-0 items-center gap-1 whitespace-nowrap rounded bg-gradient-to-r from-[#E45082] to-[#7D344B] px-1.5 py-1 text-[10px] text-white transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 cursor-pointer sm:px-2 sm:text-sm shadow-soft-text"
+              >
+                <Pencil size={15} /> Edit
               </button>
             </div>
           )}
-        />      
+        />
       </section>
 
       <ModalDetailPesanan
         isOpen={openModalDetail}
         onClose={() => setOpenModalDetail(false)}
         data={selectedPesanan}
-        variant="aktif"
+        variant={
+          selectedPesanan?.status === "Menunggu Konfirmasi"
+            ? "masuk"
+            : "aktif"
+        }
       />
 
       <ModalUbahStatusPesanan
         isOpen={openModalEdit}
         onClose={() => setOpenModalEdit(false)}
         data={selectedPesanan}
-        radioOptions={["Selesai", "Dibatalkan"]}
-        isReadonlyHargaFinal={true}
+        radioOptions={getRadioOptions(
+          selectedPesanan?.status,
+          selectedPesanan?.layanan
+        )}
+        isReadonlyHargaFinal={
+          selectedPesanan?.status !== "Menunggu Konfirmasi"
+        }
         onSubmit={async (payload) => {
           try {
-            await updateStatusPesananAktif(
+            const payloadUpdate: {
+              status: string;
+              catatan_admin: string;
+              harga_final?: string;
+            } = {
+              status: payload.status,
+              catatan_admin: payload.catatanAdmin,
+            };
+
+            if (selectedPesanan?.status === "Menunggu Konfirmasi") {
+              payloadUpdate.harga_final = payload.hargaFinal;
+            }
+
+            const updatedData = await updateStatusPesananAktif(
               selectedPesanan?.id_pesanan || 0,
-              {
-                status: payload.status,
-                catatan_admin: payload.catatanAdmin,
-              }
+              payloadUpdate
             );
-        
+
             alert("Status pesanan berhasil diubah");
-        
-            setDataPesanan((prev) =>
-              prev.filter(
-                (item) => item.kode !== payload.kode
-              )
-            );
-        
+
+            const statusBaru = formatStatus(updatedData.status);
+
+            if (statusBaru === "Selesai" || statusBaru === "Dibatalkan") {
+              setDataPesanan((prev) =>
+                prev.filter(
+                  (item) =>
+                    item.id_pesanan !== selectedPesanan?.id_pesanan
+                )
+              );
+            } else {
+              setDataPesanan((prev) =>
+                prev.map((item) =>
+                  item.id_pesanan === selectedPesanan?.id_pesanan
+                    ? {
+                        ...item,
+                        status: statusBaru,
+                        hargaFinal: updatedData.harga_final || "",
+                        tanggalVerifikasi:
+                          updatedData.pembayaran?.tanggal_verifikasi
+                            ? updatedData.pembayaran.tanggal_verifikasi.split(" ")[0]
+                            : "-",
+                        statusPembayaran:
+                          updatedData.pembayaran?.status_verifikasi
+                            ? updatedData.pembayaran.status_verifikasi
+                                .replaceAll("_", " ")
+                                .replace(/\b\w/g, (char: string) =>
+                                  char.toUpperCase()
+                                )
+                            : "-",
+                        catatanAdmin: updatedData.catatan_admin || "-",
+                      }
+                    : item
+                )
+              );
+            }
+
             setOpenModalEdit(false);
           } catch (err: any) {
-            alert(
-              err.message ||
-                "Gagal mengubah status pesanan"
-            );
+            alert(err.message || "Gagal mengubah status pesanan");
           }
         }}
       />

@@ -34,7 +34,6 @@ const menuItems = [
     title: "Pesanan",
     icon: ShoppingCart,
     children: [
-      { title: "Pesanan Masuk", href: "/page/admin/pesanan/pesanan_masuk" },
       { title: "Pesanan Aktif", href: "/page/admin/pesanan/pesanan_aktif" },
       { title: "Riwayat Pesanan", href: "/page/admin/pesanan/riwayat_pesanan" },
     ],
