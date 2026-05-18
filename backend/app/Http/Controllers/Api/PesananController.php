@@ -242,6 +242,16 @@ class PesananController extends Controller
             'pembayaran',
         ])
         ->whereIn('status', ['menunggu_konfirmasi', 'terjadwal', 'diproses'])
+        ->orderByRaw("
+            CASE
+                WHEN status = 'menunggu_konfirmasi' THEN 1
+                WHEN status = 'terjadwal' THEN 2
+                WHEN status = 'diproses' THEN 3
+                ELSE 4
+            END
+        ")
+        ->orderByRaw("COALESCE(tanggal_pesanan, '9999-12-31') ASC")
+        ->orderByRaw("COALESCE(jam_pesanan, '23:59:59') ASC")
         ->orderBy('created_at', 'desc')
         ->get();
 

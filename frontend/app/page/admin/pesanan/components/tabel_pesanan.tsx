@@ -6,9 +6,10 @@ export type Baris_Pesanan = DetailPesanan;
 type Props_Tabel_Pesanan = {
   data: Baris_Pesanan[];
   renderActions: (item: Baris_Pesanan) => ReactNode;
+  highlightMenungguKonfirmasi?: boolean;
 };
 
-export default function Tabel_Pesanan({ data, renderActions }: Props_Tabel_Pesanan) {
+export default function Tabel_Pesanan({ data, renderActions, highlightMenungguKonfirmasi = false }: Props_Tabel_Pesanan) {
   return (
     <div className="rounded-md border border-[#d3a0b0] bg-white/40 shadow-sm overflow-hidden">
       <div className="overflow-x-auto">
@@ -27,18 +28,31 @@ export default function Tabel_Pesanan({ data, renderActions }: Props_Tabel_Pesan
           </thead>
 
           <tbody className="bg-white/70 text-[#7d344b] font-medium">
-            {data.map((item) => (
-              <tr key={item.kode}>
-                <td className="border border-[#e2b6c4] px-2 py-2 text-center align-top break-words sm:px-3">{item.no}</td>
-                <td className="border border-[#e2b6c4] px-2 py-2 align-top break-all sm:px-3 sm:break-words">{item.kode}</td>
-                <td className="border border-[#e2b6c4] px-2 py-2 align-top break-all sm:px-3">{item.pelanggan}</td>
-                <td className="border border-[#e2b6c4] px-2 py-2 align-top break-words sm:px-3">{item.layanan}</td>
-                <td className="border border-[#e2b6c4] px-2 py-2 align-top break-words sm:px-3">{item.tanggal}</td>
-                <td className="border border-[#e2b6c4] px-2 py-2 text-center align-top break-words sm:px-3">{item.jam}</td>
-                <td className="border border-[#e2b6c4] px-2 py-2 align-top break-all sm:px-3 sm:break-words">{item.status}</td>
-                <td className="border border-[#e2b6c4] px-2 py-2 align-top sm:px-2">{renderActions(item)}</td>
-              </tr>
-            ))}
+            {data.map((item) => {
+              const isMenungguKonfirmasi =
+                highlightMenungguKonfirmasi &&
+                item.status === "Menunggu Konfirmasi";
+
+              return (
+                <tr
+                  key={item.kode}
+                  className={
+                    isMenungguKonfirmasi
+                      ? "bg-[#F7D8DE]"
+                      : ""
+                  }
+                >
+                  <td className="border border-[#e2b6c4] px-2 py-2 text-center align-top break-words sm:px-3">{item.no}</td>
+                  <td className="border border-[#e2b6c4] px-2 py-2 align-top break-all sm:px-3 sm:break-words">{item.kode}</td>
+                  <td className="border border-[#e2b6c4] px-2 py-2 align-top break-all sm:px-3">{item.pelanggan}</td>
+                  <td className="border border-[#e2b6c4] px-2 py-2 align-top break-words sm:px-3">{item.layanan}</td>
+                  <td className="border border-[#e2b6c4] px-2 py-2 align-top break-words sm:px-3">{item.tanggal}</td>
+                  <td className="border border-[#e2b6c4] px-2 py-2 text-center align-top break-words sm:px-3">{item.jam}</td>
+                  <td className="border border-[#e2b6c4] px-2 py-2 align-top break-all sm:px-3 sm:break-words">{item.status}</td>
+                  <td className="border border-[#e2b6c4] px-2 py-2 align-top sm:px-2">{renderActions(item)}</td>
+                </tr>
+              );
+          })}
           </tbody>
         </table>
       </div>

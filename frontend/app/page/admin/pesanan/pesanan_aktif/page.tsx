@@ -46,6 +46,38 @@ const getRadioOptions = (
   return [];
 };
 
+const sortPesananAktif = (data: DetailPesanan[]) => {
+  const statusOrder: Record<string, number> = {
+    "Menunggu Konfirmasi": 1,
+    Terjadwal: 2,
+    Diproses: 3,
+  };
+
+  return [...data].sort((a, b) => {
+    const statusA = statusOrder[a.status || ""] || 99;
+    const statusB = statusOrder[b.status || ""] || 99;
+
+    // urut status
+    if (statusA !== statusB) {
+      return statusA - statusB;
+    }
+
+    // urutkan tanggal booking
+    const tanggalA = a.tanggal || "9999-12-31";
+    const tanggalB = b.tanggal || "9999-12-31";
+
+    if (tanggalA !== tanggalB) {
+      return tanggalA.localeCompare(tanggalB);
+    }
+
+    // urutkan jam booking
+    const jamA = a.jam || "23:59:59";
+    const jamB = b.jam || "23:59:59";
+
+    return jamA.localeCompare(jamB);
+  });
+};
+
 export default function PesananAktifPage() {
   const [dataPesanan, setDataPesanan] = useState<DetailPesanan[]>([]);
   const [loading, setLoading] = useState(true);
@@ -71,25 +103,19 @@ export default function PesananAktifPage() {
 
             kode: item.kode_pesanan,
 
-            pelanggan: 
-              item.pengguna?.nama_pengguna || "-",
+            pelanggan: item.pengguna?.nama_pengguna || "-",
 
-            layanan: 
-              item.layanan?.nama_layanan || "-",
+            layanan: item.layanan?.nama_layanan || "-",
 
-            tanggal: 
-              item.tanggal_pesanan || "-",
+            tanggal: item.tanggal_pesanan || "-",
 
-            jam: 
-              item.jam_pesanan || "-",
+            jam: item.jam_pesanan || "-",
 
             status: formatStatus(item.status),
 
             // detail nail art
-            bagianKuku: 
-              item.detail_nail_art?.bagian_kuku || "-",
-            layananTambahan:
-              item.detail_nail_art?.layanan_tambahan || "-",
+            bagianKuku: item.detail_nail_art?.bagian_kuku || "-",
+            layananTambahan: item.detail_nail_art?.layanan_tambahan || "-",
 
             // gambar referensi (nail art, press on)
             gambarReferensi:
@@ -114,8 +140,7 @@ export default function PesananAktifPage() {
               item.detail_press_on?.url_foto_jempol_kiri || 
               undefined,
 
-            shapeKuku: 
-              item.detail_press_on?.shape_kuku || "-",
+            shapeKuku: item.detail_press_on?.shape_kuku || "-",
 
             metodePengambilan:
               item.detail_press_on?.metode_pengambilan === "antar"
@@ -124,8 +149,7 @@ export default function PesananAktifPage() {
                 ? "Ambil ke studio"
                 : "-",
 
-            alamatPengiriman:
-              item.detail_press_on?.alamat_pengiriman || "-",
+            alamatPengiriman: item.detail_press_on?.alamat_pengiriman || "-",
 
             // catatan (nail art, press on)
             catatan:
@@ -134,14 +158,11 @@ export default function PesananAktifPage() {
               "-",
 
             // pembayaran
-            kodePembayaran: 
-              item.pembayaran?.kode_pembayaran || "-",
+            kodePembayaran: item.pembayaran?.kode_pembayaran || "-",
 
-            nominalPembayaran:
-              item.pembayaran?.nominal_pembayaran || "-",
+            nominalPembayaran: item.pembayaran?.nominal_pembayaran || "-",
 
-            hargaFinal: 
-              item.harga_final || "",
+            hargaFinal: item.harga_final || "",
 
             statusPembayaran: 
               item.pembayaran?.status_verifikasi
@@ -162,11 +183,9 @@ export default function PesananAktifPage() {
                 ? item.pembayaran.tanggal_verifikasi.split(" ")[0]
                 : "-",
 
-            catatanAdmin: 
-              item.catatan_admin || "-",
+            catatanAdmin: item.catatan_admin || "-",
 
-            buktiTransfer:
-              item.pembayaran?.url_bukti_pembayaran || undefined,
+            buktiTransfer: item.pembayaran?.url_bukti_pembayaran || undefined,
           })
         );
 
@@ -228,6 +247,7 @@ export default function PesananAktifPage() {
         {/* Tabel daftar pesanan aktif */}
         <Tabel_Pesanan
           data={filteredData}
+          highlightMenungguKonfirmasi={true}
           renderActions={(item) => (
             <div className="flex flex-nowrap items-center justify-center gap-1 sm:gap-2">
               <button
@@ -311,27 +331,29 @@ export default function PesananAktifPage() {
               );
             } else {
               setDataPesanan((prev) =>
-                prev.map((item) =>
-                  item.id_pesanan === selectedPesanan?.id_pesanan
-                    ? {
-                        ...item,
-                        status: statusBaru,
-                        hargaFinal: updatedData.harga_final || "",
-                        tanggalVerifikasi:
-                          updatedData.pembayaran?.tanggal_verifikasi
-                            ? updatedData.pembayaran.tanggal_verifikasi.split(" ")[0]
-                            : "-",
-                        statusPembayaran:
-                          updatedData.pembayaran?.status_verifikasi
-                            ? updatedData.pembayaran.status_verifikasi
-                                .replaceAll("_", " ")
-                                .replace(/\b\w/g, (char: string) =>
-                                  char.toUpperCase()
-                                )
-                            : "-",
-                        catatanAdmin: updatedData.catatan_admin || "-",
-                      }
-                    : item
+                sortPesananAktif(
+                  prev.map((item) =>
+                    item.id_pesanan === selectedPesanan?.id_pesanan
+                      ? {
+                          ...item,
+                          status: statusBaru,
+                          hargaFinal: updatedData.harga_final || "",
+                          tanggalVerifikasi:
+                            updatedData.pembayaran?.tanggal_verifikasi
+                              ? updatedData.pembayaran.tanggal_verifikasi.split(" ")[0]
+                              : "-",
+                          statusPembayaran:
+                            updatedData.pembayaran?.status_verifikasi
+                              ? updatedData.pembayaran.status_verifikasi
+                                  .replaceAll("_", " ")
+                                  .replace(/\b\w/g, (char: string) =>
+                                    char.toUpperCase()
+                                  )
+                              : "-",
+                          catatanAdmin: updatedData.catatan_admin || "-",
+                        }
+                      : item
+                  )
                 )
               );
             }
