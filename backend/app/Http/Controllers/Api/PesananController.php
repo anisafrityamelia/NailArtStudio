@@ -241,13 +241,14 @@ class PesananController extends Controller
             'detailPressOn',
             'pembayaran',
         ])
-        ->whereIn('status', ['menunggu_konfirmasi', 'terjadwal', 'diproses'])
+        ->whereIn('status', ['menunggu_konfirmasi', 'terjadwal', 'diproses', 'siap_diambil'])
         ->orderByRaw("
             CASE
                 WHEN status = 'menunggu_konfirmasi' THEN 1
                 WHEN status = 'terjadwal' THEN 2
                 WHEN status = 'diproses' THEN 3
-                ELSE 4
+                WHEN status = 'siap_diambil' THEN 4
+                ELSE 5
             END
         ")
         ->orderByRaw("COALESCE(tanggal_pesanan, '9999-12-31') ASC")
@@ -280,6 +281,7 @@ class PesananController extends Controller
         $statusMap = [
             'Terjadwal' => 'terjadwal',
             'Diproses' => 'diproses',
+            'Siap Diambil' => 'siap_diambil',
             'Dibatalkan' => 'dibatalkan',
             'Selesai' => 'selesai',
         ];

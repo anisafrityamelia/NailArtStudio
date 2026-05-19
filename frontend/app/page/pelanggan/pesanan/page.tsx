@@ -9,7 +9,7 @@ import ModalDetailPesananPelanggan from "./components/modal_detail_pesanan_pelan
 import { DetailPesananPelanggan } from "./components/detail_pesanan_pelanggan/detail_pesanan_types";
 import { getPesananSaya } from "@/app/lib/pesanan";
 
-const statusAktif = ["Menunggu Pembayaran", "Menunggu Konfirmasi", "Terjadwal", "Diproses"];
+const statusAktif = ["Menunggu Pembayaran", "Menunggu Konfirmasi", "Terjadwal", "Diproses", "Siap Diambil"];
 const statusRiwayat = ["Selesai", "Dibatalkan"];
 
 const formatStatus = (status: string) => {
@@ -18,6 +18,7 @@ const formatStatus = (status: string) => {
     menunggu_konfirmasi: "Menunggu Konfirmasi",
     terjadwal: "Terjadwal",
     diproses: "Diproses",
+    siap_diambil: "Siap Diambil",
     selesai: "Selesai",
     dibatalkan: "Dibatalkan",
   };
@@ -93,8 +94,16 @@ export default function PesananSayaPage() {
                     item.detail_press_on?.alamat_pengiriman || "-",
                     
                 // Pembayaran
+                kodePembayaran: 
+                    item.pembayaran?.kode_pembayaran || "-",
+
+                hargaFinal: 
+                    item.harga_final || "",
+
                 buktiTransfer:
                     item.pembayaran?.url_bukti_pembayaran || undefined,
+
+                catatanAdmin: item.catatan_admin || "-",
                 })
             );
 
@@ -115,7 +124,11 @@ export default function PesananSayaPage() {
         } else {
             return statusRiwayat.includes(item.status ?? "");
         }
-    });
+    })
+    .map((item, index) => ({
+        ...item,
+        no: index + 1,
+    }));
 
     return (
         <>

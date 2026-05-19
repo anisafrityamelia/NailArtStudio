@@ -5,6 +5,7 @@ import { DetailPesananPelanggan } from "./detail_pesanan_pelanggan/detail_pesana
 import {
     InputReadonly,
     UploadPreviewReadonly,
+    TextareaReadonly,
 } from "./detail_pesanan_pelanggan/detail_pesanan_fields";
 import DetailDesainNailArt from "./detail_pesanan_pelanggan/detail_desain_nail_art";
 import DetailDesainPressOn from "./detail_pesanan_pelanggan/detail_desain_presson";
@@ -96,12 +97,15 @@ export default function ModalDetailPesananPelanggan({
                             Detail Pembayaran
                         </h3>
 
-                        <div className="grid grid-cols-1 gap-3">
+                        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                            <InputReadonly label="Kode Pembayaran" value={data?.kodePembayaran} />
+                            <InputReadonly label="Harga Final" value={data?.hargaFinal} />
                             <UploadPreviewReadonly
                                 label="Bukti Transfer"
                                 src={data?.buktiTransfer}
                                 alt="Bukti Transfer"
                             />
+                            <TextareaReadonly label="Catatan Admin" value={data?.catatanAdmin} rows={5} />
                         </div>
                     </div>
                 </div>

@@ -28,5 +28,8 @@ export type DetailPesananPelanggan = {
   catatan?: string;
 
   // Pembayaran
+  kodePembayaran?: string;
+  hargaFinal?: string;
   buktiTransfer?: string | null;
+  catatanAdmin?: string;
 };

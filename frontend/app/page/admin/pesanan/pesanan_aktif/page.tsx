@@ -18,6 +18,7 @@ const formatStatus = (status: string) => {
     menunggu_konfirmasi: "Menunggu Konfirmasi",
     terjadwal: "Terjadwal",
     diproses: "Diproses",
+    siap_diambil: "Siap Diambil",
     selesai: "Selesai",
     dibatalkan: "Dibatalkan",
   };
@@ -40,6 +41,12 @@ const getRadioOptions = (
   }
 
   if (status === "Diproses") {
+    return layanan === "Press On"
+      ? ["Siap Diambil", "Dibatalkan"]
+      : ["Selesai", "Dibatalkan"];
+  }
+
+  if (status === "Siap Diambil") {
     return ["Selesai", "Dibatalkan"];
   }
 
@@ -51,6 +58,7 @@ const sortPesananAktif = (data: DetailPesanan[]) => {
     "Menunggu Konfirmasi": 1,
     Terjadwal: 2,
     Diproses: 3,
+    "Siap Diambil": 4,
   };
 
   return [...data].sort((a, b) => {
@@ -235,7 +243,7 @@ export default function PesananAktifPage() {
         {/* Filter data */}
         <Filter_Pesanan
           layananOptions={["Layanan", "Nail Art", "Press On", "Remove", "Eyelash"]}
-          statusOptions={["Status", "Menunggu Konfirmasi", "Terjadwal", "Diproses"]}
+          statusOptions={["Status", "Menunggu Konfirmasi", "Terjadwal", "Diproses", "Siap Diambil"]}
           onFilterChange={(newFilter) =>
             setFilter((prev) => ({
               ...prev,
