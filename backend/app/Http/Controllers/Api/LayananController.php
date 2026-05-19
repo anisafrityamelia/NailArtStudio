@@ -10,7 +10,7 @@ class LayananController extends Controller
 {
     public function index()
     {
-        $layanan = Layanan::with('gambar')
+        $layanan = Layanan::with(['gambar', 'kategoriHarga'])
             ->orderBy('id_layanan', 'desc')
             ->get();
 
@@ -22,7 +22,7 @@ class LayananController extends Controller
 
     public function aktif()
     {
-        $layanan = Layanan::with('gambar')
+        $layanan = Layanan::with(['gambar', 'kategoriHarga'])
             ->where('status_layanan', 'aktif')
             ->orderBy('id_layanan', 'desc')
             ->get();
@@ -35,7 +35,7 @@ class LayananController extends Controller
 
     public function show($id)
     {
-        $layanan = Layanan::with('gambar')->find($id);
+        $layanan = Layanan::with(['gambar', 'kategoriHarga'])->find($id);
 
         if (! $layanan) {
             return response()->json([
@@ -128,7 +128,7 @@ class LayananController extends Controller
 
     public function showByKategori($kategori)
     {
-        $layanan = Layanan::with('gambar')
+        $layanan = Layanan::with(['gambar', 'kategoriHarga'])
             ->where('kategori_layanan', $kategori)
             ->where('status_layanan', 'aktif')
             ->first();

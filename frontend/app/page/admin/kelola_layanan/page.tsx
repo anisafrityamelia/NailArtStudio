@@ -7,6 +7,7 @@ import Tabel_Kelola_Layanan, {
 } from "./components/tabel_kelola_layanan";
 import ModalEditLayanan, {
   type PayloadEditLayanan,
+  type PayloadKategoriHarga,
 } from "./components/modal_edit_layanan";
 import Card_Keunggulan_Beranda from "./components/card_keunggulan_beranda";
 import Card_Galeri_Beranda from "./components/card_galeri_beranda";
@@ -46,10 +47,11 @@ export default function KelolaLayananPage() {
                     no: index + 1,
                     layanan: item.nama_layanan,
                     kategori_layanan: item.kategori_layanan,
-                    deskripsi: item.deskripsi_layanan,
+                    deskripsi: item.deskripsi_layanan || "",
                     estimasiHarga: item.harga_dasar,
                     durasi: item.durasi_menit,
                     gambar: item.gambar || [],
+                    kategoriHarga: item.kategori_harga || [],
                     statusLayanan:
                         item.status_layanan === "aktif" ? "Aktif" : "Nonaktif",
                 })
@@ -170,6 +172,109 @@ export default function KelolaLayananPage() {
         }
     }
 
+    async function handleTambahKategoriHarga(
+        id_layanan: number,
+        payload: PayloadKategoriHarga
+    ) {
+        const token = getToken();
+
+        const formData = new FormData();
+        formData.append("nama_kategori", payload.nama_kategori);
+        formData.append("deskripsi_kategori", payload.deskripsi_kategori);
+        formData.append("estimasi_harga", String(payload.estimasi_harga));
+        formData.append("urutan", String(payload.urutan));
+        formData.append("status", payload.status);
+
+        if (payload.file_gambar_kategori) {
+            formData.append("gambar_kategori", payload.file_gambar_kategori);
+        }
+
+        const response = await fetch(
+            `${API_BASE_URL}/admin/layanan/${id_layanan}/kategori-harga`,
+            {
+                method: "POST",
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: formData,
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Gagal menambah kategori harga");
+        }
+
+        await fetchLayanan();
+
+        return result.data;
+    }
+
+    async function handleUpdateKategoriHarga(
+        id_kategori_harga: number,
+        payload: PayloadKategoriHarga
+    ) {
+        const token = getToken();
+
+        const formData = new FormData();
+        formData.append("nama_kategori", payload.nama_kategori);
+        formData.append("deskripsi_kategori", payload.deskripsi_kategori);
+        formData.append("estimasi_harga", String(payload.estimasi_harga));
+        formData.append("urutan", String(payload.urutan));
+        formData.append("status", payload.status);
+
+        if (payload.file_gambar_kategori) {
+            formData.append("gambar_kategori", payload.file_gambar_kategori);
+        }
+
+        const response = await fetch(
+            `${API_BASE_URL}/admin/kategori-harga-layanan/${id_kategori_harga}`,
+            {
+                method: "POST",
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: formData,
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Gagal update kategori harga");
+        }
+
+        await fetchLayanan();
+
+        return result.data;
+    }
+
+    async function handleHapusKategoriHarga(id_kategori_harga: number) {
+        const token = getToken();
+
+        const response = await fetch(
+            `${API_BASE_URL}/admin/kategori-harga-layanan/${id_kategori_harga}`,
+            {
+                method: "DELETE",
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Gagal hapus kategori harga");
+        }
+
+        await fetchLayanan();
+    }
+
     return (
         <>
             <section>
@@ -200,6 +305,9 @@ export default function KelolaLayananPage() {
                 onClose={handleTutupModalEdit}
                 data={dataEdit}
                 onSubmit={handleUpdateLayanan}
+                onTambahKategoriHarga={handleTambahKategoriHarga}
+                onUpdateKategoriHarga={handleUpdateKategoriHarga}
+                onHapusKategoriHarga={handleHapusKategoriHarga}
             />
         </>
     );

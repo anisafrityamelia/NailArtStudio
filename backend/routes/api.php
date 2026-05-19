@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\GambarLayananController;
 use App\Http\Controllers\Api\ManajemenPenggunaController;
 use App\Http\Controllers\Api\PesananController;
 use App\Http\Controllers\Api\PembayaranController;
+use App\Http\Controllers\Api\KategoriHargaLayananController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -30,6 +31,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/layanan/{id_layanan}/gambar', [GambarLayananController::class, 'store']);
         Route::post('/gambar-layanan/{id_gambar}/replace', [GambarLayananController::class, 'replace']);
         Route::delete('/gambar-layanan/{id_gambar}', [GambarLayananController::class, 'destroy']);
+
+        Route::post('/layanan/{id_layanan}/kategori-harga', [KategoriHargaLayananController::class, 'store']);
+        Route::post('/kategori-harga-layanan/{id_kategori_harga}', [KategoriHargaLayananController::class, 'update']);
+        Route::delete('/kategori-harga-layanan/{id_kategori_harga}', [KategoriHargaLayananController::class, 'destroy']);
 
         Route::get('/pengguna', [ManajemenPenggunaController::class, 'index']);
         Route::post('/pengguna', [ManajemenPenggunaController::class, 'store']);

@@ -24,6 +24,15 @@ class Layanan extends Model
         return $this->hasMany(GambarLayanan::class, 'id_layanan', 'id_layanan');
     }
 
+    public function kategoriHarga()
+    {
+        return $this->hasMany(
+            KategoriHargaLayanan::class,
+            'id_layanan',
+            'id_layanan'
+        )->orderBy('urutan', 'asc');
+    }
+
     public function pesanan()
     {
         return $this->hasMany(
