@@ -12,6 +12,7 @@ export default function Navbar() {
   const [isMenuAkunOpen, setIsMenuAkunOpen] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [isUserLogin, setIsUserLogin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [userName, setUserName] = useState("");
   const [fotoProfil, setFotoProfil] = useState("");
 
@@ -33,6 +34,11 @@ export default function Navbar() {
       setIsUserLogin(true);
       setUserName(user.nama_pengguna || "");
       setFotoProfil(user.url_profil_foto || "");
+
+      const roleUser =
+        user.role || user.peran || user.tipe_pengguna || user.level || "";
+
+      setIsAdmin(roleUser.toLowerCase() === "admin");
     }
   }, []);
 
@@ -87,26 +93,16 @@ export default function Navbar() {
           </div>
 
           <nav className="hidden items-center gap-6 md:flex lg:gap-8">
-            {menuItems.map((item) =>
-              item.href.startsWith("#") ? (
-                <button
-                  key={item.label}
-                  type="button"
-                  onClick={() => scrollKeSection(item.href)}
-                  className="text-[15px] font-semibold transition hover:text-[#f8d7e1]"
-                >
-                  {item.label}
-                </button>
-              ) : (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  className="text-[15px] font-semibold transition hover:text-[#f8d7e1]"
-                >
-                  {item.label}
-                </Link>
-              )
-            )}
+            {menuItems.map((item) => (
+              <button
+                key={item.label}
+                type="button"
+                onClick={() => scrollKeSection(item.href)}
+                className="text-[15px] font-semibold transition hover:text-[#f8d7e1]"
+              >
+                {item.label}
+              </button>
+            ))}
           </nav>
 
           <div className="flex items-center gap-2">
@@ -120,18 +116,20 @@ export default function Navbar() {
                   <Bell size={22} />
                 </button>
 
-                <Link
-                  href="/page/pelanggan/dasbor_pelanggan"
-                  className="relative ml-1 h-7 w-7 overflow-hidden rounded-full transition hover:scale-105"
-                >
-                  <Image
-                    src={fotoProfil || "/profile-default.jfif"}
-                    alt="Foto Profil Pelanggan"
-                    fill
-                    unoptimized
-                    className="object-cover"
-                  />
-                </Link>
+                {!isAdmin && (
+                  <Link
+                    href="/page/pelanggan/dasbor_pelanggan"
+                    className="relative ml-1 h-7 w-7 overflow-hidden rounded-full transition hover:scale-105"
+                  >
+                    <Image
+                      src={fotoProfil || "/profile-default.jfif"}
+                      alt="Foto Profil Pelanggan"
+                      fill
+                      unoptimized
+                      className="object-cover"
+                    />
+                  </Link>
+                )}
 
                 <div className="relative" ref={menuAkunRef}>
                   <button
@@ -146,9 +144,21 @@ export default function Navbar() {
                   {isMenuAkunOpen && (
                     <div className="absolute right-0 top-12 z-50 w-45 overflow-hidden rounded-2xl border border-[#dd98ad] bg-[#ffecf2] text-[#7d344b] shadow-soft-text">
                       <div className="border-b border-[#efcfd8] px-4 py-2">
-                        <p className="break-words text-[15px] font-semibold leading-snug">
-                          {userName || "User"}
-                        </p>
+                        {isAdmin ? (
+                          <Link
+                            href="/page/admin/dasbor_admin"
+                            onClick={() => setIsMenuAkunOpen(false)}
+                            className="block rounded-lg transition hover:text-[#a14d68]"
+                          >
+                            <p className="break-words text-[15px] font-semibold leading-snug">
+                              {userName || "Admin"}
+                            </p>
+                          </Link>
+                        ) : (
+                          <p className="break-words text-[15px] font-semibold leading-snug">
+                            {userName || "User"}
+                          </p>
+                        )}
                       </div>
 
                       <div className="space-y-1 px-3 py-2">
@@ -208,61 +218,56 @@ export default function Navbar() {
         >
           <div className="border-t border-white/10 bg-[#7d344b] px-4 pb-4 pt-3">
             <nav className="flex flex-col">
-              {menuItems.map((item) =>
-                item.href.startsWith("#") ? (
-                  <button
-                    key={item.label}
-                    type="button"
-                    onClick={() => scrollKeSection(item.href)}
-                    className="group flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-[15px] font-medium transition-all duration-200 hover:bg-white/10 active:scale-[0.98]"
-                  >
-                    <span className="transition-transform duration-200 group-hover:translate-x-1">
-                      {item.label}
-                    </span>
-                    <ChevronRight
-                      size={18}
-                      className="opacity-60 transition-transform duration-200 group-hover:translate-x-1"
-                    />
-                  </button>
-                ) : (
-                  <Link
-                    key={item.label}
-                    href={item.href}
-                    onClick={() => setIsOpen(false)}
-                    className="group flex items-center justify-between rounded-xl px-3 py-3 text-[15px] font-medium transition-all duration-200 hover:bg-white/10 active:scale-[0.98]"
-                  >
-                    <span className="transition-transform duration-200 group-hover:translate-x-1">
-                      {item.label}
-                    </span>
-                    <ChevronRight
-                      size={18}
-                      className="opacity-60 transition-transform duration-200 group-hover:translate-x-1"
-                    />
-                  </Link>
-                )
-              )}
+              {menuItems.map((item) => (
+                <button
+                  key={item.label}
+                  type="button"
+                  onClick={() => scrollKeSection(item.href)}
+                  className="group flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-[15px] font-medium transition-all duration-200 hover:bg-white/10 active:scale-[0.98]"
+                >
+                  <span className="transition-transform duration-200 group-hover:translate-x-1">
+                    {item.label}
+                  </span>
+                  <ChevronRight
+                    size={18}
+                    className="opacity-60 transition-transform duration-200 group-hover:translate-x-1"
+                  />
+                </button>
+              ))}
 
               {isUserLogin ? (
                 <div className="mt-3 rounded-2xl bg-white/10 p-3">
-                  <Link
-                    href="/page/pelanggan/dasbor_pelanggan"
-                    onClick={() => setIsOpen(false)}
-                    className="mb-3 flex items-center gap-3 rounded-xl px-3 py-3 transition hover:bg-white/10"
-                  >
-                    <div className="relative h-9 w-9 overflow-hidden rounded-full">
-                      <Image
-                        src={fotoProfil || "/profile-default.jfif"}
-                        alt="Foto Profil Pelanggan"
-                        fill
-                        unoptimized
-                        className="object-cover"
-                      />
-                    </div>
+                  {!isAdmin ? (
+                    <Link
+                      href="/page/pelanggan/dasbor_pelanggan"
+                      onClick={() => setIsOpen(false)}
+                      className="mb-3 flex items-center gap-3 rounded-xl px-3 py-3 transition hover:bg-white/10"
+                    >
+                      <div className="relative h-9 w-9 overflow-hidden rounded-full">
+                        <Image
+                          src={fotoProfil || "/profile-default.jfif"}
+                          alt="Foto Profil Pelanggan"
+                          fill
+                          unoptimized
+                          className="object-cover"
+                        />
+                      </div>
 
-                    <p className="text-[15px] font-semibold">
-                      {userName || "User"}
-                    </p>
-                  </Link>
+                      <p className="text-[15px] font-semibold">
+                        {userName || "User"}
+                      </p>
+                    </Link>
+                  ) : (
+                    <Link
+                      href="/page/admin/dasbor_admin"
+                      onClick={() => setIsOpen(false)}
+                      className="mb-3 block rounded-xl px-3 py-3 transition hover:bg-white/10"
+                    >
+                      <p className="break-words text-[15px] font-semibold">
+                        {userName || "Admin"}
+                      </p>
+                    </Link>
+                  )}
 
                   <button
                     type="button"
