@@ -56,6 +56,15 @@ class Pesanan extends Model
             'id_pesanan'
         );
     }
+
+    public function detailEyelash()
+    {
+        return $this->hasOne(
+            DetailEyelash::class,
+            'id_pesanan',
+            'id_pesanan'
+        );
+    }
     
     public function pembayaran()
     {

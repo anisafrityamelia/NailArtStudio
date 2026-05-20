@@ -49,6 +49,30 @@ export const bookingPressOn = async (formData: FormData) => {
   return result;
 };
 
+export const bookingEyelash = async (formData: FormData) => {
+  const token = getToken();
+
+  const response = await fetch(
+    `${API_BASE_URL}/pelanggan/pesanan/eyelash`,
+    {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    }
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "Booking eyelash gagal");
+  }
+
+  return result;
+};
+
 export const getDetailPesanan = async (
   id: string
 ) => {

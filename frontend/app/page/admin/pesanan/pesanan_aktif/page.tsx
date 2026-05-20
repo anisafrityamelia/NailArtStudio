@@ -131,6 +131,10 @@ export default function PesananAktifPage() {
               item.detail_press_on?.url_gambar_inspo ||
               undefined,
 
+            // detail eyelash
+            jenisLash:
+              item.detail_eyelash?.jenis_lash || "-",
+
             // detail press on
             fotoJariKanan:
               item.detail_press_on?.url_foto_jari_kanan || 
@@ -159,10 +163,11 @@ export default function PesananAktifPage() {
 
             alamatPengiriman: item.detail_press_on?.alamat_pengiriman || "-",
 
-            // catatan (nail art, press on)
+            // catatan (nail art, press on, eyelash)
             catatan:
               item.detail_nail_art?.catatan ||
               item.detail_press_on?.catatan ||
+              item.detail_eyelash?.catatan ||
               "-",
 
             // pembayaran

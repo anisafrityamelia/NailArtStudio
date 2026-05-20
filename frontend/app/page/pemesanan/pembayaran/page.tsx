@@ -168,6 +168,32 @@ export default function PembayaranUniversal() {
       );
     }
 
+    if (pesanan?.detail_eyelash) {
+      return (
+        <>
+          <InputReadonly
+            label="Tanggal"
+            value={pesanan?.tanggal_pesanan || "-"}
+          />
+
+          <InputReadonly
+            label="Jam"
+            value={pesanan?.jam_pesanan || "-"}
+          />
+
+          <InputReadonly
+            label="Jenis Lash"
+            value={pesanan?.detail_eyelash?.jenis_lash || "-"}
+          />
+
+          <TextareaReadonly
+            label="Catatan"
+            value={pesanan?.detail_eyelash?.catatan || "-"}
+          />
+        </>
+      );
+    }
+
     return (
       <p className="text-center text-sm text-red-600">
         Detail layanan tidak ditemukan.

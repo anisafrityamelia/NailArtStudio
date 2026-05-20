@@ -8,6 +8,7 @@ import BottomSheetPemesanan from "./components/bottom_sheet_pemesanan";
 import FormNailArt from "./components/form_nail_art";
 import FormPlaceholderLayanan from "./components/form_placeholder_layanan";
 import FormPressOn from "./components/form_presson";
+import FormEyelash from "./components/form_eyelash";
 
 type GambarLayanan = {
   id_gambar: number;
@@ -266,8 +267,13 @@ export default function DetailLayananPage() {
           <FormPressOn layanan={layanan} />
         )}
 
+        {layanan.kategori_layanan === "eyelash" && (
+          <FormEyelash layanan={layanan} />
+        )}
+
         {layanan.kategori_layanan !== "nail_art" &&
-          layanan.kategori_layanan !== "presson" && (
+          layanan.kategori_layanan !== "presson" &&
+          layanan.kategori_layanan !== "eyelash" && (
             <FormPlaceholderLayanan namaLayanan={layanan.nama_layanan} />
           )}
       </BottomSheetPemesanan>
