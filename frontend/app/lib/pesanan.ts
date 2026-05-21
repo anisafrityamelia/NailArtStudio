@@ -239,10 +239,17 @@ export type SlotBooking = {
   sisa_kapasitas: number;
 };
 
+export type ResponseSlotBooking = {
+  slots: SlotBooking[];
+  status_jadwal: "Default" | "Buka" | "Tutup";
+  catatan_jadwal: string | null;
+  message: string;
+};
+
 export const getSlotBooking = async (
   tanggal: string,
   idLayanan: number
-): Promise<SlotBooking[]> => {
+): Promise<ResponseSlotBooking> => {
   const token = getToken();
 
   const response = await fetch(
@@ -262,5 +269,10 @@ export const getSlotBooking = async (
     throw new Error(result.message || "Gagal mengambil slot booking");
   }
 
-  return result.data;
+  return {
+    slots: result.data || [],
+    status_jadwal: result.status_jadwal || "Default",
+    catatan_jadwal: result.catatan_jadwal || null,
+    message: result.message,
+  };
 };

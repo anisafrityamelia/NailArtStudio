@@ -23,6 +23,8 @@ export default function FormRemove({ layanan }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [slotBooking, setSlotBooking] = useState<SlotBooking[]>([]);
   const [isLoadingSlot, setIsLoadingSlot] = useState(false);
+  const [statusJadwal, setStatusJadwal] = useState<"Default" | "Buka" | "Tutup">("Default");
+  const [catatanJadwal, setCatatanJadwal] = useState<string | null>(null);
 
   const pilihanBagianKuku = ["Jari tangan", "Jari kaki"];
 
@@ -42,6 +44,8 @@ export default function FormRemove({ layanan }: Props) {
     async function ambilSlotBooking() {
       if (!tanggalPesanan || !layanan?.id_layanan) {
         setSlotBooking([]);
+        setStatusJadwal("Default");
+        setCatatanJadwal(null);
         return;
       }
 
@@ -53,10 +57,14 @@ export default function FormRemove({ layanan }: Props) {
           layanan.id_layanan
         );
 
-        setSlotBooking(data);
+        setSlotBooking(data.slots);
+        setStatusJadwal(data.status_jadwal);
+        setCatatanJadwal(data.catatan_jadwal);
       } catch (error: any) {
         alert(error.message || "Gagal mengambil slot booking");
         setSlotBooking([]);
+        setStatusJadwal("Default");
+        setCatatanJadwal(null);
       } finally {
         setIsLoadingSlot(false);
       }
@@ -67,6 +75,11 @@ export default function FormRemove({ layanan }: Props) {
 
   const handleSubmitRemove = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (statusJadwal === "Tutup") {
+      alert("Studio tutup pada tanggal ini. Silakan pilih tanggal lain.");
+      return;
+    }
 
     if (!tanggalPesanan || !jamPesanan || bagianKuku.length === 0) {
       alert("Tanggal, jam, dan bagian kuku wajib diisi");
@@ -129,6 +142,18 @@ export default function FormRemove({ layanan }: Props) {
             <p className="text-[11px] text-[#7D344B]/70">
               Memuat jam tersedia...
             </p>
+          ) : statusJadwal === "Tutup" ? (
+            <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2">
+              <p className="text-[11px] font-medium text-red-500">
+                Studio tutup pada tanggal ini.
+              </p>
+
+              {catatanJadwal && (
+                <p className="mt-1 text-[11px] text-red-500">
+                  Catatan: {catatanJadwal}
+                </p>
+              )}
+            </div>
           ) : (
             <div className="grid grid-cols-5 gap-2">
               {slotBooking.map((slot) => (
@@ -156,7 +181,7 @@ export default function FormRemove({ layanan }: Props) {
               Jam tersedia akan muncul setelah memilih tanggal.
             </p>
           )}
-          {tanggalPesanan && !isLoadingSlot && slotBooking.length === 0 && (
+          {tanggalPesanan && !isLoadingSlot && statusJadwal !== "Tutup" && slotBooking.length === 0 && (
             <p className="text-[11px] text-red-500">
               Belum ada slot tersedia untuk tanggal ini.
             </p>
@@ -209,7 +234,7 @@ export default function FormRemove({ layanan }: Props) {
 
       <button
         type="submit"
-        disabled={isSubmitting}
+        disabled={isSubmitting || statusJadwal === "Tutup"}
         className="w-full cursor-pointer rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-4 py-2 text-xs font-medium text-white shadow-soft-text disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isSubmitting ? "Memproses..." : "Lanjut ke Pembayaran"}

@@ -3,6 +3,7 @@
 import { Pencil, Trash2 } from "lucide-react";
 
 export type Baris_Jadwal_Khusus = {
+  id_jadwal: number;
   no: number;
   tanggal: string;
   status: string;

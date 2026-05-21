@@ -1,14 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import Judul_Halaman from "@/app/components/ui/judul_halaman";
 import Tabel_Jadwal_Khusus from "./components/tabel_jadwal_khusus";
 import ModalTambahJadwalKhusus from "./components/modal_tambah_jadwal_khusus";
 import ModalEditJadwalKhusus from "./components/modal_edit_jadwal_khusus";
 import Modal_Hapus from "@/app/components/ui/modal_hapus";
+import { getJadwalKhususAdmin, tambahJadwalKhususAdmin, updateJadwalKhususAdmin, hapusJadwalKhususAdmin, type JadwalKhusus as JadwalKhususApi } from "@/app/lib/jadwal_khusus";
 
 type JadwalKhusus = {
+  id_jadwal: number;
   no: number;
   tanggal: string;
   status: string;
@@ -17,48 +19,49 @@ type JadwalKhusus = {
   catatan: string;
 };
 
+function formatJam(jam?: string | null) {
+  if (!jam) return "-";
+  return jam.slice(0, 5);
+}
+
 export default function KelolaJadwalKhususPage() {
-  // Data sementara untuk isi tabel
-  const data: JadwalKhusus[] = [
-    {
-      no: 1,
-      tanggal: "2025-11-01",
-      status: "Tutup",
-      jamBuka: "-",
-      jamTutup: "-",
-      catatan: "Hari ini libur dulu",
-    },
-    {
-      no: 2,
-      tanggal: "2025-11-02",
-      status: "Buka",
-      jamBuka: "10:00",
-      jamTutup: "22:00",
-      catatan: "Buka mulai dari jam 10 pagi",
-    },
-    {
-      no: 3,
-      tanggal: "2025-11-03",
-      status: "Buka",
-      jamBuka: "11:00",
-      jamTutup: "22:00",
-      catatan: "Buka mulai dari jam 11 pagi",
-    },
-    {
-      no: 4,
-      tanggal: "2025-11-04",
-      status: "Buka",
-      jamBuka: "12:00",
-      jamTutup: "22:00",
-      catatan: "Buka mulai dari jam 12 siang",
-    },
-  ];
+  const [data, setData] = useState<JadwalKhusus[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   const [isModalTambahOpen, setIsModalTambahOpen] = useState(false);
   const [isModalEditOpen, setIsModalEditOpen] = useState(false);
   const [isModalHapusOpen, setIsModalHapusOpen] = useState(false);
 
   const [dataEdit, setDataEdit] = useState<JadwalKhusus | null>(null);
   const [dataHapus, setDataHapus] = useState<JadwalKhusus | null>(null);
+
+  useEffect(() => {
+    ambilJadwalKhusus();
+  }, []);
+
+  async function ambilJadwalKhusus() {
+    try {
+      setIsLoading(true);
+
+      const result = await getJadwalKhususAdmin();
+
+      const mappedData = result.map((item: JadwalKhususApi, index: number) => ({
+        id_jadwal: item.id_jadwal,
+        no: index + 1,
+        tanggal: item.tanggal,
+        status: item.status_buka,
+        jamBuka: formatJam(item.jam_buka),
+        jamTutup: formatJam(item.jam_tutup),
+        catatan: item.catatan || "-",
+      }));
+
+      setData(mappedData);
+    } catch (error: any) {
+      alert(error.message || "Gagal mengambil jadwal khusus");
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   function handleBukaModalEdit(item: JadwalKhusus) {
     setDataEdit(item);
@@ -80,8 +83,79 @@ export default function KelolaJadwalKhususPage() {
     setDataHapus(null);
   }
 
-  function handleKonfirmasiHapus() {
-    handleTutupModalHapus();
+  async function handleTambahJadwal(payload: {
+    tanggal: string;
+    status: string;
+    jamBuka: string;
+    jamTutup: string;
+    catatan: string;
+  }) {
+    if (payload.status === "Buka" && payload.jamTutup <= payload.jamBuka) {
+      alert("Jam tutup harus lebih besar dari jam buka");
+      return;
+    }
+
+    try {
+      await tambahJadwalKhususAdmin({
+        tanggal: payload.tanggal,
+        status_buka: payload.status as "Buka" | "Tutup",
+        jam_buka: payload.status === "Buka" ? payload.jamBuka : null,
+        jam_tutup: payload.status === "Buka" ? payload.jamTutup : null,
+        catatan: payload.catatan,
+      });
+
+      setIsModalTambahOpen(false);
+      await ambilJadwalKhusus();
+      alert("Jadwal khusus berhasil ditambahkan");
+    } catch (error: any) {
+      alert(error.message || "Gagal menambah jadwal khusus");
+    }
+  }
+
+  async function handleEditJadwal(payload: {
+    no: number;
+    tanggal: string;
+    status: string;
+    jamBuka: string;
+    jamTutup: string;
+    catatan: string;
+  }) {
+    if (!dataEdit) return;
+
+    if (payload.status === "Buka" && payload.jamTutup <= payload.jamBuka) {
+      alert("Jam tutup harus lebih besar dari jam buka");
+      return;
+    }
+
+    try {
+      await updateJadwalKhususAdmin(dataEdit.id_jadwal, {
+        tanggal: payload.tanggal,
+        status_buka: payload.status as "Buka" | "Tutup",
+        jam_buka: payload.status === "Buka" ? payload.jamBuka : null,
+        jam_tutup: payload.status === "Buka" ? payload.jamTutup : null,
+        catatan: payload.catatan,
+      });
+
+      handleTutupModalEdit();
+      await ambilJadwalKhusus();
+      alert("Jadwal khusus berhasil diperbarui");
+    } catch (error: any) {
+      alert(error.message || "Gagal memperbarui jadwal khusus");
+    }
+  }
+
+  async function handleKonfirmasiHapus() {
+    if (!dataHapus) return;
+
+    try {
+      await hapusJadwalKhususAdmin(dataHapus.id_jadwal);
+
+      handleTutupModalHapus();
+      await ambilJadwalKhusus();
+      alert("Jadwal khusus berhasil dihapus");
+    } catch (error: any) {
+      alert(error.message || "Gagal menghapus jadwal khusus");
+    }
   }
 
   return (
@@ -101,29 +175,30 @@ export default function KelolaJadwalKhususPage() {
           </button>
         </div>
 
-        {/* Tabel */}
-        <Tabel_Jadwal_Khusus 
-          data={data} 
-          onEdit={handleBukaModalEdit}
-          onDelete={handleBukaModalHapus}
-        />
+        {isLoading ? (
+          <section className="rounded-md border border-[#d3a0b0] bg-white/40 p-5 text-sm text-[#7D344B] shadow-sm">
+            Memuat jadwal khusus...
+          </section>
+        ) : (
+          <Tabel_Jadwal_Khusus
+            data={data}
+            onEdit={handleBukaModalEdit}
+            onDelete={handleBukaModalHapus}
+          />
+        )}
       </section>
 
       <ModalTambahJadwalKhusus
         isOpen={isModalTambahOpen}
         onClose={() => setIsModalTambahOpen(false)}
-        onSubmit={() => {
-          setIsModalTambahOpen(false);
-        }}
+        onSubmit={handleTambahJadwal}
       />
 
       <ModalEditJadwalKhusus
         isOpen={isModalEditOpen}
         onClose={handleTutupModalEdit}
         data={dataEdit}
-        onSubmit={() => {
-          handleTutupModalEdit();
-        }}
+        onSubmit={handleEditJadwal}
       />
 
       <Modal_Hapus

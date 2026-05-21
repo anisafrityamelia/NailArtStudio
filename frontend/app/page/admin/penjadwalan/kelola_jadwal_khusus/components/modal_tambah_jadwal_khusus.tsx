@@ -55,8 +55,6 @@ export default function ModalTambahJadwalKhusus({
             jamTutup,
             catatan,
         });
-
-        onClose();
     };
 
     return (

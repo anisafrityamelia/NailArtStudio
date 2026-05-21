@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 
 type DataJadwalKhusus = {
+    id_jadwal: number;
     no: number;
     tanggal: string;
     status: string;
@@ -68,8 +69,6 @@ export default function ModalEditJadwalKhusus({
             jamTutup,
             catatan,
         });
-
-        onClose();
     };
 
     return (

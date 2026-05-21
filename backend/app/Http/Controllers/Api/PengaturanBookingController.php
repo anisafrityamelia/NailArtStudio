@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\PengaturanBooking;
+use App\Models\JadwalKhusus;
 use App\Models\Pesanan;
 use App\Models\Layanan;
 use Carbon\Carbon;
@@ -67,6 +68,17 @@ class PengaturanBookingController extends Controller
             ]);
         }
 
+        $jadwalKhusus = JadwalKhusus::whereDate('tanggal', $request->tanggal)->first();
+
+        if ($jadwalKhusus && $jadwalKhusus->status_buka === 'Tutup') {
+            return response()->json([
+                'message' => 'Studio tutup pada tanggal ini',
+                'data' => [],
+                'status_jadwal' => 'Tutup',
+                'catatan_jadwal' => $jadwalKhusus->catatan,
+            ]);
+        }
+
         $layanan = Layanan::findOrFail($request->id_layanan);
 
         $tanggal = $request->tanggal;
@@ -74,12 +86,25 @@ class PengaturanBookingController extends Controller
         $jumlahKaryawan = (int) $pengaturan->jumlah_karyawan;
         $durasiLayanan = (int) $layanan->durasi_menit;
 
-        $jamBuka = Carbon::parse($tanggal . ' ' . $pengaturan->jam_buka);
-        $jamTutup = Carbon::parse($tanggal . ' ' . $pengaturan->jam_tutup);
+        $jamBukaAktif = $jadwalKhusus && $jadwalKhusus->status_buka === 'Buka'
+            ? $jadwalKhusus->jam_buka
+            : $pengaturan->jam_buka;
+
+        $jamTutupAktif = $jadwalKhusus && $jadwalKhusus->status_buka === 'Buka'
+            ? $jadwalKhusus->jam_tutup
+            : $pengaturan->jam_tutup;
+
+        $jamBuka = Carbon::parse($tanggal . ' ' . $jamBukaAktif);
+        $jamTutup = Carbon::parse($tanggal . ' ' . $jamTutupAktif);
 
         $pesananTanggalIni = Pesanan::with('layanan')
             ->whereDate('tanggal_pesanan', $tanggal)
-            ->whereNotIn('status', ['dibatalkan'])
+            ->whereIn('status', [
+                'menunggu_konfirmasi',
+                'terjadwal',
+                'diproses',
+                'siap_diambil',
+            ])
             ->get();
 
         $slots = [];
@@ -122,6 +147,8 @@ class PengaturanBookingController extends Controller
         return response()->json([
             'message' => 'Slot booking berhasil diambil',
             'data' => $slots,
+            'status_jadwal' => $jadwalKhusus ? $jadwalKhusus->status_buka : 'Default',
+            'catatan_jadwal' => $jadwalKhusus ? $jadwalKhusus->catatan : null,
         ]);
     }
 }
