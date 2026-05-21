@@ -232,3 +232,35 @@ export const getRiwayatPesananAdmin = async () => {
 
   return result.data;
 };
+
+export type SlotBooking = {
+  jam: string;
+  tersedia: boolean;
+  sisa_kapasitas: number;
+};
+
+export const getSlotBooking = async (
+  tanggal: string,
+  idLayanan: number
+): Promise<SlotBooking[]> => {
+  const token = getToken();
+
+  const response = await fetch(
+    `${API_BASE_URL}/pelanggan/slot-booking?tanggal=${tanggal}&id_layanan=${idLayanan}`,
+    {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "Gagal mengambil slot booking");
+  }
+
+  return result.data;
+};

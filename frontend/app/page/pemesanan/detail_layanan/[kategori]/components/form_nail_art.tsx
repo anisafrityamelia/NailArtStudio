@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { bookingNailArt } from "@/app/lib/pesanan";
+import { useEffect, useState } from "react";
+import { bookingNailArt, getSlotBooking, SlotBooking } from "@/app/lib/pesanan";
 
 type Layanan = {
   id_layanan: number;
@@ -23,19 +23,38 @@ export default function FormNailArt({ layanan }: Props) {
   const [catatan, setCatatan] = useState("");
   const [gambarInspo, setGambarInspo] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [slotBooking, setSlotBooking] = useState<SlotBooking[]>([]);
+  const [isLoadingSlot, setIsLoadingSlot] = useState(false);
 
   const pilihanBagianKuku = ["Jari tangan", "Jari kaki"];
   const pilihanLayananTambahan = ["Remove", "Extension"];
 
-  const pilihanJamBooking = [
-    "10:00",
-    "11:00",
-    "12:00",
-    "13:00",
-    "14:00",
-    "15:00",
-    "16:00",
-  ];
+    useEffect(() => {
+    async function ambilSlotBooking() {
+      if (!tanggalPesanan || !layanan?.id_layanan) {
+        setSlotBooking([]);
+        return;
+      }
+
+      try {
+        setIsLoadingSlot(true);
+
+        const data = await getSlotBooking(
+          tanggalPesanan,
+          layanan.id_layanan
+        );
+
+        setSlotBooking(data);
+      } catch (error: any) {
+        alert(error.message || "Gagal mengambil slot booking");
+        setSlotBooking([]);
+      } finally {
+        setIsLoadingSlot(false);
+      }
+    }
+
+    ambilSlotBooking();
+  }, [tanggalPesanan, layanan?.id_layanan]);
 
   const handleCheckboxChange = (
     value: string,
@@ -110,27 +129,35 @@ export default function FormNailArt({ layanan }: Props) {
             Jam
           </label>
 
-          <div className="grid grid-cols-5 gap-2">
-            {pilihanJamBooking.map((jam) => (
-              <button
-                key={jam}
-                type="button"
-                disabled={!tanggalPesanan}
-                onClick={() => setJamPesanan(jam)}
-                className={`rounded-md border px-3 py-2 text-xs font-medium transition ${
-                  jamPesanan === jam
-                    ? "border-[#E45082] bg-[#f8dfe8] text-[#7D344B]"
-                    : "border-[#dd98ad] bg-white text-[#7D344B]"
-                } disabled:cursor-not-allowed disabled:bg-white/50 disabled:text-[#7D344B]/40`}
-              >
-                {jam}
-              </button>
-            ))}
-          </div>
-
-          {!tanggalPesanan && (
+          {isLoadingSlot ? (
             <p className="text-[11px] text-[#7D344B]/70">
-              Jam tersedia akan muncul setelah memilih tanggal.
+              Memuat jam tersedia...
+            </p>
+          ) : (
+            <div className="grid grid-cols-5 gap-2">
+              {slotBooking.map((slot) => (
+                <button
+                  key={slot.jam}
+                  type="button"
+                  disabled={!tanggalPesanan || !slot.tersedia}
+                  onClick={() => setJamPesanan(slot.jam)}
+                  className={`rounded-md border px-3 py-2 text-xs font-medium transition ${
+                    jamPesanan === slot.jam
+                      ? "border-[#E45082] bg-[#f8dfe8] text-[#7D344B]"
+                      : slot.tersedia
+                      ? "border-[#dd98ad] bg-white text-[#7D344B]"
+                      : "cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400"
+                  }`}
+                >
+                  {slot.jam}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {tanggalPesanan && !isLoadingSlot && slotBooking.length === 0 && (
+            <p className="text-[11px] text-red-500">
+              Belum ada slot tersedia untuk tanggal ini.
             </p>
           )}
         </div>

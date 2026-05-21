@@ -2,6 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { Pencil } from "lucide-react";
+import {
+  getPengaturanBookingAdmin,
+  updatePengaturanBookingAdmin,
+  PengaturanBooking,
+} from "@/app/lib/pengaturan_booking";
 
 type Data_Jadwal_Default = {
   jamBuka: string;
@@ -10,17 +15,28 @@ type Data_Jadwal_Default = {
   jumlahKaryawan: string;
 };
 
+function formatJam(jam?: string) {
+  if (!jam) return "";
+  return jam.slice(0, 5);
+}
+
 export default function Kelola_Jadwal_Default_Content() {
   const [isEdit, setIsEdit] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
-  // data yang ditampilkan di form
-  const [dataJadwal, setDataJadwal] = useState<Data_Jadwal_Default | null>(null);
+  const [dataJadwal, setDataJadwal] = useState<Data_Jadwal_Default | null>(
+    null
+  );
 
-  // draft form saat edit
   const [jamBuka, setJamBuka] = useState("");
   const [jamTutup, setJamTutup] = useState("");
   const [durasiSlot, setDurasiSlot] = useState("");
   const [jumlahKaryawan, setJumlahKaryawan] = useState("");
+
+  useEffect(() => {
+    ambilPengaturanBooking();
+  }, []);
 
   useEffect(() => {
     if (isEdit && dataJadwal) {
@@ -30,6 +46,30 @@ export default function Kelola_Jadwal_Default_Content() {
       setJumlahKaryawan(dataJadwal.jumlahKaryawan);
     }
   }, [isEdit, dataJadwal]);
+
+  async function ambilPengaturanBooking() {
+    try {
+      setIsLoading(true);
+
+      const data: PengaturanBooking | null =
+        await getPengaturanBookingAdmin();
+
+      if (data) {
+        setDataJadwal({
+          jamBuka: formatJam(data.jam_buka),
+          jamTutup: formatJam(data.jam_tutup),
+          durasiSlot: String(data.durasi_slot),
+          jumlahKaryawan: String(data.jumlah_karyawan),
+        });
+      } else {
+        setDataJadwal(null);
+      }
+    } catch (error: any) {
+      alert(error.message || "Gagal mengambil pengaturan booking");
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   function handleBukaEdit() {
     setIsEdit(true);
@@ -43,26 +83,70 @@ export default function Kelola_Jadwal_Default_Content() {
     setIsEdit(false);
   }
 
-  function handleSimpanEdit(e: React.FormEvent) {
+  async function handleSimpanEdit(e: React.FormEvent) {
     e.preventDefault();
 
-    const payload: Data_Jadwal_Default = {
-      jamBuka,
-      jamTutup,
-      durasiSlot: durasiSlot.trim(),
-      jumlahKaryawan: jumlahKaryawan.trim(),
-    };
+    if (!jamBuka || !jamTutup || !durasiSlot || !jumlahKaryawan) {
+      alert("Semua field wajib diisi");
+      return;
+    }
 
-    console.log("Payload jadwal default:", payload);
+    if (jamTutup <= jamBuka) {
+      alert("Jam tutup harus lebih besar dari jam buka");
+      return;
+    }
 
-    // dummy disimpan ke state dulu
-    setDataJadwal(payload);
-    setIsEdit(false);
+    try {
+      setIsSaving(true);
+
+      const payload = {
+        jam_buka: jamBuka,
+        jam_tutup: jamTutup,
+        durasi_slot: Number(durasiSlot),
+        jumlah_karyawan: Number(jumlahKaryawan),
+      };
+
+      const data = await updatePengaturanBookingAdmin(payload);
+
+      setDataJadwal({
+        jamBuka: formatJam(data.jam_buka),
+        jamTutup: formatJam(data.jam_tutup),
+        durasiSlot: String(data.durasi_slot),
+        jumlahKaryawan: String(data.jumlah_karyawan),
+      });
+
+      setIsEdit(false);
+      alert("Pengaturan booking berhasil disimpan");
+    } catch (error: any) {
+      alert(error.message || "Gagal menyimpan pengaturan booking");
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  const totalSlot =
+    dataJadwal?.jamBuka &&
+    dataJadwal?.jamTutup &&
+    dataJadwal?.durasiSlot &&
+    dataJadwal?.jumlahKaryawan
+      ? hitungTotalSlot(
+          dataJadwal.jamBuka,
+          dataJadwal.jamTutup,
+          Number(dataJadwal.durasiSlot),
+          Number(dataJadwal.jumlahKaryawan)
+        )
+      : 0;
+
+  if (isLoading) {
+    return (
+      <section className="rounded-lg border border-[#d3a0b0] bg-white/40 p-5 text-sm text-[#7D344B] shadow-sm">
+        Memuat pengaturan booking...
+      </section>
+    );
   }
 
   return (
     <section className="grid grid-cols-1 gap-4 xl:grid-cols-[1.35fr_1fr]">
-      {/* card from */}
       <section className="rounded-lg border border-[#d3a0b0] bg-white/40 p-4 shadow-sm sm:p-5">
         <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
@@ -78,7 +162,7 @@ export default function Kelola_Jadwal_Default_Content() {
             <button
               type="button"
               onClick={handleBukaEdit}
-              className="flex w-fit items-center gap-2 rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-2.5 py-1.5 text-xs text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 sm:px-3 sm:py-1.5 sm:text-sm cursor-pointer"
+              className="flex w-fit cursor-pointer items-center gap-2 rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-2.5 py-1.5 text-xs text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 sm:px-3 sm:py-1.5 sm:text-sm"
             >
               <Pencil size={16} /> Edit
             </button>
@@ -87,7 +171,8 @@ export default function Kelola_Jadwal_Default_Content() {
               <button
                 type="button"
                 onClick={handleBatalEdit}
-                className="rounded-md bg-gradient-to-r from-[#d9d9d9] to-[#dd98ad] px-2.5 py-1.5 text-xs text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 sm:px-3 sm:py-1.5 sm:text-sm cursor-pointer"
+                disabled={isSaving}
+                className="cursor-pointer rounded-md bg-gradient-to-r from-[#d9d9d9] to-[#dd98ad] px-2.5 py-1.5 text-xs text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60 sm:px-3 sm:py-1.5 sm:text-sm"
               >
                 Batal
               </button>
@@ -95,9 +180,10 @@ export default function Kelola_Jadwal_Default_Content() {
               <button
                 type="submit"
                 form="form-jadwal-default"
-                className="rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-2.5 py-1.5 text-xs text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 sm:px-3 sm:py-1.5 sm:text-sm cursor-pointer"
+                disabled={isSaving}
+                className="cursor-pointer rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-2.5 py-1.5 text-xs text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60 sm:px-3 sm:py-1.5 sm:text-sm"
               >
-                Simpan
+                {isSaving ? "Menyimpan..." : "Simpan"}
               </button>
             </div>
           )}
@@ -111,12 +197,10 @@ export default function Kelola_Jadwal_Default_Content() {
               </label>
               <input
                 type="time"
-                min="09:00"
-                max="22:00"
                 value={isEdit ? jamBuka : dataJadwal?.jamBuka || ""}
                 onChange={(e) => setJamBuka(e.target.value)}
                 readOnly={!isEdit}
-                className={`w-full rounded-md border border-[#dd98ad] px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text sm:text-sm ${
+                className={`w-full rounded-md border border-[#dd98ad] px-3 py-2 text-xs text-[#7D344B] shadow-soft-text outline-none transition sm:text-sm ${
                   isEdit
                     ? "bg-white focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0]"
                     : "bg-white/70 text-gray-400"
@@ -130,12 +214,10 @@ export default function Kelola_Jadwal_Default_Content() {
               </label>
               <input
                 type="time"
-                min="09:00"
-                max="22:00"
                 value={isEdit ? jamTutup : dataJadwal?.jamTutup || ""}
                 onChange={(e) => setJamTutup(e.target.value)}
                 readOnly={!isEdit}
-                className={`w-full rounded-md border border-[#dd98ad] px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text sm:text-sm ${
+                className={`w-full rounded-md border border-[#dd98ad] px-3 py-2 text-xs text-[#7D344B] shadow-soft-text outline-none transition sm:text-sm ${
                   isEdit
                     ? "bg-white focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0]"
                     : "bg-white/70 text-gray-400"
@@ -147,19 +229,19 @@ export default function Kelola_Jadwal_Default_Content() {
               <label className="text-xs font-semibold text-[#7D344B] sm:text-sm">
                 Durasi Antar Slot
               </label>
-              <div className="flex overflow-hidden rounded-md border border-[#dd98ad] shadow-soft-text">
-                <input
-                  type="number"
-                  min="1"
-                  value={isEdit ? durasiSlot : dataJadwal?.durasiSlot || ""}
-                  onChange={(e) => setDurasiSlot(e.target.value)}
-                  readOnly={!isEdit}
-                  placeholder={isEdit ? "Contoh: 30" : ""}
-                  className={`w-full px-3 py-2 text-xs text-[#7D344B] outline-none sm:text-sm ${
-                    isEdit ? "bg-white" : "bg-white/70 text-gray-400"
-                  }`}
-                />
-              </div>
+              <input
+                type="number"
+                min="1"
+                value={isEdit ? durasiSlot : dataJadwal?.durasiSlot || ""}
+                onChange={(e) => setDurasiSlot(e.target.value)}
+                readOnly={!isEdit}
+                placeholder={isEdit ? "Contoh: 30" : ""}
+                className={`w-full rounded-md border border-[#dd98ad] px-3 py-2 text-xs text-[#7D344B] shadow-soft-text outline-none transition sm:text-sm ${
+                  isEdit
+                    ? "bg-white focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0]"
+                    : "bg-white/70 text-gray-400"
+                }`}
+              />
             </div>
 
             <div className="flex flex-col gap-1">
@@ -169,11 +251,13 @@ export default function Kelola_Jadwal_Default_Content() {
               <input
                 type="number"
                 min="1"
-                value={isEdit ? jumlahKaryawan : dataJadwal?.jumlahKaryawan || ""}
+                value={
+                  isEdit ? jumlahKaryawan : dataJadwal?.jumlahKaryawan || ""
+                }
                 onChange={(e) => setJumlahKaryawan(e.target.value)}
                 readOnly={!isEdit}
                 placeholder={isEdit ? "Contoh: 2" : ""}
-                className={`w-full rounded-md border border-[#dd98ad] px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text sm:text-sm ${
+                className={`w-full rounded-md border border-[#dd98ad] px-3 py-2 text-xs text-[#7D344B] shadow-soft-text outline-none transition sm:text-sm ${
                   isEdit
                     ? "bg-white focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0]"
                     : "bg-white/70 text-gray-400"
@@ -197,9 +281,7 @@ export default function Kelola_Jadwal_Default_Content() {
         </form>
       </section>
 
-      {/* sebelah kanan */}
       <div className="space-y-4">
-        {/* card preview jadwal */}
         <section className="rounded-lg border border-[#d3a0b0] bg-white/40 p-4 shadow-sm sm:p-5">
           <h3 className="text-base font-semibold text-[#7D344B] sm:text-lg">
             Preview Jadwal
@@ -212,7 +294,9 @@ export default function Kelola_Jadwal_Default_Content() {
             <p className="text-xs text-[#7D344B] sm:text-sm">Jam Operasional</p>
             <p className="mt-1 text-xl font-semibold text-[#7D344B] sm:text-2xl">
               {dataJadwal
-                ? `${dataJadwal.jamBuka || "-"} - ${dataJadwal.jamTutup || "-"}`
+                ? `${dataJadwal.jamBuka || "-"} - ${
+                    dataJadwal.jamTutup || "-"
+                  }`
                 : "-"}
             </p>
           </div>
@@ -236,28 +320,44 @@ export default function Kelola_Jadwal_Default_Content() {
           </div>
         </section>
 
-        {/* card estimasi kapasitas */}
         <section className="rounded-lg border border-[#d3a0b0] bg-white/40 p-4 shadow-sm sm:p-5">
           <h3 className="text-base font-semibold text-[#7D344B] sm:text-lg">
             Estimasi Kapasitas
           </h3>
           <p className="text-xs text-[#b17e8e] sm:text-sm">
-            Perkiraan jumlah slot booking per hari.
+            Perkiraan jumlah kapasitas booking per hari.
           </p>
 
           <div className="mt-4 rounded-xl bg-[#dd98ad] p-4 shadow-soft-text">
             <p className="text-xs text-[#7D344B] sm:text-sm">
-              Total Slot Tersedia
+              Total Kapasitas Harian
             </p>
             <p className="mt-1 text-xl font-semibold text-[#7D344B] sm:text-2xl">
-              66
+              {totalSlot || "-"}
             </p>
             <p className="mt-2 text-xs text-[#7D344B] sm:text-sm">
-              Berdasarkan jam operasional dan jumlah karyawan aktif.
+              Berdasarkan jam operasional, durasi slot, dan jumlah karyawan.
             </p>
           </div>
         </section>
       </div>
     </section>
   );
+}
+
+function hitungTotalSlot(
+  jamBuka: string,
+  jamTutup: string,
+  durasiSlot: number,
+  jumlahKaryawan: number
+) {
+  const [bukaJam, bukaMenit] = jamBuka.split(":").map(Number);
+  const [tutupJam, tutupMenit] = jamTutup.split(":").map(Number);
+
+  const totalMenitBuka = bukaJam * 60 + bukaMenit;
+  const totalMenitTutup = tutupJam * 60 + tutupMenit;
+
+  const totalSlot = Math.floor((totalMenitTutup - totalMenitBuka) / durasiSlot);
+
+  return totalSlot * jumlahKaryawan;
 }

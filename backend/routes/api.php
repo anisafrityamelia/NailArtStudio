@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\ManajemenPenggunaController;
 use App\Http\Controllers\Api\PesananController;
 use App\Http\Controllers\Api\PembayaranController;
 use App\Http\Controllers\Api\KategoriHargaLayananController;
+use App\Http\Controllers\Api\PengaturanBookingController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -46,6 +47,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/pesanan/{id}/status-aktif', [PesananController::class, 'updateStatusAktif']);
 
         Route::get('/pesanan/riwayat', [PesananController::class, 'riwayatPesananAdmin']);
+
+        Route::get('/pengaturan-booking', [PengaturanBookingController::class, 'show']);
+        Route::put('/pengaturan-booking', [PengaturanBookingController::class, 'update']);
     });
 
     Route::middleware('role:pelanggan')->prefix('pelanggan')->group(function () {
@@ -64,6 +68,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/pembayaran', [PembayaranController::class, 'store']);
         Route::get('/pesanan', [PesananController::class, 'index']);
         Route::get('/pesanan/{id}', [PesananController::class, 'show']);
+        Route::get('/slot-booking', [PengaturanBookingController::class, 'slotTersedia']);
     });
 });
 
