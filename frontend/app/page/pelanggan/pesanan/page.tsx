@@ -58,10 +58,12 @@ export default function PesananSayaPage() {
                     "-",
                 layananTambahan:
                     item.detail_nail_art?.layanan_tambahan || "-",
-                
-                // catatan (nail art,remove)
+
+                // catatan (nail art, press on, eyelash, remove)
                 catatan:
                     item.detail_nail_art?.catatan ||
+                    item.detail_press_on?.catatan ||
+                    item.detail_eyelash?.catatan ||
                     item.detail_remove?.catatan ||
                     "-",
 
@@ -96,6 +98,10 @@ export default function PesananSayaPage() {
 
                 alamatPengiriman:
                     item.detail_press_on?.alamat_pengiriman || "-",
+
+                // detail eyelash
+                jenisLash:
+                    item.detail_eyelash?.jenis_lash || "-",
                     
                 // Pembayaran
                 kodePembayaran: 
