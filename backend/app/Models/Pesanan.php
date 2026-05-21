@@ -65,6 +65,15 @@ class Pesanan extends Model
             'id_pesanan'
         );
     }
+
+    public function detailRemove()
+    {
+        return $this->hasOne(
+            DetailRemove::class,
+            'id_pesanan',
+            'id_pesanan'
+        );
+    }
     
     public function pembayaran()
     {

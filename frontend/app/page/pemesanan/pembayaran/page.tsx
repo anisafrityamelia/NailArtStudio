@@ -194,6 +194,32 @@ export default function PembayaranUniversal() {
       );
     }
 
+    if (pesanan?.detail_remove) {
+      return (
+        <>
+          <InputReadonly
+            label="Tanggal"
+            value={pesanan?.tanggal_pesanan || "-"}
+          />
+
+          <InputReadonly
+            label="Jam"
+            value={pesanan?.jam_pesanan || "-"}
+          />
+
+          <InputReadonly
+            label="Bagian Kuku"
+            value={pesanan?.detail_remove?.bagian_kuku || "-"}
+          />
+
+          <TextareaReadonly
+            label="Catatan"
+            value={pesanan?.detail_remove?.catatan || "-"}
+          />
+        </>
+      );
+    }
+
     return (
       <p className="text-center text-sm text-red-600">
         Detail layanan tidak ditemukan.

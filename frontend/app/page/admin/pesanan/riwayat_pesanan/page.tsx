@@ -59,9 +59,11 @@ export default function RiwayatPesananPage() {
     
             status: formatStatus(item.status),
     
-            // detail nail art
+            // detail nail art dan remove
             bagianKuku:
-              item.detail_nail_art?.bagian_kuku || "-",
+              item.detail_nail_art?.bagian_kuku ||
+              item.detail_remove?.bagian_kuku ||
+              "-",
     
             layananTambahan:
               item.detail_nail_art?.layanan_tambahan || "-",
@@ -106,11 +108,12 @@ export default function RiwayatPesananPage() {
             alamatPengiriman:
               item.detail_press_on?.alamat_pengiriman || "-",
     
-            // catatan (nail art, press on, eyelash)
+            // catatan (nail art, press on, eyelash, remove)
             catatan:
               item.detail_nail_art?.catatan ||
               item.detail_press_on?.catatan ||
               item.detail_eyelash?.catatan ||
+              item.detail_remove?.catatan ||
               "-",
     
             // pembayaran

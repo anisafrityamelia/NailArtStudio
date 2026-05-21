@@ -7,6 +7,7 @@ use App\Models\Pesanan;
 use App\Models\DetailNailArt;
 use App\Models\DetailPressOn;
 use App\Models\DetailEyelash;
+use App\Models\DetailRemove;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -274,6 +275,70 @@ class PesananController extends Controller
         }
     }
 
+    public function storeRemove(Request $request)
+    {
+        $request->validate([
+            'id_layanan' => 'required|exists:layanan,id_layanan',
+
+            'tanggal_pesanan' => 'required|date',
+
+            'jam_pesanan' => 'required',
+
+            'bagian_kuku' => 'required|string',
+
+            'catatan' => 'nullable|string',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $kodePesanan =
+                'ORD-' .
+                now()->format('YmdHis');
+
+            $pesanan = Pesanan::create([
+                'kode_pesanan' => $kodePesanan,
+
+                'id_pengguna' => $request->user()->id_pengguna,
+
+                'id_layanan' => $request->id_layanan,
+
+                'tanggal_pesanan' => $request->tanggal_pesanan,
+
+                'jam_pesanan' => $request->jam_pesanan,
+
+                'status' => 'menunggu_pembayaran',
+            ]);
+
+            DetailRemove::create([
+                'id_pesanan' => $pesanan->id_pesanan,
+
+                'bagian_kuku' => $request->bagian_kuku,
+
+                'catatan' => $request->catatan,
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Booking remove berhasil',
+                'data' => $pesanan->load([
+                    'detailRemove',
+                    'layanan',
+                    'pengguna'
+                ]),
+            ], 201);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'message' => 'Booking remove gagal',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
     public function index(Request $request)
     {
         // Ambil user yang sedang login
@@ -285,6 +350,7 @@ class PesananController extends Controller
             'detailNailArt',
             'detailPressOn',
             'detailEyelash',
+            'detailRemove',
             'pembayaran',
         ])
         ->where('id_pengguna', $user->id_pengguna)
@@ -306,6 +372,7 @@ class PesananController extends Controller
             'detailNailArt',
             'detailPressOn',
             'detailEyelash',
+            'detailRemove',
             'pembayaran',
         ])
         ->whereIn('status', ['menunggu_konfirmasi', 'terjadwal', 'diproses', 'siap_diambil'])
@@ -385,6 +452,7 @@ class PesananController extends Controller
                 'detailNailArt',
                 'detailPressOn',
                 'detailEyelash',
+                'detailRemove',
                 'pembayaran',
             ]),
         ]);
@@ -399,6 +467,7 @@ class PesananController extends Controller
             'detailNailArt',
             'detailPressOn',
             'detailEyelash',
+            'detailRemove',
             'pembayaran',
         ])
         ->whereIn('status', ['selesai', 'dibatalkan'])
@@ -419,6 +488,7 @@ class PesananController extends Controller
             'detailNailArt',
             'detailPressOn',
             'detailEyelash',
+            'detailRemove',
         ])->find($id);
 
         if (! $pesanan) {

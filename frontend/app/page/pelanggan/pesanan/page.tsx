@@ -51,16 +51,20 @@ export default function PesananSayaPage() {
                 jam: item.jam_pesanan || "-",
                 status: formatStatus(item.status),
 
-                // Detail Nail Art
+                // Detail Nail Art dan Remove
                 bagianKuku:
-                    item.detail_nail_art?.bagian_kuku || "-",
+                    item.detail_nail_art?.bagian_kuku ||
+                    item.detail_remove?.bagian_kuku ||
+                    "-",
                 layananTambahan:
                     item.detail_nail_art?.layanan_tambahan || "-",
-
-                catatan:
-                    item.detail_nail_art?.catatan || "-",
-
                 
+                // catatan (nail art,remove)
+                catatan:
+                    item.detail_nail_art?.catatan ||
+                    item.detail_remove?.catatan ||
+                    "-",
+
                 // Gambar Inspo untuk Nail Art & Press ON
                     gambarReferensi:
                     item.detail_nail_art?.url_gambar_inspo ||

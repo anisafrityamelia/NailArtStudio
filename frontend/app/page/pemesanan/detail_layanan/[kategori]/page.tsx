@@ -9,6 +9,7 @@ import FormNailArt from "./components/form_nail_art";
 import FormPlaceholderLayanan from "./components/form_placeholder_layanan";
 import FormPressOn from "./components/form_presson";
 import FormEyelash from "./components/form_eyelash";
+import FormRemove from "./components/form_remove";
 
 type GambarLayanan = {
   id_gambar: number;
@@ -126,7 +127,13 @@ export default function DetailLayananPage() {
       <div className="fixed inset-0 bg-black/40" />
 
       <div className="relative z-10 flex min-h-screen items-center justify-center px-2 py-6 md:px-6">
-        <section className="max-h-[92vh] w-full max-w-md overflow-y-auto rounded-2xl bg-[#ffecf2] shadow-[0_12px_35px_rgba(125,52,75,0.20)] shadow-soft-text md:max-w-3xl lg:max-w-5xl">
+        <section
+          className={`max-h-[92vh] w-full overflow-y-auto rounded-2xl bg-[#ffecf2] shadow-[0_12px_35px_rgba(125,52,75,0.20)] shadow-soft-text ${
+            layanan.kategori_layanan === "remove"
+              ? "max-w-md md:max-w-2xl"
+              : "max-w-md md:max-w-3xl lg:max-w-5xl"
+          }`}
+        >
           <div className="sticky top-0 z-10 flex items-center border-b border-[#dd98ad] bg-[#ffecf2] px-5 py-3 shadow-soft-text">
             <button
               type="button"
@@ -155,20 +162,30 @@ export default function DetailLayananPage() {
 
               <div className="mt-3 rounded-md bg-white/60 px-3 py-2">
                 <p className="text-xs font-semibold text-[#7D344B]">
-                  Estimasi mulai dari
+                  {layanan.kategori_layanan === "remove"
+                    ? "Estimasi harga layanan"
+                    : "Estimasi mulai dari"}
                 </p>
-
+                
                 <p className="text-lg font-semibold text-[#E45082]">
                   {formatRupiah(layanan.harga_dasar)}
                 </p>
-
-                <p className="text-[11px] text-[#7D344B]/70">
-                  Harga akhir dapat menyesuaikan tingkat kesulitan desain.
-                </p>
+                
+                {layanan.kategori_layanan !== "remove" && (
+                  <p className="text-[11px] text-[#7D344B]/70">
+                    Harga akhir dapat menyesuaikan tingkat kesulitan desain.
+                  </p>
+                )}
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            <div
+              className={`grid grid-cols-2 gap-3 ${
+                layanan.kategori_layanan !== "remove"
+                  ? "md:grid-cols-4"
+                  : ""
+              }`}
+            >
               {daftarGambar.map((gambar, index) => (
                 <img
                   key={index}
@@ -179,68 +196,70 @@ export default function DetailLayananPage() {
               ))}
             </div>
 
-            <div className="rounded-lg border border-[#dd98ad] bg-[#ffecf2] p-4 shadow-soft-text">
-              <div className="mb-3">
-                <h3 className="text-sm font-semibold text-[#7D344B]">
-                  Kategori Harga Layanan
-                </h3>
+            {layanan.kategori_layanan !== "remove" && (
+              <div className="rounded-lg border border-[#dd98ad] bg-[#ffecf2] p-4 shadow-soft-text">
+                <div className="mb-3">
+                  <h3 className="text-sm font-semibold text-[#7D344B]">
+                    Kategori Harga Layanan
+                  </h3>
 
-                <p className="mt-1 text-[11px] text-[#7D344B]/70 sm:text-xs">
-                  Kami menyediakan beberapa kategori dengan estimasi harga
-                  sebagai berikut.
-                </p>
-              </div>
+                  <p className="mt-1 text-[11px] text-[#7D344B]/70 sm:text-xs">
+                    Kami menyediakan beberapa kategori dengan estimasi harga
+                    sebagai berikut.
+                  </p>
+                </div>
 
-              {daftarKategoriHarga.length > 0 ? (
-                <div className="grid gap-4 md:grid-cols-2">
-                  {daftarKategoriHarga.map((item) => (
-                    <div
-                      key={item.id_kategori_harga}
-                      className="overflow-hidden rounded-lg border border-[#dd98ad] bg-white/60 shadow-soft-text"
-                    >
-                      {item.url_gambar_kategori ? (
-                        <img
-                          src={item.url_gambar_kategori}
-                          alt={item.nama_kategori}
-                          className="h-36 w-full object-cover md:h-48"
-                        />
-                      ) : (
-                        <div className="flex h-28 w-full items-center justify-center bg-white text-xs text-[#7D344B]/60">
-                          Belum ada gambar kategori
-                        </div>
-                      )}
+                {daftarKategoriHarga.length > 0 ? (
+                  <div className="grid gap-4 md:grid-cols-2">
+                    {daftarKategoriHarga.map((item) => (
+                      <div
+                        key={item.id_kategori_harga}
+                        className="overflow-hidden rounded-lg border border-[#dd98ad] bg-white/60 shadow-soft-text"
+                      >
+                        {item.url_gambar_kategori ? (
+                          <img
+                            src={item.url_gambar_kategori}
+                            alt={item.nama_kategori}
+                            className="h-36 w-full object-cover md:h-48"
+                          />
+                        ) : (
+                          <div className="flex h-28 w-full items-center justify-center bg-white text-xs text-[#7D344B]/60">
+                            Belum ada gambar kategori
+                          </div>
+                        )}
 
-                      <div className="space-y-2 p-3">
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <h4 className="text-sm font-semibold text-[#7D344B]">
-                              {item.nama_kategori}
-                            </h4>
+                        <div className="space-y-2 p-3">
+                          <div className="flex items-start justify-between gap-3">
+                            <div>
+                              <h4 className="text-sm font-semibold text-[#7D344B]">
+                                {item.nama_kategori}
+                              </h4>
 
-                            <p className="text-base font-semibold text-[#E45082]">
-                              {formatRupiah(item.estimasi_harga)}
-                            </p>
+                              <p className="text-base font-semibold text-[#E45082]">
+                                {formatRupiah(item.estimasi_harga)}
+                              </p>
+                            </div>
+
+                            <span className="rounded-full bg-[#f8dfe8] px-2 py-1 text-[10px] font-medium text-[#7D344B]">
+                              Estimasi
+                            </span>
                           </div>
 
-                          <span className="rounded-full bg-[#f8dfe8] px-2 py-1 text-[10px] font-medium text-[#7D344B]">
-                            Estimasi
-                          </span>
+                          <p className="text-justify text-xs leading-relaxed text-[#7D344B]/85 sm:text-sm">
+                            {item.deskripsi_kategori ||
+                              "Belum ada deskripsi kategori."}
+                          </p>
                         </div>
-
-                        <p className="text-justify text-xs leading-relaxed text-[#7D344B]/85 sm:text-sm">
-                          {item.deskripsi_kategori ||
-                            "Belum ada deskripsi kategori."}
-                        </p>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="rounded-md border border-dashed border-[#dd98ad] bg-white/50 p-3 text-center text-xs text-[#7D344B]/70">
-                  Belum ada kategori harga untuk layanan ini.
-                </div>
-              )}
-            </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="rounded-md border border-dashed border-[#dd98ad] bg-white/50 p-3 text-center text-xs text-[#7D344B]/70">
+                    Belum ada kategori harga untuk layanan ini.
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </section>
       </div>
@@ -271,9 +290,14 @@ export default function DetailLayananPage() {
           <FormEyelash layanan={layanan} />
         )}
 
+        {layanan.kategori_layanan === "remove" && (
+          <FormRemove layanan={layanan} />
+        )}
+
         {layanan.kategori_layanan !== "nail_art" &&
           layanan.kategori_layanan !== "presson" &&
-          layanan.kategori_layanan !== "eyelash" && (
+          layanan.kategori_layanan !== "eyelash" &&
+          layanan.kategori_layanan !== "remove" && (
             <FormPlaceholderLayanan namaLayanan={layanan.nama_layanan} />
           )}
       </BottomSheetPemesanan>
