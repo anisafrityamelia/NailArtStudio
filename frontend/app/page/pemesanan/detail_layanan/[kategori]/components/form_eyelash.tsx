@@ -116,6 +116,7 @@ export default function FormEyelash({ layanan }: Props) {
               setTanggalPesanan(e.target.value);
               setJamPesanan("");
             }}
+            min={new Date().toISOString().split("T")[0]}
             className="w-full rounded-md border border-[#dd98ad] bg-white px-3 py-2 text-xs text-[#7D344B] outline-none shadow-soft-text"
           />
 

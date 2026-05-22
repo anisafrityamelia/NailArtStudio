@@ -19,7 +19,7 @@ class PesananController extends Controller
         $request->validate([
             'id_layanan' => 'required|exists:layanan,id_layanan',
 
-            'tanggal_pesanan' => 'required|date',
+            'tanggal_pesanan' => 'required|date|after_or_equal:today',
 
             'jam_pesanan' => 'required',
 
@@ -216,7 +216,7 @@ class PesananController extends Controller
         $request->validate([
             'id_layanan' => 'required|exists:layanan,id_layanan',
 
-            'tanggal_pesanan' => 'required|date',
+            'tanggal_pesanan' => 'required|date|after_or_equal:today',
 
             'jam_pesanan' => 'required',
 
@@ -280,7 +280,7 @@ class PesananController extends Controller
         $request->validate([
             'id_layanan' => 'required|exists:layanan,id_layanan',
 
-            'tanggal_pesanan' => 'required|date',
+            'tanggal_pesanan' => 'required|date|after_or_equal:today',
 
             'jam_pesanan' => 'required',
 

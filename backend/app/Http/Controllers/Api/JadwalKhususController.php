@@ -22,7 +22,7 @@ class JadwalKhususController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'tanggal' => 'required|date|unique:jadwal_khusus,tanggal',
+            'tanggal' => 'required|date|after_or_equal:today|unique:jadwal_khusus,tanggal',
             'status_buka' => 'required|in:Buka,Tutup',
             'jam_buka' => 'nullable|required_if:status_buka,Buka|date_format:H:i',
             'jam_tutup' => 'nullable|required_if:status_buka,Buka|date_format:H:i|after:jam_buka',
@@ -51,6 +51,7 @@ class JadwalKhususController extends Controller
             'tanggal' => [
                 'required',
                 'date',
+                'after_or_equal:today',
                 Rule::unique('jadwal_khusus', 'tanggal')->ignore($jadwal->id_jadwal, 'id_jadwal'),
             ],
             'status_buka' => 'required|in:Buka,Tutup',

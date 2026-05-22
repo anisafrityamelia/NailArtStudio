@@ -22,7 +22,7 @@ class KapasitasKhususController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'tanggal' => 'required|date|unique:kapasitas_khusus,tanggal',
+            'tanggal' => 'required|date|after_or_equal:today|unique:kapasitas_khusus,tanggal',
             'jumlah_karyawan' => 'required|integer|min:1',
             'catatan' => 'nullable|string',
         ]);
@@ -47,6 +47,7 @@ class KapasitasKhususController extends Controller
             'tanggal' => [
                 'required',
                 'date',
+                'after_or_equal:today',
                 Rule::unique('kapasitas_khusus', 'tanggal')->ignore($kapasitas->id_kapasitas, 'id_kapasitas'),
             ],
             'jumlah_karyawan' => 'required|integer|min:1',
