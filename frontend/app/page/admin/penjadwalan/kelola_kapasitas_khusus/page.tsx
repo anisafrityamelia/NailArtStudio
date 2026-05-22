@@ -1,14 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import Judul_Halaman from "@/app/components/ui/judul_halaman";
 import Tabel_Kapasitas_Khusus from "./components/tabel_kapasitas_khusus";
 import ModalTambahKapasitasKhusus from "./components/modal_tambah_kapasitas_khusus";
 import ModalEditKapasitasKhusus from "./components/modal_edit_kapasitas_khusus";
 import Modal_Hapus from "@/app/components/ui/modal_hapus";
+import { getKapasitasKhususAdmin, tambahKapasitasKhususAdmin, updateKapasitasKhususAdmin, hapusKapasitasKhususAdmin, type KapasitasKhusus as KapasitasKhususApi } from "@/app/lib/kapasitas_khusus";
 
 type KapasitasKhusus = {
+  id_kapasitas: number;
   no: number;
   tanggal: string;
   jumlahKaryawan: number;
@@ -16,33 +18,8 @@ type KapasitasKhusus = {
 };
 
 export default function KelolaKapasitasKhususPage() {
-    // Data sementara untuk isi tabel
-    const data: KapasitasKhusus[] = [
-        {
-            no: 1,
-            tanggal: "2025-11-12",
-            jumlahKaryawan: 1,
-            catatan: "Nisa dan Anan cuti",
-        },
-        {
-            no: 2,
-            tanggal: "2025-11-12",
-            jumlahKaryawan: 2,
-            catatan: "Widay cuti",
-        },
-        {
-            no: 3,
-            tanggal: "2025-11-12",
-            jumlahKaryawan: 2,
-            catatan: "Anan cuti",
-        },
-        {
-            no: 4,
-            tanggal: "2025-11-12",
-            jumlahKaryawan: 1,
-            catatan: "Widay dan Anan cuti",
-        },
-    ];
+    const [data, setData] = useState<KapasitasKhusus[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     const [isModalTambahOpen, setIsModalTambahOpen] = useState(false);
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);
@@ -50,6 +27,34 @@ export default function KelolaKapasitasKhususPage() {
  
     const [dataEdit, setDataEdit] = useState<KapasitasKhusus | null>(null);
     const [dataHapus, setDataHapus] = useState<KapasitasKhusus | null>(null);
+
+    useEffect(() => {
+        ambilKapasitasKhusus();
+    }, []);
+
+    async function ambilKapasitasKhusus() {
+        try {
+            setIsLoading(true);
+
+            const result = await getKapasitasKhususAdmin();
+
+            const mappedData = result.map(
+                (item: KapasitasKhususApi, index: number) => ({
+                    id_kapasitas: item.id_kapasitas,
+                    no: index + 1,
+                    tanggal: item.tanggal,
+                    jumlahKaryawan: item.jumlah_karyawan,
+                    catatan: item.catatan || "-",
+                })
+            );
+
+            setData(mappedData);
+        } catch (error: any) {
+            alert(error.message || "Gagal mengambil kapasitas khusus");
+        } finally {
+            setIsLoading(false);
+        }
+    }
 
     function handleBukaModalEdit(item: KapasitasKhusus) {
         setDataEdit(item);
@@ -70,9 +75,72 @@ export default function KelolaKapasitasKhususPage() {
         setIsModalHapusOpen(false);
         setDataHapus(null);
     }
-    
-    function handleKonfirmasiHapus() {
-        handleTutupModalHapus();
+
+    async function handleTambahKapasitas(payload: {
+        tanggal: string;
+        jumlahKaryawan: number;
+        catatan: string;
+    }) {
+        if (!payload.tanggal || payload.jumlahKaryawan < 1) {
+            alert("Tanggal dan jumlah karyawan wajib diisi");
+            return;
+        }
+
+        try {
+            await tambahKapasitasKhususAdmin({
+                tanggal: payload.tanggal,
+                jumlah_karyawan: payload.jumlahKaryawan,
+                catatan: payload.catatan,
+            });
+
+            setIsModalTambahOpen(false);
+            await ambilKapasitasKhusus();
+            alert("Kapasitas khusus berhasil ditambahkan");
+        } catch (error: any) {
+            alert(error.message || "Gagal menambah kapasitas khusus");
+        }
+    }
+
+    async function handleEditKapasitas(payload: {
+        no: number;
+        tanggal: string;
+        jumlahKaryawan: number;
+        catatan: string;
+    }) {
+        if (!dataEdit) return;
+
+        if (!payload.tanggal || payload.jumlahKaryawan < 1) {
+            alert("Tanggal dan jumlah karyawan wajib diisi");
+            return;
+        }
+
+        try {
+            await updateKapasitasKhususAdmin(dataEdit.id_kapasitas, {
+                tanggal: payload.tanggal,
+                jumlah_karyawan: payload.jumlahKaryawan,
+                catatan: payload.catatan,
+            });
+
+            handleTutupModalEdit();
+            await ambilKapasitasKhusus();
+            alert("Kapasitas khusus berhasil diperbarui");
+        } catch (error: any) {
+            alert(error.message || "Gagal memperbarui kapasitas khusus");
+        }
+    }
+
+    async function handleKonfirmasiHapus() {
+        if (!dataHapus) return;
+
+        try {
+            await hapusKapasitasKhususAdmin(dataHapus.id_kapasitas);
+
+            handleTutupModalHapus();
+            await ambilKapasitasKhusus();
+            alert("Kapasitas khusus berhasil dihapus");
+        } catch (error: any) {
+            alert(error.message || "Gagal menghapus kapasitas khusus");
+        }
     }
 
     return (
@@ -91,30 +159,31 @@ export default function KelolaKapasitasKhususPage() {
                         <Plus size={15} /> Tambah
                     </button>
                 </div>
-    
-                {/* Tabel */}
-                <Tabel_Kapasitas_Khusus 
-                    data={data}
-                    onEdit={handleBukaModalEdit}
-                    onDelete={handleBukaModalHapus} 
-                />
+
+                {isLoading ? (
+                <section className="rounded-md border border-[#d3a0b0] bg-white/40 p-5 text-sm text-[#7D344B] shadow-sm">
+                    Memuat kapasitas khusus...
+                </section>
+                ) : (
+                    <Tabel_Kapasitas_Khusus 
+                        data={data}
+                        onEdit={handleBukaModalEdit}
+                        onDelete={handleBukaModalHapus} 
+                    />
+                )}
             </section>
 
             <ModalTambahKapasitasKhusus
                 isOpen={isModalTambahOpen}
                 onClose={() => setIsModalTambahOpen(false)}
-                onSubmit={() => {
-                    setIsModalTambahOpen(false);
-                }}
+                onSubmit={handleTambahKapasitas}
             />
 
             <ModalEditKapasitasKhusus
                 isOpen={isModalEditOpen}
                 onClose={handleTutupModalEdit}
                 data={dataEdit}
-                onSubmit={() => {
-                    handleTutupModalEdit();
-                }}
+                onSubmit={handleEditKapasitas}
             />
 
             <Modal_Hapus

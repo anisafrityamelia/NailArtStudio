@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 
 type DataKapasitasKhusus = {
+    id_kapasitas: number;
     no: number;
     tanggal: string;
     jumlahKaryawan: number;
@@ -51,8 +52,6 @@ export default function ModalEditKapasitasKhusus({
             jumlahKaryawan: Number(jumlahKaryawan),
             catatan,
         });
-
-        onClose();
     };
 
     return (

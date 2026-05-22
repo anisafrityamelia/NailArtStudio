@@ -3,6 +3,7 @@
 import { Pencil, Trash2 } from "lucide-react";
 
 export type Baris_Kapasitas_Khusus = {
+  id_kapasitas: number;
   no: number;
   tanggal: string;
   jumlahKaryawan: number;

@@ -40,8 +40,6 @@ export default function ModalTambahKapasitasKhusus({
       jumlahKaryawan: Number(jumlahKaryawan),
       catatan,
     });
-
-    onClose();
   };
 
   return (

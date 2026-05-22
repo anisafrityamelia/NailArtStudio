@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\PengaturanBooking;
 use App\Models\JadwalKhusus;
+use App\Models\KapasitasKhusus;
 use App\Models\Pesanan;
 use App\Models\Layanan;
 use Carbon\Carbon;
@@ -15,6 +16,16 @@ class PengaturanBookingController extends Controller
     public function show()
     {
         $pengaturan = PengaturanBooking::first();
+
+        if ($pengaturan) {
+            $hariIni = now()->toDateString();
+
+            $kapasitasKhusus = KapasitasKhusus::whereDate('tanggal', $hariIni)->first();
+
+            if ($kapasitasKhusus) {
+                $pengaturan->jumlah_karyawan = $kapasitasKhusus->jumlah_karyawan;
+            }
+        }
 
         return response()->json([
             'message' => 'Pengaturan booking berhasil diambil',
@@ -69,6 +80,7 @@ class PengaturanBookingController extends Controller
         }
 
         $jadwalKhusus = JadwalKhusus::whereDate('tanggal', $request->tanggal)->first();
+        $kapasitasKhusus = KapasitasKhusus::whereDate('tanggal', $request->tanggal)->first();
 
         if ($jadwalKhusus && $jadwalKhusus->status_buka === 'Tutup') {
             return response()->json([
@@ -83,7 +95,9 @@ class PengaturanBookingController extends Controller
 
         $tanggal = $request->tanggal;
         $durasiSlot = (int) $pengaturan->durasi_slot;
-        $jumlahKaryawan = (int) $pengaturan->jumlah_karyawan;
+        $jumlahKaryawan = $kapasitasKhusus
+            ? (int) $kapasitasKhusus->jumlah_karyawan
+            : (int) $pengaturan->jumlah_karyawan;
         $durasiLayanan = (int) $layanan->durasi_menit;
 
         $jamBukaAktif = $jadwalKhusus && $jadwalKhusus->status_buka === 'Buka'
@@ -149,6 +163,7 @@ class PengaturanBookingController extends Controller
             'data' => $slots,
             'status_jadwal' => $jadwalKhusus ? $jadwalKhusus->status_buka : 'Default',
             'catatan_jadwal' => $jadwalKhusus ? $jadwalKhusus->catatan : null,
+            'kapasitas_khusus' => $kapasitasKhusus ? true : false,
         ]);
     }
 }

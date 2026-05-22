@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\PembayaranController;
 use App\Http\Controllers\Api\KategoriHargaLayananController;
 use App\Http\Controllers\Api\PengaturanBookingController;
 use App\Http\Controllers\Api\JadwalKhususController;
+use App\Http\Controllers\Api\KapasitasKhususController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -56,6 +57,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/jadwal-khusus', [JadwalKhususController::class, 'store']);
         Route::put('/jadwal-khusus/{id}', [JadwalKhususController::class, 'update']);
         Route::delete('/jadwal-khusus/{id}', [JadwalKhususController::class, 'destroy']);
+
+        Route::get('/kapasitas-khusus', [KapasitasKhususController::class, 'index']);
+        Route::post('/kapasitas-khusus', [KapasitasKhususController::class, 'store']);
+        Route::put('/kapasitas-khusus/{id}', [KapasitasKhususController::class, 'update']);
+        Route::delete('/kapasitas-khusus/{id}', [KapasitasKhususController::class, 'destroy']);
     });
 
     Route::middleware('role:pelanggan')->prefix('pelanggan')->group(function () {
