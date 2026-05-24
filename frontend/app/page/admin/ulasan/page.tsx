@@ -1,103 +1,232 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Judul_Halaman from "@/app/components/ui/judul_halaman";
 import Filter_Ulasan from "./components/filter_ulasan";
 import Tabel_Ulasan from "./components/tabel_ulasan";
-import Modal_Hapus from "@/app/components/ui/modal_hapus";
+import Modal_Hide from "@/app/components/ui/modal_hide";
 
-type Ulasan = {
-  no: number;
-  kode: string,
-  pelanggan: string;
-  layanan: string,
-  ulasan: string,
+import {
+  getUlasanAdmin,
+  updateStatusTampilUlasan,
+} from "@/app/lib/ulasan";
+
+import API_BASE_URL from "@/app/lib/api";
+
+export type UlasanAdmin = {
+  id_ulasan: number;
+  kode_pesanan: string;
+  nama_pelanggan: string;
+  nama_layanan: string;
+  ulasan: string;
   rating: number;
-  foto: string,
+  gambar_ulasan_url: string | null;
+  status_tampil: "ditampilkan" | "disembunyikan";
+};
+
+type LayananOption = {
+  id_layanan: number;
+  nama_layanan: string;
 };
 
 export default function UlasanPage() {
-  // Data sementara untuk isi tabel ulasan
-    const data: Ulasan[] = [
-        {
-            no: 1,
-            kode: "ORD01023",
-            pelanggan: "widayy",
-            layanan: "Nail Art",
-            ulasan: "bagus",
-            rating: 4,
-            foto: "/galeri 6.jpeg",
-        },
-        {
-            no: 2,
-            kode: "ORD03024",
-            pelanggan: "anann",
-            layanan: "Eyelash",
-            ulasan: "bagus",
-            rating: 4,
-            foto: "/galeri 4.jpeg",
-        },
-        {
-            no: 3,
-            kode: "ORD02025",
-            pelanggan: "Rani",
-            layanan: "Press On",
-            ulasan: "bagus",
-            rating: 4,
-            foto: "/galeri 2.jpeg",
-        },
-        {
-            no: 4,
-            kode: "ORD01026",
-            pelanggan: "anisa fitriy amelia",
-            layanan: "Remove",
-            ulasan: "bagus",
-            rating: 4,
-            foto: "/galeri 10.jpeg",
-        },
-    ];
+  const [data, setData] = useState<UlasanAdmin[]>([]);
+  const [loading, setLoading] = useState(true);
 
-    const [isModalHapusOpen, setIsModalHapusOpen] = useState(false);
-    const [dataHapus, setDataHapus] = useState<Ulasan | null>(null);
-    
-    function handleBukaModalHapus(item: Ulasan) {
-        setDataHapus(item);
-        setIsModalHapusOpen(true);
+  const [layananOptions, setLayananOptions] = useState<string[]>([
+    "Layanan",
+  ]);
+
+  const [filter, setFilter] = useState({
+    layanan: "Layanan",
+    rating: "Rating",
+  });
+
+  const [isModalHideOpen, setIsModalHideOpen] = useState(false);
+
+  const [dataHide, setDataHide] =
+    useState<UlasanAdmin | null>(null);
+
+  const ratingOptions = [
+    "Rating",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+  ];
+
+  const ambilDataUlasan = async () => {
+    try {
+      setLoading(true);
+
+      const result = await getUlasanAdmin();
+
+      setData(result || []);
+    } catch (error) {
+      console.error(
+        "Gagal mengambil data ulasan admin:",
+        error
+      );
+
+      setData([]);
+    } finally {
+      setLoading(false);
     }
-    
-    function handleTutupModalHapus() {
-        setIsModalHapusOpen(false);
-        setDataHapus(null);
+  };
+
+  useEffect(() => {
+    ambilDataUlasan();
+  }, []);
+
+  useEffect(() => {
+    const ambilDataLayanan = async () => {
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/layanan`,
+          {
+            headers: {
+              Accept: "application/json",
+            },
+          }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          return;
+        }
+
+        const options = result.data.map(
+          (item: LayananOption) => item.nama_layanan
+        );
+
+        setLayananOptions([
+          "Layanan",
+          ...options,
+        ]);
+      } catch (error) {
+        console.error(
+          "Gagal mengambil data layanan:",
+          error
+        );
+
+        setLayananOptions(["Layanan"]);
+      }
+    };
+
+    ambilDataLayanan();
+  }, []);
+
+  const filteredData = data
+    .filter((item) => {
+      const matchLayanan =
+        filter.layanan === "Layanan" ||
+        item.nama_layanan === filter.layanan;
+
+      const matchRating =
+        filter.rating === "Rating" ||
+        item.rating === Number(filter.rating);
+
+      return matchLayanan && matchRating;
+    })
+    .map((item, index) => ({
+      ...item,
+      no: index + 1,
+    }));
+
+  function handleBukaModalHide(
+    item: UlasanAdmin
+  ) {
+    setDataHide(item);
+    setIsModalHideOpen(true);
+  }
+
+  function handleTutupModalHide() {
+    setIsModalHideOpen(false);
+    setDataHide(null);
+  }
+
+  async function handleKonfirmasiHide() {
+    if (!dataHide) return;
+
+    try {
+      await updateStatusTampilUlasan(
+        dataHide.id_ulasan,
+        "disembunyikan"
+      );
+
+      await ambilDataUlasan();
+
+      handleTutupModalHide();
+    } catch (error) {
+      console.error(
+        "Gagal menyembunyikan ulasan:",
+        error
+      );
     }
-    
-    function handleKonfirmasiHapus() {
-        handleTutupModalHapus();
+  }
+
+  async function handleTampilkan(
+    item: UlasanAdmin
+  ) {
+    try {
+      await updateStatusTampilUlasan(
+        item.id_ulasan,
+        "ditampilkan"
+      );
+
+      await ambilDataUlasan();
+    } catch (error) {
+      console.error(
+        "Gagal menampilkan ulasan:",
+        error
+      );
     }
+  }
 
-    return (
-        <>
-            <section>
-                {/* Judul halaman */}
-                <Judul_Halaman title="Kelola Ulasan" />
+  return (
+    <>
+      <section>
+        <Judul_Halaman title="Kelola Ulasan" />
 
-                {/* Filter data */}
-                <Filter_Ulasan 
-                    layananOptions={["Layanan", "Nail Art", "Eyelash", "Press On"]}
-                    ratingOptions={["Rating", "1", "2", "3", "4", "5"]}
-                />
+        <Filter_Ulasan
+          layananOptions={layananOptions}
+          ratingOptions={ratingOptions}
+          layananTerpilih={filter.layanan}
+          ratingTerpilih={filter.rating}
+          onChangeLayanan={(value) =>
+            setFilter((prev) => ({
+              ...prev,
+              layanan: value,
+            }))
+          }
+          onChangeRating={(value) =>
+            setFilter((prev) => ({
+              ...prev,
+              rating: value,
+            }))
+          }
+        />
 
-                {/* Tabel daftar ulasan */}
-                <Tabel_Ulasan 
-                    data={data} 
-                    onDelete={handleBukaModalHapus}
-                />
-            </section>
+        {loading ? (
+          <p className="text-sm font-medium text-[#7d344b]">
+            Memuat data ulasan...
+          </p>
+        ) : (
+          <Tabel_Ulasan
+            data={filteredData}
+            onDelete={handleBukaModalHide}
+            onTampilkan={handleTampilkan}
+          />
+        )}
+      </section>
 
-            <Modal_Hapus
-                isOpen={isModalHapusOpen}
-                onClose={handleTutupModalHapus}
-                onConfirm={handleKonfirmasiHapus}
-            />
-        </>
-    );
+      <Modal_Hide
+        isOpen={isModalHideOpen}
+        onClose={handleTutupModalHide}
+        onConfirm={handleKonfirmasiHide}
+      />
+    </>
+  );
 }

@@ -63,6 +63,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/kapasitas-khusus', [KapasitasKhususController::class, 'store']);
         Route::put('/kapasitas-khusus/{id}', [KapasitasKhususController::class, 'update']);
         Route::delete('/kapasitas-khusus/{id}', [KapasitasKhususController::class, 'destroy']);
+
+        Route::get('/ulasan', [UlasanController::class, 'adminIndex']);
+        Route::put('/ulasan/{id}/status-tampil', [UlasanController::class, 'ubahStatusTampil']);
     });
 
     Route::middleware('role:pelanggan')->prefix('pelanggan')->group(function () {

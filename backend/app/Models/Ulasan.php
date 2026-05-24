@@ -17,6 +17,7 @@ class Ulasan extends Model
         'rating',
         'ulasan',
         'gambar_ulasan',
+        'status_tampil',
     ];
 
     protected $appends = [

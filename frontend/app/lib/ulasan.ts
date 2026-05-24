@@ -105,3 +105,53 @@ export const getUlasanLanding = async () => {
 
   return result.data;
 };
+
+export const getUlasanAdmin = async () => {
+  const token = getToken();
+
+  const response = await fetch(`${API_BASE_URL}/admin/ulasan`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "Gagal mengambil data ulasan admin");
+  }
+
+  return result.data;
+};
+
+export const updateStatusTampilUlasan = async (
+  idUlasan: number,
+  statusTampil: "ditampilkan" | "disembunyikan"
+) => {
+  const token = getToken();
+
+  const response = await fetch(
+    `${API_BASE_URL}/admin/ulasan/${idUlasan}/status-tampil`,
+    {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        status_tampil: statusTampil,
+      }),
+    }
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "Gagal mengubah status ulasan");
+  }
+
+  return result.data;
+};

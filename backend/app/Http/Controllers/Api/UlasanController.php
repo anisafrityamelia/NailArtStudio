@@ -37,6 +37,7 @@ class UlasanController extends Controller
         ])
         ->whereNotNull('ulasan')
         ->where('ulasan', '!=', '')
+        ->where('status_tampil', 'ditampilkan')
         ->inRandomOrder()
         ->get()
         ->map(function ($item) {
@@ -55,6 +56,57 @@ class UlasanController extends Controller
 
         return response()->json([
             'message' => 'Ulasan landing berhasil diambil',
+            'data' => $ulasan,
+        ]);
+    }
+
+    public function adminIndex()
+    {
+        $ulasan = Ulasan::with([
+            'pengguna',
+            'pesanan.layanan',
+        ])
+        ->latest()
+        ->get()
+        ->map(function ($item) {
+            return [
+                'id_ulasan' => $item->id_ulasan,
+                'kode_pesanan' => $item->pesanan?->kode_pesanan ?? '-',
+                'nama_pelanggan' => $item->pengguna?->nama_pengguna ?? '-',
+                'nama_layanan' => $item->pesanan?->layanan?->nama_layanan ?? '-',
+                'rating' => $item->rating,
+                'ulasan' => $item->ulasan,
+                'gambar_ulasan_url' => $item->url_gambar_ulasan,
+                'status_tampil' => $item->status_tampil,
+            ];
+        });
+
+        return response()->json([
+            'message' => 'Daftar ulasan admin berhasil diambil',
+            'data' => $ulasan,
+        ]);
+    }
+
+    public function ubahStatusTampil(Request $request, $id)
+    {
+        $request->validate([
+            'status_tampil' => 'required|in:ditampilkan,disembunyikan',
+        ]);
+
+        $ulasan = Ulasan::find($id);
+
+        if (! $ulasan) {
+            return response()->json([
+                'message' => 'Ulasan tidak ditemukan',
+            ], 404);
+        }
+
+        $ulasan->update([
+            'status_tampil' => $request->status_tampil,
+        ]);
+
+        return response()->json([
+            'message' => 'Status tampil ulasan berhasil diperbarui',
             'data' => $ulasan,
         ]);
     }
