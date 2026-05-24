@@ -4,12 +4,14 @@ import { MessageSquarePlus, Pencil, Trash2 } from "lucide-react";
 
 export type Baris_Ulasan_Pelanggan = {
   no: number;
-  kode: string,
-  layanan: string,
+  id_pesanan: number;
+  id_ulasan?: number | null;
+  kode: string;
+  layanan: string;
   tanggal: string;
-  ulasan: string,
+  ulasan: string;
   rating: number | string;
-  gambar: string,
+  gambar: string;
 };
 
 type Props_Tabel_Ulasan = {

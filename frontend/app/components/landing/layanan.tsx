@@ -198,7 +198,7 @@ export default function Layanan() {
     >
       <div className="container-landing px-4 sm:px-6 lg:px-10">
         <Reveal>
-          <h2 className="mb-15 text-center text-2xl font-bold text-[#7d344b] drop-shadow-sm sm:text-3xl md:text-4xl">
+          <h2 className="mb-7 text-center text-2xl font-bold text-[#7d344b] drop-shadow-sm sm:mb-15 sm:text-3xl md:text-4xl">
             Layanan Kami
           </h2>
         </Reveal>
@@ -252,10 +252,10 @@ export default function Layanan() {
               (jumlahTampil === 1 ? daftarLayanan : layananTampil).map((layanan) => (
                 <article
                   key={jumlahTampil === 1 ? layanan.id : `${layanan.id}-${indexAktif}`}
-                  className="w-full max-md:mx-auto max-md:min-w-[260px] max-md:max-w-[260px] max-md:snap-center origin-center rounded-2xl border 
+                  className="w-full max-md:mx-auto max-md:min-w-[210px] max-md:max-w-[210px] max-md:snap-center origin-center rounded-2xl border 
                   border-[rgba(138,62,85,0.14)] bg-[rgba(221,152,173,0.2)] p-[18px] shadow-[0_6px_14px_rgba(0,0,0,0.18)] 
                   transition-all duration-[260ms] ease-out [@media(hover:hover)_and_(pointer:fine)]:hover:-translate-y-[10px] 
-                  [@media(hover:hover)_and_(pointer:fine)]:hover:shadow-[0_18px_38px_rgba(0,0,0,0.2)] max-[420px]:p-3"
+                  [@media(hover:hover)_and_(pointer:fine)]:hover:shadow-[0_18px_38px_rgba(0,0,0,0.2)] max-[420px]:p-2.5"
                 >
                   <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-white">
                     <img
@@ -270,9 +270,9 @@ export default function Layanan() {
                     />
                   </div>
 
-                  <div className="flex flex-col gap-[14px] pt-[14px]">
+                  <div className="flex flex-col max-md:gap-[10px] gap-[14px] pt-[14px]">
                     <h3
-                      className="text-[17px] font-semibold text-[#7d344b] transition-all duration-200 md:text-[18px] 
+                      className="max-md:text-[14px] text-[17px] font-semibold text-[#7d344b] transition-all duration-200 md:text-[18px] 
                       [@media(hover:hover)_and_(pointer:fine)]:group-hover:-translate-y-px 
                       [@media(hover:hover)_and_(pointer:fine)]:group-hover:text-[#8a3e55]"
                     >
@@ -283,7 +283,7 @@ export default function Layanan() {
                       type="button"
                       onClick={() => router.push(layanan.detailUrl)}
                       className="cursor-pointer rounded-md bg-gradient-to-r from-[#E45082] 
-                      to-[#7D344B] px-2.5 py-1.5 sm:px-3 sm:py-1.5 sm:text-sm text-xs text-white shadow-soft-text 
+                      to-[#7D344B] px-2.5 py-1.5 sm:px-3 sm:py-1.5 max-md:text-[11px] sm:text-sm text-xs text-white shadow-soft-text 
                       transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95"
                     >
                       Detail

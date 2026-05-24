@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\KategoriHargaLayananController;
 use App\Http\Controllers\Api\PengaturanBookingController;
 use App\Http\Controllers\Api\JadwalKhususController;
 use App\Http\Controllers\Api\KapasitasKhususController;
+use App\Http\Controllers\Api\UlasanController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -73,17 +74,27 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::put('/profile', [AuthController::class, 'updateProfile']);
         Route::post('/profile/foto', [AuthController::class, 'updateFotoProfil']);
+        
         Route::post('/pesanan/nail-art', [PesananController::class, 'storeNailArt']);
         Route::post('/pesanan/press-on', [PesananController::class, 'storePressOn']);
         Route::post('/pesanan/eyelash', [PesananController::class, 'storeEyelash']);
         Route::post('/pesanan/remove', [PesananController::class, 'storeRemove']);
-        Route::post('/pembayaran', [PembayaranController::class, 'store']);
         Route::get('/pesanan', [PesananController::class, 'index']);
         Route::get('/pesanan/{id}', [PesananController::class, 'show']);
+
+        Route::post('/pembayaran', [PembayaranController::class, 'store']);
+    
         Route::get('/slot-booking', [PengaturanBookingController::class, 'slotTersedia']);
+
+        Route::get('/ulasan', [UlasanController::class, 'index']);
+        Route::post('/ulasan', [UlasanController::class, 'store']);
+        Route::post('/ulasan/{id}', [UlasanController::class, 'update']);
+        Route::delete('/ulasan/{id}', [UlasanController::class, 'destroy']);
     });
 });
 
 Route::get('/layanan', [LayananController::class, 'aktif']);
 Route::get('/layanan/kategori/{kategori}', [LayananController::class, 'showByKategori']);
 Route::get('/layanan/{id}', [LayananController::class, 'show']);
+
+Route::get('/ulasan-landing', [UlasanController::class, 'landing']);

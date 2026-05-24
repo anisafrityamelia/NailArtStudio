@@ -352,6 +352,7 @@ class PesananController extends Controller
             'detailEyelash',
             'detailRemove',
             'pembayaran',
+            'ulasan',
         ])
         ->where('id_pengguna', $user->id_pengguna)
         ->orderBy('created_at', 'desc')

@@ -9,6 +9,7 @@ type PropsModalTambahUlasanPelanggan = {
   onClose: () => void;
   data: Baris_Ulasan_Pelanggan | null;
   onSubmit: (payload: {
+    id_pesanan: number;
     kode: string;
     layanan: string;
     tanggal: string;
@@ -44,6 +45,7 @@ export default function ModalTambahUlasanPelanggan({
     if (rating < 1) return;
 
     onSubmit({
+      id_pesanan: data.id_pesanan,
       kode: data.kode,
       layanan: data.layanan,
       tanggal: data.tanggal,
@@ -51,8 +53,6 @@ export default function ModalTambahUlasanPelanggan({
       ulasan,
       gambar,
     });
-
-    onClose();
   };
 
    return (

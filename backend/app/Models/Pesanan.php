@@ -79,4 +79,9 @@ class Pesanan extends Model
     {
         return $this->hasOne(Pembayaran::class, 'id_pesanan', 'id_pesanan');
     }
+
+    public function ulasan()
+    {
+        return $this->hasOne(Ulasan::class, 'id_pesanan', 'id_pesanan');
+    }
 }

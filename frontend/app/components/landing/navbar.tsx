@@ -61,21 +61,25 @@ export default function Navbar() {
 
   const scrollKeSection = (href: string) => {
     const id = href.replace("#", "");
-    const element = document.getElementById(id);
-
-    if (!element) return;
-
-    const isMobile = window.innerWidth < 768;
-    const offset = isMobile ? 96 : 72;
-
-    const posisi = element.getBoundingClientRect().top + window.scrollY - offset;
-
-    window.scrollTo({
-      top: posisi,
-      behavior: "smooth",
-    });
 
     setIsOpen(false);
+
+    setTimeout(() => {
+      const element = document.getElementById(id);
+
+      if (!element) return;
+
+      const isMobile = window.innerWidth < 768;
+      const offset = isMobile ? 72 : 72;
+
+      const posisi =
+        element.getBoundingClientRect().top + window.scrollY - offset;
+
+      window.scrollTo({
+        top: posisi,
+        behavior: "smooth",
+      });
+    }, 320);
   };
 
   return (
