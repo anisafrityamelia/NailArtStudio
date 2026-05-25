@@ -1,7 +1,100 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Reveal from "./reveal";
+import { getBerandaLanding } from "@/app/lib/beranda";
+
+type DataKontak = {
+  alamat_studio: string;
+  link_lokasi: string;
+  jam_buka: string;
+  akun_ig: string;
+  akun_tiktok: string;
+  no_wa: string;
+};
+
+function formatWhatsAppLink(noWa?: string) {
+  if (!noWa) return "#";
+
+  let nomor = noWa.replace(/\D/g, "");
+
+  if (nomor.startsWith("0")) {
+    nomor = "62" + nomor.slice(1);
+  }
+
+  return `https://wa.me/${nomor}`;
+}
+
+function formatInstagramLink(username?: string) {
+  if (!username) return "#";
+
+  if (username.startsWith("http")) {
+    return username;
+  }
+
+  return `https://www.instagram.com/${username.replace(/^@/, "")}`;
+}
+
+function formatTiktokLink(username?: string) {
+  if (!username) return "#";
+
+  if (username.startsWith("http")) {
+    return username;
+  }
+
+  return `https://www.tiktok.com/@${username.replace(/^@/, "")}`;
+}
+
+function formatGoogleMapsEmbed(link?: string, alamat?: string) {
+  if (link && link.includes("/embed")) {
+    return link;
+  }
+
+  if (alamat) {
+    return `https://www.google.com/maps?q=${encodeURIComponent(
+      alamat
+    )}&z=16&output=embed`;
+  }
+
+  return "";
+}
 
 export default function Kontak() {
+  const [dataKontak, setDataKontak] = useState<DataKontak | null>(null);
+
+  useEffect(() => {
+    async function fetchKontak() {
+      try {
+        const data = await getBerandaLanding();
+
+        setDataKontak({
+          alamat_studio: data?.alamat_studio || "",
+          link_lokasi: data?.link_lokasi || "",
+          jam_buka: data?.jam_buka || "",
+          akun_ig: data?.akun_ig || "",
+          akun_tiktok: data?.akun_tiktok || "",
+          no_wa: data?.no_wa || "",
+        });
+      } catch (error) {
+        console.error("Gagal mengambil kontak:", error);
+      }
+    }
+
+    fetchKontak();
+  }, []);
+
+  const alamat =
+    dataKontak?.alamat_studio ||
+    "Harapan 2 kampung bawean, Baloi No.14 Blok A, Sungai Panas, Kec. Batam Kota, Kota Batam, Kepulauan Riau 29457";
+
+  const jamBuka = dataKontak?.jam_buka || "Senin - Minggu (09:00 - 22:00)";
+
+  const linkMaps = formatGoogleMapsEmbed(dataKontak?.link_lokasi, alamat);
+  const linkInstagram = formatInstagramLink(dataKontak?.akun_ig);
+  const linkTiktok = formatTiktokLink(dataKontak?.akun_tiktok);
+  const linkWhatsapp = formatWhatsAppLink(dataKontak?.no_wa);
+
   return (
     <section
       id="kontak"
@@ -9,10 +102,8 @@ export default function Kontak() {
     >
       <div className="mb-[clamp(34px,5vw,56px)] h-[14px] w-full max-md:mb-7 max-md:h-2.5" />
 
-      {/* TAMBAH PADDING KANAN KIRI */}
       <div className="container-landing px-4 sm:px-6 lg:px-25">
         <div className="grid grid-cols-[minmax(320px,1fr)_minmax(320px,1.05fr)] items-center gap-[clamp(28px,4vw,52px)] max-[991px]:grid-cols-1 max-[991px]:gap-7">
-          {/* MAP */}
           <Reveal
             delay={0.3}
             className="min-h-[270px] overflow-hidden rounded-3xl bg-[#f6f6f6] shadow-[0_10px_24px_rgba(0,0,0,0.22)] 
@@ -20,24 +111,27 @@ export default function Kontak() {
           max-md:min-h-[240px] max-md:rounded-[20px] 
           max-[420px]:min-h-[220px] max-[420px]:rounded-[18px]"
           >
-            <iframe
-              title="Lokasi Alia Oye Studio"
-              src="https://www.google.com/maps?q=Harapan%202%20kampung%20bawean%2C%20Baloi%20No.14%20Blok%20A%2C%20Sungai%20Panas%2C%20Kec.%20Batam%20Kota%2C%20Kota%20Batam%2C%20Kepulauan%20Riau%2029457&z=16&output=embed"
-              className="block h-full min-h-[270px] w-full border-0 
-              max-md:min-h-[240px] max-[420px]:min-h-[220px]"
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              allowFullScreen
-            />
+            {linkMaps ? (
+              <iframe
+                title="Lokasi Alia Oye Studio"
+                src={linkMaps}
+                className="block h-full min-h-[270px] w-full border-0 max-md:min-h-[240px] max-[420px]:min-h-[220px]"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                allowFullScreen
+              />
+            ) : (
+              <div className="flex h-full min-h-[270px] items-center justify-center text-sm text-[#84344f]">
+                Lokasi belum tersedia
+              </div>
+            )}
           </Reveal>
 
-          {/* INFORMASI */}
           <div
             className="flex flex-col items-end text-right text-white 
           max-[991px]:mx-auto max-[991px]:max-w-[760px] 
           max-md:items-center max-md:text-center"
           >
-            {/* SOSIAL */}
             <Reveal className="mb-[22px]">
               <h2 className="mb-3.5 text-[clamp(28px,3.5vw,30px)] font-bold drop-shadow-[0_2px_6px_rgba(0,0,0,0.22)] max-md:mb-3">
                 Ikuti Kami
@@ -47,10 +141,9 @@ export default function Kontak() {
                 delay={0.3}
                 className="flex items-center justify-end gap-4 max-md:justify-center max-md:gap-3"
               >
-                {/* ICON TEMPLATE */}
                 {[
                   {
-                    href: "https://www.instagram.com/aliaoye_nail.art?igsh=MXJhMXFibXVkZ28weA==",
+                    href: linkInstagram,
                     label: "Instagram",
                     icon: (
                       <>
@@ -82,14 +175,14 @@ export default function Kontak() {
                     ),
                   },
                   {
-                    href: "https://www.tiktok.com/@alia_oye?_r=1&_t=ZS-95pZsxNSmL1",
+                    href: linkTiktok,
                     label: "TikTok",
                     icon: (
                       <path d="M14.2 4.2c.7 2 2.1 3.3 4 3.9v2.8c-1.4-.1-2.7-.6-3.9-1.3v5.4c0 2.8-2.3 5.1-5.1 5.1S4.1 17.8 4.1 15s2.3-5.1 5.1-5.1c.3 0 .6 0 .9.1v3c-.3-.1-.6-.2-.9-.2-1.2 0-2.1 1-2.1 2.2s.9 2.2 2.1 2.2 2.2-1 2.2-2.2V4.2h2.8Z" />
                     ),
                   },
                   {
-                    href: "https://wa.me/6281267363177",
+                    href: linkWhatsapp,
                     label: "WhatsApp",
                     icon: (
                       <>
@@ -115,23 +208,16 @@ export default function Kontak() {
               </Reveal>
             </Reveal>
 
-            {/* TEXT (DIUBAH JADI 18PX BOLD) */}
             <Reveal
               delay={0.3}
               className="flex flex-col items-end gap-5 max-md:items-center"
             >
               <p className="text-[18px] font-bold leading-[1.5]">
-                Harapan 2 kampung bawean, Baloi No.14
-                <br />
-                Blok A, Sungai Panas, Kec. Batam Kota,
-                <br />
-                Kota Batam, Kepulauan Riau 29457
+                {alamat}
               </p>
 
               <Reveal delay={0.2}>
-                <p className="text-[18px] font-bold">
-                  Open : Senin - Minggu (09:00 - 22:00)
-                </p>
+                <p className="text-[18px] font-bold">Open : {jamBuka}</p>
               </Reveal>
             </Reveal>
 

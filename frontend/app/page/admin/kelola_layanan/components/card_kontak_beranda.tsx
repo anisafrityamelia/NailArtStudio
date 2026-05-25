@@ -2,23 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { Pencil } from "lucide-react";
+import { updateBerandaAdmin } from "@/app/lib/beranda";
 
-type Data_Kontak = {
-  alamat: string;
-  jamOperasional: string;
-  instagram: string;
-  tiktok: string;
-  whatsapp: string;
-  googleMaps: string;
+type Props = {
+  dataBeranda: any;
+  onRefresh: () => Promise<void>;
 };
 
-export default function Card_Kontak_Beranda() {
+export default function Card_Kontak_Beranda({ dataBeranda, onRefresh }: Props) {
   const [isEdit, setIsEdit] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  // data yang ditampilkan di card
-  const [dataKontak, setDataKontak] = useState<Data_Kontak | null>(null);
-
-  // data form saat edit
   const [alamat, setAlamat] = useState("");
   const [jamOperasional, setJamOperasional] = useState("");
   const [instagram, setInstagram] = useState("");
@@ -27,59 +21,65 @@ export default function Card_Kontak_Beranda() {
   const [googleMaps, setGoogleMaps] = useState("");
 
   useEffect(() => {
-    if (isEdit && dataKontak) {
-      setAlamat(dataKontak.alamat);
-      setJamOperasional(dataKontak.jamOperasional);
-      setInstagram(dataKontak.instagram);
-      setTiktok(dataKontak.tiktok);
-      setWhatsapp(dataKontak.whatsapp);
-      setGoogleMaps(dataKontak.googleMaps);
-    }
-  }, [isEdit, dataKontak]);
+    setAlamat(dataBeranda?.alamat_studio || "");
+    setJamOperasional(dataBeranda?.jam_buka || "");
+    setInstagram(dataBeranda?.akun_ig || "");
+    setTiktok(dataBeranda?.akun_tiktok || "");
+    setWhatsapp(dataBeranda?.no_wa || "");
+    setGoogleMaps(dataBeranda?.link_lokasi || "");
+  }, [dataBeranda]);
 
   function handleBukaEdit() {
     setIsEdit(true);
   }
 
   function handleBatalEdit() {
-    setAlamat(dataKontak?.alamat || "");
-    setJamOperasional(dataKontak?.jamOperasional || "");
-    setInstagram(dataKontak?.instagram || "");
-    setTiktok(dataKontak?.tiktok || "");
-    setWhatsapp(dataKontak?.whatsapp || "");
-    setGoogleMaps(dataKontak?.googleMaps || "");
+    setAlamat(dataBeranda?.alamat_studio || "");
+    setJamOperasional(dataBeranda?.jam_buka || "");
+    setInstagram(dataBeranda?.akun_ig || "");
+    setTiktok(dataBeranda?.akun_tiktok || "");
+    setWhatsapp(dataBeranda?.no_wa || "");
+    setGoogleMaps(dataBeranda?.link_lokasi || "");
     setIsEdit(false);
   }
 
-  function handleSimpanEdit(e: React.FormEvent) {
+  async function handleSimpanEdit(e: React.FormEvent) {
     e.preventDefault();
 
-    const payload: Data_Kontak = {
-      alamat: alamat.trim(),
-      jamOperasional: jamOperasional.trim(),
-      instagram: instagram.trim().replace(/^@/, ""),
-      tiktok: tiktok.trim().replace(/^@/, ""),
-      whatsapp: whatsapp.trim(),
-      googleMaps: googleMaps.trim(),
-    };
+    try {
+      setLoading(true);
 
-    console.log("Payload kontak:", payload);
+      await updateBerandaAdmin({
+        alamat_studio: alamat.trim(),
+        jam_buka: jamOperasional.trim(),
+        akun_ig: instagram.trim().replace(/^@/, ""),
+        akun_tiktok: tiktok.trim().replace(/^@/, ""),
+        no_wa: whatsapp.trim(),
+        link_lokasi: googleMaps.trim(),
+      });
 
-    // dummy disimpan ke state dulu
-    setDataKontak(payload);
-    setIsEdit(false);
+      await onRefresh();
+      setIsEdit(false);
+      alert("Kontak berhasil diperbarui");
+    } catch (error: any) {
+      alert(error.message || "Gagal memperbarui kontak");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
     <section className="rounded-xl border border-[#d3a0b0] bg-white/40 p-5 shadow-sm">
       <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-base font-semibold text-[#7D344B] sm:text-lg">Kontak</h3>
+        <h3 className="text-base font-semibold text-[#7D344B] sm:text-lg">
+          Kontak
+        </h3>
 
         {!isEdit ? (
           <button
             type="button"
             onClick={handleBukaEdit}
-            className="flex cursor-pointer items-center gap-2 rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-2.5 py-1.5 sm:px-3 sm:py-1.5 sm:text-sm text-xs text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95"
+            className="flex cursor-pointer items-center gap-2 rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-2.5 py-1.5 text-xs text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 sm:px-3 sm:py-1.5 sm:text-sm"
           >
             <Pencil size={16} /> Edit
           </button>
@@ -88,7 +88,8 @@ export default function Card_Kontak_Beranda() {
             <button
               type="button"
               onClick={handleBatalEdit}
-              className="cursor-pointer rounded-md bg-gradient-to-r from-[#d9d9d9] to-[#dd98ad] px-2.5 py-1.5 sm:px-3 sm:py-1.5 sm:text-sm text-xs text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95"
+              disabled={loading}
+              className="cursor-pointer rounded-md bg-gradient-to-r from-[#d9d9d9] to-[#dd98ad] px-2.5 py-1.5 text-xs text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 sm:px-3 sm:py-1.5 sm:text-sm"
             >
               Batal
             </button>
@@ -96,9 +97,10 @@ export default function Card_Kontak_Beranda() {
             <button
               type="submit"
               form="form-kontak-beranda"
-              className="cursor-pointer rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-2.5 py-1.5 sm:px-3 sm:py-1.5 sm:text-sm text-xs text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95"
+              disabled={loading}
+              className="cursor-pointer rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-2.5 py-1.5 text-xs text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 sm:px-3 sm:py-1.5 sm:text-sm"
             >
-              Simpan
+              {loading ? "Menyimpan..." : "Simpan"}
             </button>
           </div>
         )}
@@ -106,115 +108,123 @@ export default function Card_Kontak_Beranda() {
 
       <form id="form-kontak-beranda" onSubmit={handleSimpanEdit}>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div className="flex flex-col gap-1">
-            <label className="text-xs font-semibold text-[#7D344B] sm:text-sm">
-              Jam Operasional
-            </label>
-            <input
-              type="text"
-              value={isEdit ? jamOperasional : dataKontak?.jamOperasional || ""}
-              onChange={(e) => setJamOperasional(e.target.value)}
-              readOnly={!isEdit}
-              placeholder={isEdit ? "Masukkan jam operasional" : ""}
-              className={`w-full rounded-md border border-[#dd98ad] px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text sm:text-sm ${
-                isEdit
-                  ? "bg-white focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0]"
-                  : "text-gray-400 bg-white/70"
-              }`}
-            />
-          </div>
+          <InputKontak
+            label="Jam Operasional"
+            value={jamOperasional}
+            setValue={setJamOperasional}
+            isEdit={isEdit}
+            placeholder="Masukkan jam operasional"
+          />
 
-          <div className="flex flex-col gap-1">
-            <label className="text-xs font-semibold text-[#7D344B] sm:text-sm">
-              Instagram
-            </label>
-            <input
-              type="text"
-              value={isEdit ? instagram : dataKontak?.instagram || ""}
-              onChange={(e) => setInstagram(e.target.value)}
-              readOnly={!isEdit}
-              placeholder={isEdit ? "Contoh: username (tanpa @)" : ""}
-              className={`w-full rounded-md border border-[#dd98ad] px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text sm:text-sm ${
-                isEdit
-                  ? "bg-white focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0]"
-                  : "text-gray-400 bg-white/70"
-              }`}
-            />
-          </div>
+          <InputKontak
+            label="Instagram"
+            value={instagram}
+            setValue={setInstagram}
+            isEdit={isEdit}
+            placeholder="Contoh: username tanpa @"
+          />
 
-          <div className="flex flex-col gap-1">
-            <label className="text-xs font-semibold text-[#7D344B] sm:text-sm">
-              Tiktok
-            </label>
-            <input
-              type="text"
-              value={isEdit ? tiktok : dataKontak?.tiktok || ""}
-              onChange={(e) => setTiktok(e.target.value)}
-              readOnly={!isEdit}
-              placeholder={isEdit ? "Contoh: username (tanpa @)" : ""}
-              className={`w-full rounded-md border border-[#dd98ad] px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text sm:text-sm ${
-                isEdit
-                  ? "bg-white focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0]"
-                  : "text-gray-400 bg-white/70"
-              }`}
-            />
-          </div>
+          <InputKontak
+            label="Tiktok"
+            value={tiktok}
+            setValue={setTiktok}
+            isEdit={isEdit}
+            placeholder="Contoh: username tanpa @"
+          />
 
-          <div className="flex flex-col gap-1">
-            <label className="text-xs font-semibold text-[#7D344B] sm:text-sm">
-              No WhatsApp Admin
-            </label>
-            <input
-              type="text"
-              value={isEdit ? whatsapp : dataKontak?.whatsapp || ""}
-              onChange={(e) => setWhatsapp(e.target.value)}
-              readOnly={!isEdit}
-              placeholder={isEdit ? "Contoh: 0812xxxxxxxx" : ""}
-              className={`w-full rounded-md border border-[#dd98ad] px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text sm:text-sm ${
-                isEdit
-                  ? "bg-white focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0]"
-                  : "text-gray-400 bg-white/70"
-              }`}
-            />
-          </div>
+          <InputKontak
+            label="No WhatsApp Admin"
+            value={whatsapp}
+            setValue={setWhatsapp}
+            isEdit={isEdit}
+            placeholder="Contoh: 0812xxxxxxxx"
+          />
 
-          <div className="flex flex-col gap-1">
-            <label className="text-xs font-semibold text-[#7D344B] sm:text-sm">
-              Alamat
-            </label>
-            <textarea
-              value={isEdit ? alamat : dataKontak?.alamat || ""}
-              onChange={(e) => setAlamat(e.target.value)}
-              readOnly={!isEdit}
-              rows={4}
-              placeholder={isEdit ? "Masukkan alamat" : ""}
-              className={`w-full rounded-md border border-[#dd98ad] px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text sm:text-sm ${
-                isEdit
-                  ? "bg-white focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0]"
-                  : "text-gray-400 bg-white/70"
-              }`}
-            />
-          </div>
+          <TextareaKontak
+            label="Alamat"
+            value={alamat}
+            setValue={setAlamat}
+            isEdit={isEdit}
+            placeholder="Masukkan alamat"
+          />
 
-          <div className="flex flex-col gap-1">
-            <label className="text-xs font-semibold text-[#7D344B] sm:text-sm">
-              Link Google Maps
-            </label>
-            <input
-              type="text"
-              value={isEdit ? googleMaps : dataKontak?.googleMaps || ""}
-              onChange={(e) => setGoogleMaps(e.target.value)}
-              readOnly={!isEdit}
-              placeholder={isEdit ? "Masukkan link google maps" : ""}
-              className={`w-full rounded-md border border-[#dd98ad] px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text sm:text-sm ${
-                isEdit
-                  ? "bg-white focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0]"
-                  : "text-gray-400 bg-white/70"
-              }`}
-            />
-          </div>
+          <InputKontak
+            label="Link Google Maps"
+            value={googleMaps}
+            setValue={setGoogleMaps}
+            isEdit={isEdit}
+            placeholder="Masukkan link google maps"
+          />
         </div>
       </form>
     </section>
+  );
+}
+
+function InputKontak({
+  label,
+  value,
+  setValue,
+  isEdit,
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  setValue: (value: string) => void;
+  isEdit: boolean;
+  placeholder: string;
+}) {
+  return (
+    <div className="flex flex-col gap-1">
+      <label className="text-xs font-semibold text-[#7D344B] sm:text-sm">
+        {label}
+      </label>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        readOnly={!isEdit}
+        placeholder={isEdit ? placeholder : ""}
+        className={`w-full rounded-md border border-[#dd98ad] px-3 py-2 text-xs text-[#7D344B] shadow-soft-text outline-none transition sm:text-sm ${
+          isEdit
+            ? "bg-white focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0]"
+            : "bg-white/70 text-gray-400"
+        }`}
+      />
+    </div>
+  );
+}
+
+function TextareaKontak({
+  label,
+  value,
+  setValue,
+  isEdit,
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  setValue: (value: string) => void;
+  isEdit: boolean;
+  placeholder: string;
+}) {
+  return (
+    <div className="flex flex-col gap-1">
+      <label className="text-xs font-semibold text-[#7D344B] sm:text-sm">
+        {label}
+      </label>
+      <textarea
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        readOnly={!isEdit}
+        rows={4}
+        placeholder={isEdit ? placeholder : ""}
+        className={`w-full rounded-md border border-[#dd98ad] px-3 py-2 text-xs text-[#7D344B] shadow-soft-text outline-none transition sm:text-sm ${
+          isEdit
+            ? "bg-white focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0]"
+            : "bg-white/70 text-gray-400"
+        }`}
+      />
+    </div>
   );
 }

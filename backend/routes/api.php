@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\PengaturanBookingController;
 use App\Http\Controllers\Api\JadwalKhususController;
 use App\Http\Controllers\Api\KapasitasKhususController;
 use App\Http\Controllers\Api\UlasanController;
+use App\Http\Controllers\Api\BerandaController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -66,6 +67,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/ulasan', [UlasanController::class, 'adminIndex']);
         Route::put('/ulasan/{id}/status-tampil', [UlasanController::class, 'ubahStatusTampil']);
+
+        Route::get('/beranda', [BerandaController::class, 'show']);
+        Route::put('/beranda', [BerandaController::class, 'update']);
+        Route::post('/beranda/galeri', [BerandaController::class, 'uploadGaleri']);
+        Route::delete('/beranda/galeri/{id_galeri}', [BerandaController::class, 'deleteGaleri']);
     });
 
     Route::middleware('role:pelanggan')->prefix('pelanggan')->group(function () {
@@ -101,3 +107,5 @@ Route::get('/layanan/kategori/{kategori}', [LayananController::class, 'showByKat
 Route::get('/layanan/{id}', [LayananController::class, 'show']);
 
 Route::get('/ulasan-landing', [UlasanController::class, 'landing']);
+
+Route::get('/beranda', [BerandaController::class, 'show']);

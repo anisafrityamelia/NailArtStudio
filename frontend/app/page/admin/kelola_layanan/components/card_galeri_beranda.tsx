@@ -1,169 +1,226 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Pencil } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
+import {
+  getStorageUrl,
+  hapusGaleriBeranda,
+  uploadGaleriBeranda,
+} from "@/app/lib/beranda";
 
 type Item_Galeri = {
-  id: number;
+  id_galeri?: number;
   gambar: string;
+  file?: File | null;
+  urutan_tampil: number;
 };
 
-const data: Item_Galeri[] = [
-    { 
-        id: 1, 
-        gambar: "/galeri 1.jpeg",
-    },
-    { 
-        id: 2, 
-        gambar: "/galeri 2.jpeg",
-    },
-    { 
-        id: 3, 
-        gambar: "/galeri 7.jpeg",
-    },
-    { 
-        id: 4, 
-        gambar: "/galeri 6.jpeg",
-    },
-    { 
-        id: 5, 
-        gambar: "/galeri 5.jpeg",
-    },
-    { 
-        id: 6, 
-        gambar: "/galeri 4.jpeg",
-    },
-    { 
-        id: 7, 
-        gambar: "/galeri 8.jpeg", 
-    },
-    { 
-        id: 8, 
-        gambar: "", 
-    },
-];
+type Props = {
+  dataBeranda: any;
+  onRefresh: () => Promise<void>;
+};
 
-export default function Card_Galeri_Beranda() {
+export default function Card_Galeri_Beranda({ dataBeranda, onRefresh }: Props) {
+  const [isEdit, setIsEdit] = useState(false);
+  const [draftGaleri, setDraftGaleri] = useState<Item_Galeri[]>([]);
+  const [loading, setLoading] = useState(false);
 
-    const [isEdit, setIsEdit] = useState(false);
-    const [draftGaleri, setDraftGaleri] = useState<Item_Galeri[]>([]);
+  function mappingGaleri(): Item_Galeri[] {
+    const galeriDatabase = dataBeranda?.galeri || [];
 
-    useEffect(() => {
-        if (isEdit) {
-            setDraftGaleri(data);
-        }
-    }, [isEdit]);
+    return Array.from({ length: 8 }, (_, index) => {
+      const urutan = index + 1;
+      const item = galeriDatabase.find(
+        (galeri: any) => Number(galeri.urutan_tampil) === urutan
+      );
 
-    function handleBukaEdit() {
-        setIsEdit(true);
-    }
+      return {
+        id_galeri: item?.id_galeri,
+        gambar: item?.path_gambar ? getStorageUrl(item.path_gambar) : "",
+        file: null,
+        urutan_tampil: urutan,
+      };
+    });
+  }
 
-    function handleBatalEdit() {
-        setDraftGaleri(data);
-        setIsEdit(false);
-    }
+  useEffect(() => {
+    setDraftGaleri(mappingGaleri());
+  }, [dataBeranda]);
 
-    function handleSimpanEdit() {
-        const payload = draftGaleri;
+  function handleBukaEdit() {
+    setDraftGaleri(mappingGaleri());
+    setIsEdit(true);
+  }
 
-        console.log("Payload galeri:", payload);
+  function handleBatalEdit() {
+    setDraftGaleri(mappingGaleri());
+    setIsEdit(false);
+  }
 
-        setIsEdit(false);
-    }
+  function handleChangeFile(
+    e: React.ChangeEvent<HTMLInputElement>,
+    urutan_tampil: number
+  ) {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-    function handleChangeFile(
-        e: React.ChangeEvent<HTMLInputElement>,
-        id: number
-    ) {
-        const file = e.target.files?.[0];
-        if (!file) return;
+    const imageUrl = URL.createObjectURL(file);
 
-        const imageUrl = URL.createObjectURL(file);
-
-        setDraftGaleri((prev) =>
-            prev.map((item) =>
-                item.id === id
-                ?   {
-                        ...item,
-                        gambar: imageUrl,
-                    }
-                : item
-            )
-        );
-    }
-
-    return (
-        <section className="rounded-xl border border-[#d3a0b0] bg-white/40 p-5 shadow-sm">
-            <div className="mb-4 flex items-center justify-between">
-                <div>
-                    <h3 className="text-base font-semibold text-[#7D344B] sm:text-lg">
-                        Galeri Studio
-                    </h3>
-                </div>
-
-                {!isEdit ? (
-                <button
-                    type="button"
-                    onClick={handleBukaEdit}
-                    className="flex cursor-pointer items-center gap-2 rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-2.5 py-1.5 sm:px-3 sm:py-1.5 sm:text-sm text-xs text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95"
-                >
-                    <Pencil size={16} /> Edit
-                </button>
-                ) : (
-                    <div className="flex items-center gap-2">
-                        <button
-                            type="button"
-                            onClick={handleBatalEdit}
-                            className="cursor-pointer rounded-md bg-gradient-to-r from-[#d9d9d9] to-[#dd98ad] px-2.5 py-1.5 sm:px-3 sm:py-1.5 sm:text-sm text-xs text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95"
-                        >
-                            Batal
-                        </button>
-
-                        <button
-                            type="button"
-                            onClick={handleSimpanEdit}
-                            className="cursor-pointer rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-2.5 py-1.5 sm:px-3 sm:py-1.5 sm:text-sm text-xs text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95"
-                        >
-                            Simpan
-                        </button>
-                    </div>
-                )}
-            </div>
-
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-                {(isEdit ? draftGaleri : data).map((item) => (
-                    <div
-                        key={item.id}
-                        className="rounded-lg border border-[#dd98ad] bg-white p-2 shadow-soft-text"
-                    >
-                        {item.gambar ? (
-                            <img
-                                src={item.gambar}
-                                alt={`Galeri ${item.id}`}
-                                className="h-48 w-full rounded-md object-cover"
-                            />
-                        ) : (
-                            <div className="flex h-48 w-full items-center justify-center rounded-md bg-[#fff7fa] text-xs sm:text-sm text-gray-400">
-                                Belum ada gambar
-                            </div>
-                        )}
-
-                        {isEdit && (
-                            <div className="mt-2">
-                                <label className="block w-full cursor-pointer rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-3 py-1 sm:py-2 text-center text-xs sm:text-sm text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95">
-                                    Ganti
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={(e) => handleChangeFile(e, item.id)}
-                                        className="hidden"
-                                    />
-                                </label>
-                            </div>
-                        )}
-                    </div>
-                ))}
-            </div>
-        </section>
+    setDraftGaleri((prev) =>
+      prev.map((item) =>
+        item.urutan_tampil === urutan_tampil
+          ? {
+              ...item,
+              gambar: imageUrl,
+              file,
+            }
+          : item
+      )
     );
+  }
+
+  async function handleSimpanEdit() {
+    try {
+      setLoading(true);
+
+      const gambarYangDiubah = draftGaleri.filter((item) => item.file);
+
+      for (const item of gambarYangDiubah) {
+        if (!item.file) continue;
+        await uploadGaleriBeranda(item.file, item.urutan_tampil);
+      }
+
+      await onRefresh();
+      setIsEdit(false);
+      alert("Galeri berhasil diperbarui");
+    } catch (error: any) {
+      alert(error.message || "Gagal memperbarui galeri");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleHapusGambar(item: Item_Galeri) {
+    if (!item.id_galeri) {
+      setDraftGaleri((prev) =>
+        prev.map((galeri) =>
+          galeri.urutan_tampil === item.urutan_tampil
+            ? {
+                ...galeri,
+                gambar: "",
+                file: null,
+              }
+            : galeri
+        )
+      );
+      return;
+    }
+
+    const konfirmasi = confirm("Yakin ingin menghapus gambar ini?");
+    if (!konfirmasi) return;
+
+    try {
+      setLoading(true);
+
+      await hapusGaleriBeranda(item.id_galeri);
+      await onRefresh();
+
+      setDraftGaleri(mappingGaleri());
+      alert("Gambar berhasil dihapus");
+    } catch (error: any) {
+      alert(error.message || "Gagal menghapus gambar");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const dataTampil = isEdit ? draftGaleri : mappingGaleri();
+
+  return (
+    <section className="rounded-xl border border-[#d3a0b0] bg-white/40 p-5 shadow-sm">
+      <div className="mb-4 flex items-center justify-between">
+        <div>
+          <h3 className="text-base font-semibold text-[#7D344B] sm:text-lg">
+            Galeri Studio
+          </h3>
+        </div>
+
+        {!isEdit ? (
+          <button
+            type="button"
+            onClick={handleBukaEdit}
+            className="flex cursor-pointer items-center gap-2 rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-2.5 py-1.5 text-xs text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 sm:px-3 sm:py-1.5 sm:text-sm"
+          >
+            <Pencil size={16} /> Edit
+          </button>
+        ) : (
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleBatalEdit}
+              disabled={loading}
+              className="cursor-pointer rounded-md bg-gradient-to-r from-[#d9d9d9] to-[#dd98ad] px-2.5 py-1.5 text-xs text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 sm:px-3 sm:py-1.5 sm:text-sm"
+            >
+              Batal
+            </button>
+
+            <button
+              type="button"
+              onClick={handleSimpanEdit}
+              disabled={loading}
+              className="cursor-pointer rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-2.5 py-1.5 text-xs text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 sm:px-3 sm:py-1.5 sm:text-sm"
+            >
+              {loading ? "Menyimpan..." : "Simpan"}
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        {dataTampil.map((item) => (
+          <div
+            key={item.urutan_tampil}
+            className="rounded-lg border border-[#dd98ad] bg-white p-2 shadow-soft-text"
+          >
+            {item.gambar ? (
+              <img
+                src={item.gambar}
+                alt={`Galeri ${item.urutan_tampil}`}
+                className="h-48 w-full rounded-md object-cover"
+              />
+            ) : (
+              <div className="flex h-48 w-full items-center justify-center rounded-md bg-[#fff7fa] text-xs text-gray-400 sm:text-sm">
+                Belum ada gambar
+              </div>
+            )}
+
+            {isEdit && (
+              <div className="mt-2 flex gap-2">
+                <label className="block w-full cursor-pointer rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-3 py-1 text-center text-xs text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 sm:py-2 sm:text-sm">
+                  Ganti
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleChangeFile(e, item.urutan_tampil)}
+                    className="hidden"
+                  />
+                </label>
+
+                {item.gambar && (
+                  <button
+                    type="button"
+                    onClick={() => handleHapusGambar(item)}
+                    disabled={loading}
+                    className="flex cursor-pointer items-center justify-center rounded-md bg-red-500 px-2 text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
 }

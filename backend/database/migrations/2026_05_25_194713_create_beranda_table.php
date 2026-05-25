@@ -1,0 +1,28 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('beranda', function (Blueprint $table) {
+            $table->id('id_beranda');
+            $table->text('deskripsi')->nullable();
+            $table->text('alamat_studio')->nullable();
+            $table->text('link_lokasi')->nullable();
+            $table->string('jam_buka')->nullable();
+            $table->string('akun_ig')->nullable();
+            $table->string('akun_tiktok')->nullable();
+            $table->string('no_wa')->nullable();
+            $table->timestamps();
+        });
+    }
+    
+    public function down(): void
+    {
+        Schema::dropIfExists('beranda');
+    }
+};

@@ -102,7 +102,7 @@ export default function Ulasan() {
                 ulasan.foto_profil_url || `/avatar ${(index % 3) + 1}.jpg`;
 
               const fotoUlasan =
-                ulasan.gambar_ulasan_url || `/ulasan ${(index % 3) + 1}.jpg`;
+                ulasan.gambar_ulasan_url || "/ulasan-default.png";
 
               const rating = Number(ulasan.rating || 0);
 

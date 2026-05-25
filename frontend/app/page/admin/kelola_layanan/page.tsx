@@ -14,6 +14,7 @@ import Card_Galeri_Beranda from "./components/card_galeri_beranda";
 import Card_Kontak_Beranda from "./components/card_kontak_beranda";
 import API_BASE_URL from "@/app/lib/api";
 import { getToken } from "@/app/lib/auth";
+import { getBerandaAdmin } from "@/app/lib/beranda";
 
 export default function KelolaLayananPage() {
     const [data, setData] = useState<Baris_Kelola_Layanan[]>([]);
@@ -21,6 +22,8 @@ export default function KelolaLayananPage() {
     const [error, setError] = useState("");
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);
     const [dataEdit, setDataEdit] = useState<Baris_Kelola_Layanan | null>(null);
+    const [dataBeranda, setDataBeranda] = useState<any>(null);
+    const [loadingBeranda, setLoadingBeranda] = useState(true);
     async function fetchLayanan() {
         try {
             setLoading(true);
@@ -65,8 +68,23 @@ export default function KelolaLayananPage() {
         }
     }
 
+    async function fetchBeranda() {
+        try {
+            setLoadingBeranda(true);
+
+            const result = await getBerandaAdmin();
+
+            setDataBeranda(result);
+        } catch (error) {
+            console.error("Gagal mengambil data beranda:", error);
+        } finally {
+            setLoadingBeranda(false);
+        }
+    }
+
     useEffect(() => {
         fetchLayanan();
+        fetchBeranda();
     }, []);
 
     function handleBukaModalEdit(item: Baris_Kelola_Layanan) {
@@ -295,9 +313,26 @@ export default function KelolaLayananPage() {
             <section className="mt-10 space-y-5">
                 <Judul_Halaman title="Kelola Beranda" />
 
-                <Card_Keunggulan_Beranda />
-                <Card_Galeri_Beranda />
-                <Card_Kontak_Beranda />
+                {loadingBeranda ? (
+                    <p className="text-sm text-[#7D344B]">Memuat data beranda...</p>
+                ) : (
+                    <>
+                        <Card_Keunggulan_Beranda
+                        dataBeranda={dataBeranda}
+                        onRefresh={fetchBeranda}
+                        />
+
+                        <Card_Galeri_Beranda
+                        dataBeranda={dataBeranda}
+                        onRefresh={fetchBeranda}
+                        />
+
+                        <Card_Kontak_Beranda
+                        dataBeranda={dataBeranda}
+                        onRefresh={fetchBeranda}
+                        />
+                    </>
+                )}
             </section>
 
             <ModalEditLayanan
