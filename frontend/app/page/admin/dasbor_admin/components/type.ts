@@ -8,6 +8,6 @@ export type Pesanan = {
 
 export type StatistikDasbor = {
     jumlah_pelanggan: number;
-    pesanan_masuk: number;
+    pesanan_aktif: number;
     pesanan_selesai: number;
 };

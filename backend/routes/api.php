@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\JadwalKhususController;
 use App\Http\Controllers\Api\KapasitasKhususController;
 use App\Http\Controllers\Api\UlasanController;
 use App\Http\Controllers\Api\BerandaController;
+use App\Http\Controllers\Api\DasborAdminController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -72,6 +73,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/beranda', [BerandaController::class, 'update']);
         Route::post('/beranda/galeri', [BerandaController::class, 'uploadGaleri']);
         Route::delete('/beranda/galeri/{id_galeri}', [BerandaController::class, 'deleteGaleri']);
+
+        Route::get('/dasbor/statistik', [DasborAdminController::class, 'statistik']);
+        Route::get('/dasbor/jadwal-bulanan', [DasborAdminController::class, 'jadwalBulanan']);
     });
 
     Route::middleware('role:pelanggan')->prefix('pelanggan')->group(function () {

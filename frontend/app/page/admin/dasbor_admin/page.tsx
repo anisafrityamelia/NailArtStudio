@@ -6,34 +6,38 @@ import Judul_Halaman from "@/app/components/ui/judul_halaman";
 import Card_Statistik from "./components/card_statistik";
 import Jadwal_Bulanan from "./components/jadwal_bulanan";
 import Kalender_Pesanan from "./components/kalender_pesanan";
-import { data_pesanan_dummy, data_statistik_dummy } from "./components/data_dummy";
+import {
+    getStatistikDasborAdmin,
+    StatistikDasborAdmin,
+    getJadwalBulananAdmin,
+    JadwalBulananAdmin,
+} from "@/app/lib/pesanan";
 import { getCurrentUser } from "@/app/lib/auth";
 
 export default function DasborAdminPage() {
     const router = useRouter();
     const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+    const [statistikDasbor, setStatistikDasbor] = useState<StatistikDasborAdmin>({
+        jumlah_pelanggan: 0,
+        pesanan_aktif: 0,
+        pesanan_selesai: 0,
+    });
+
+    const [loadingStatistik, setLoadingStatistik] = useState(true);
 
     const hari_ini = new Date();
 
-    {/* ambil semua tahun yang ada di database */}
-    const semua_tahun = data_pesanan_dummy
-        .map((item) => {
-            if (!item.tanggal) return null;
-            const parsed = new Date(item.tanggal);
-            if (Number.isNaN(parsed.getTime())) return null;
-            return parsed.getFullYear();
-        })
-        .filter((tahun): tahun is number => tahun !== null);
-    
-    {/* hapus tahun duplikat, urutkan dari terkecil */}
-    const daftar_tahun = Array.from(new Set(semua_tahun)).sort((a, b) => a - b);
+    const daftar_tahun_final = [
+        hari_ini.getFullYear() - 1,
+        hari_ini.getFullYear(),
+        hari_ini.getFullYear() + 1,
+    ];
 
-    {/* daftar tahun kosong, pakai tahun hari ini */}
-    const daftar_tahun_final =
-        daftar_tahun.length > 0 ? daftar_tahun : [hari_ini.getFullYear()];
+    const [bulan_aktif, set_bulan_aktif] = useState(hari_ini.getMonth());
+    const [tahun_aktif, set_tahun_aktif] = useState(hari_ini.getFullYear());
 
-    const [bulan_aktif, set_bulan_aktif] = useState(10);
-    const [tahun_aktif, set_tahun_aktif] = useState(2025);
+    const [daftarPesananBulanan, setDaftarPesananBulanan] = useState<JadwalBulananAdmin[]>([]);
+    const [loadingJadwalBulanan, setLoadingJadwalBulanan] = useState(true);
 
     useEffect(() => {
         const cekAuthAdmin = async () => {
@@ -55,18 +59,49 @@ export default function DasborAdminPage() {
         cekAuthAdmin();
     }, [router]);
 
-    {/* ambil pesanan sesuai bulan dan tahun terpilih */}
-    const daftar_pesanan_terfilter = data_pesanan_dummy.filter((item) => {
-        if (!item.tanggal) return false;
+    useEffect(() => {
+        const ambilStatistikDasbor = async () => {
+            try {
+                setLoadingStatistik(true);
 
-        const parsed = new Date(item.tanggal);
-        if (Number.isNaN(parsed.getTime())) return false;
+                const data = await getStatistikDasborAdmin();
 
-        return (
-            parsed.getMonth() === bulan_aktif &&
-            parsed.getFullYear() === tahun_aktif
-        );
-    });
+                setStatistikDasbor(data);
+            } catch (error) {
+                console.error("Gagal mengambil statistik dasbor:", error);
+            } finally {
+                setLoadingStatistik(false);
+            }
+        };
+
+        if (!isCheckingAuth) {
+            ambilStatistikDasbor();
+        }
+    }, [isCheckingAuth]);
+
+    useEffect(() => {
+        const ambilJadwalBulanan = async () => {
+            try {
+                setLoadingJadwalBulanan(true);
+
+                const data = await getJadwalBulananAdmin(
+                    bulan_aktif + 1,
+                    tahun_aktif
+                );
+
+                setDaftarPesananBulanan(data);
+            } catch (error) {
+                console.error("Gagal mengambil jadwal bulanan:", error);
+                setDaftarPesananBulanan([]);
+            } finally {
+                setLoadingJadwalBulanan(false);
+            }
+        };
+
+        if (!isCheckingAuth) {
+            ambilJadwalBulanan();
+        }
+    }, [isCheckingAuth, bulan_aktif, tahun_aktif]);
 
     function handle_bulan_sebelumnya() {
         if (bulan_aktif === 0) {
@@ -110,21 +145,33 @@ export default function DasborAdminPage() {
         <section className="space-y-5">
             <Judul_Halaman title="Dasbor Admin" />
 
-            <Card_Statistik data={data_statistik_dummy} />
+            {loadingStatistik ? (
+                <p className="text-sm font-semibold text-[#7D344B]">
+                    Memuat statistik...
+                </p>
+            ) : (
+                <Card_Statistik data={statistikDasbor} />
+            )}
 
-            <Jadwal_Bulanan
-                daftar_pesanan={daftar_pesanan_terfilter}
-                bulan_aktif={bulan_aktif}
-                tahun_aktif={tahun_aktif}
-                daftar_tahun={daftar_tahun_final}
-                on_ganti_bulan={set_bulan_aktif}
-                on_ganti_tahun={set_tahun_aktif}
-            />
+            {loadingJadwalBulanan ? (
+                <section className="rounded-[12px] border border-[#dd98ad] bg-[#fdf0f4] p-4 text-[13px] text-[#b06d82] shadow-[0_3px_8px_rgba(160,84,108,0.18)] sm:p-5">
+                    Memuat jadwal bulanan...
+                </section>
+            ) : (
+                <Jadwal_Bulanan
+                    daftar_pesanan={daftarPesananBulanan}
+                    bulan_aktif={bulan_aktif}
+                    tahun_aktif={tahun_aktif}
+                    daftar_tahun={daftar_tahun_final}
+                    on_ganti_bulan={set_bulan_aktif}
+                    on_ganti_tahun={set_tahun_aktif}
+                />
+            )}
 
             <Kalender_Pesanan
                 bulan_aktif={bulan_aktif}
                 tahun_aktif={tahun_aktif}
-                daftar_pesanan={daftar_pesanan_terfilter}
+                daftar_pesanan={daftarPesananBulanan}
                 on_bulan_sebelumnya={handle_bulan_sebelumnya}
                 on_bulan_berikutnya={handle_bulan_berikutnya}
             />

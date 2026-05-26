@@ -1,10 +1,4 @@
-import type { Pesanan, StatistikDasbor } from "./type";
-
-export const data_statistik_dummy: StatistikDasbor = {
-    jumlah_pelanggan: 52,
-    pesanan_masuk: 12,
-    pesanan_selesai: 73,
-};
+import type { Pesanan } from "./type";
 
 export const data_pesanan_dummy: Pesanan[] = [
     {   

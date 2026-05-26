@@ -276,3 +276,70 @@ export const getSlotBooking = async (
     message: result.message,
   };
 };
+
+export type StatistikDasborAdmin = {
+  jumlah_pelanggan: number;
+  pesanan_aktif: number;
+  pesanan_selesai: number;
+};
+
+export const getStatistikDasborAdmin = async (): Promise<StatistikDasborAdmin> => {
+  const token = getToken();
+
+  const response = await fetch(
+    `${API_BASE_URL}/admin/dasbor/statistik`,
+    {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      result.message || "Gagal mengambil statistik dasbor admin"
+    );
+  }
+
+  return result.data;
+};
+
+export type JadwalBulananAdmin = {
+  kode?: string;
+  pelanggan?: string;
+  layanan?: string;
+  tanggal?: string;
+  jam?: string;
+};
+
+export const getJadwalBulananAdmin = async (
+  bulan: number,
+  tahun: number
+): Promise<JadwalBulananAdmin[]> => {
+  const token = getToken();
+
+  const response = await fetch(
+    `${API_BASE_URL}/admin/dasbor/jadwal-bulanan?bulan=${bulan}&tahun=${tahun}`,
+    {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      result.message || "Gagal mengambil jadwal bulanan admin"
+    );
+  }
+
+  return result.data;
+};
