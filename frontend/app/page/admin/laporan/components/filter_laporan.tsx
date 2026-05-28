@@ -1,12 +1,13 @@
 "use client";
 
 import { ExternalLink } from "lucide-react";
-import { pilihanLayanan, type LayananType } from "./data_dummy";
+import { pilihanLayanan, type LayananType } from "@/app/lib/laporan";
 
 interface FilterLaporanProps {
   tanggalMulai: string;
   tanggalSampai: string;
   layanan: LayananType;
+  loading: boolean;
   setTanggalMulai: (value: string) => void;
   setTanggalSampai: (value: string) => void;
   setLayanan: (value: LayananType) => void;
@@ -18,6 +19,7 @@ export default function FilterLaporan({
   tanggalMulai,
   tanggalSampai,
   layanan,
+  loading,
   setTanggalMulai,
   setTanggalSampai,
   setLayanan,
@@ -71,9 +73,10 @@ export default function FilterLaporan({
           <button
             type="button"
             onClick={onTerapkan}
-            className="h-8 rounded bg-gradient-to-r from-[#E45082] to-[#7D344B] px-5 text-sm font-medium text-white hover:opacity-95 cursor-pointer transition-all duration-200 ease-out hover:-translate-y-[2px] shadow-soft-text"
+            disabled={loading}
+            className="h-8 rounded bg-gradient-to-r from-[#E45082] to-[#7D344B] px-5 text-sm font-medium text-white hover:opacity-95 disabled:opacity-70 cursor-pointer transition-all duration-200 ease-out hover:-translate-y-[2px] shadow-soft-text"
           >
-            Terapkan
+            {loading ? "Memuat..." : "Terapkan"}
           </button>
         </div>
       </div>

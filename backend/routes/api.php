@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\KapasitasKhususController;
 use App\Http\Controllers\Api\UlasanController;
 use App\Http\Controllers\Api\BerandaController;
 use App\Http\Controllers\Api\DasborAdminController;
+use App\Http\Controllers\Api\LaporanController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -76,6 +77,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/dasbor/statistik', [DasborAdminController::class, 'statistik']);
         Route::get('/dasbor/jadwal-bulanan', [DasborAdminController::class, 'jadwalBulanan']);
+
+        Route::get('/laporan', [LaporanController::class, 'index']);
     });
 
     Route::middleware('role:pelanggan')->prefix('pelanggan')->group(function () {
