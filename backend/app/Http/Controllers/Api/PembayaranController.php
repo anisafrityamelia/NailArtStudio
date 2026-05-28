@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Pembayaran;
 use App\Models\Pesanan;
 use Illuminate\Http\Request;
+use App\Services\FonnteService;
 
 class PembayaranController extends Controller
 {
@@ -45,6 +46,22 @@ class PembayaranController extends Controller
         $pesanan->update([
             'status' => 'menunggu_konfirmasi',
         ]);
+
+        $pesanan->load(['pengguna', 'layanan']);
+
+        $pesanAdmin =
+            "📢 Pesanan Baru Masuk\n\n" .
+            "Kode Pesanan: {$pesanan->kode_pesanan}\n" .
+            "Pelanggan: " . ($pesanan->pengguna->nama_pengguna ?? '-') . "\n" .
+            "No HP: " . ($pesanan->pengguna->no_hp ?? '-') . "\n" .
+            "Layanan: " . ($pesanan->layanan->nama_layanan ?? '-') . "\n" .
+            "Status: Menunggu Konfirmasi\n\n" .
+            "Silakan cek dashboard admin.";
+
+        FonnteService::sendMessage(
+            env('FONNTE_ADMIN_NUMBER'),
+            $pesanAdmin
+        );
 
         return response()->json([
             'message' => 'Pembayaran berhasil dikirim',

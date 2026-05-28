@@ -6,6 +6,11 @@ import Link from "next/link";
 import { LogIn, Menu, X, ChevronRight, MoreVertical, KeyRound, LogOut, Bell } from "lucide-react";
 import ModalGantiPassword from "@/app/components/ui/modal-ganti-password";
 import { getUser, logout } from "@/app/lib/auth";
+import {
+  getNotifikasiAdminNavbar,
+  getNotifikasiPelangganNavbar,
+  type NotifikasiNavbar,
+} from "@/app/lib/pesanan";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,7 +20,10 @@ export default function Navbar() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [userName, setUserName] = useState("");
   const [fotoProfil, setFotoProfil] = useState("");
-
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [notifikasi, setNotifikasi] = useState<NotifikasiNavbar[]>([]);
+  const [notifSudahDilihat, setNotifSudahDilihat] = useState(false);
+  const notifRef = useRef<HTMLDivElement>(null);
   const menuAkunRef = useRef<HTMLDivElement>(null);
 
   const menuItems = [
@@ -43,12 +51,62 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
+    const fetchNotifikasi = async () => {
+      try {
+
+        const user = getUser();
+
+        if (!user) return;
+
+        const roleUser =
+          user.role ||
+          user.peran ||
+          user.tipe_pengguna ||
+          user.level ||
+          "";
+
+        if (roleUser.toLowerCase() === "admin") {
+
+          const data = await getNotifikasiAdminNavbar();
+
+          setNotifikasi(data);
+          setNotifSudahDilihat(false);
+
+        } else {
+
+          const data = await getNotifikasiPelangganNavbar();
+
+          setNotifikasi(data);
+        }
+
+      } catch (error) {
+
+        setNotifikasi([]);
+      }
+    };
+
+    fetchNotifikasi();
+
+    const interval = setInterval(fetchNotifikasi, 30000);
+
+    return () => clearInterval(interval);
+
+  }, []);
+
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         menuAkunRef.current &&
         !menuAkunRef.current.contains(event.target as Node)
       ) {
         setIsMenuAkunOpen(false);
+      }
+
+      if (
+        notifRef.current &&
+        !notifRef.current.contains(event.target as Node)
+      ) {
+        setIsNotifOpen(false);
       }
     };
 
@@ -112,13 +170,71 @@ export default function Navbar() {
           <div className="flex items-center gap-2">
             {isUserLogin ? (
               <div className="hidden items-center md:flex">
-                <button
-                  type="button"
-                  className="cursor-pointer rounded-md p-1.5 transition hover:bg-white/10"
-                  aria-label="Notifikasi"
-                >
-                  <Bell size={22} />
-                </button>
+                <div className="relative" ref={notifRef}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsNotifOpen((current) => !current);
+
+                      setNotifSudahDilihat(true);
+                    }}
+                    className="relative cursor-pointer rounded-md p-1.5 transition hover:bg-white/10"
+                    aria-label="Notifikasi"
+                  >
+                    <Bell size={22} />
+
+                    {notifikasi.length > 0 && !notifSudahDilihat && (
+                      <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#dd98ad] px-1 text-[10px] font-bold text-white">
+                        {notifikasi.length}
+                      </span>
+                    )}
+                  </button>
+
+                  {isNotifOpen && (
+                    <div className="absolute right-0 top-12 z-50 w-72 overflow-hidden rounded-2xl border border-[#dd98ad] bg-[#ffecf2] text-[#7d344b] shadow-soft-text">
+
+                      <div className="border-b border-[#efcfd8] px-4 py-3">
+                        <p className="text-sm font-semibold">
+                          Notifikasi
+                        </p>
+                      </div>
+
+                      <div className="max-h-80 overflow-y-auto px-3 py-2">
+
+                        {notifikasi.length === 0 ? (
+
+                          <p className="px-2 py-3 text-sm text-[#7d344b]/70">
+                            Belum ada notifikasi.
+                          </p>
+
+                        ) : (
+
+                          notifikasi.map((item) => (
+                            <Link
+                              key={item.id}
+                              href={item.href}
+                              onClick={() => setIsNotifOpen(false)}
+                              className="block rounded-xl px-3 py-2 transition hover:bg-[#f2dce3]"
+                            >
+                              <p className="text-sm font-semibold">
+                                {item.judul}
+                              </p>
+
+                              <p className="mt-0.5 text-xs">
+                                {item.deskripsi}
+                              </p>
+
+                              <p className="mt-1 text-[11px] font-medium text-[#a14d68]">
+                                {item.status}
+                              </p>
+                            </Link>
+                          ))
+
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
 
                 {!isAdmin && (
                   <Link

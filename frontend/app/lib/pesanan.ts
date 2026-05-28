@@ -343,3 +343,55 @@ export const getJadwalBulananAdmin = async (
 
   return result.data;
 };
+
+export type NotifikasiNavbar = {
+  id: number;
+  judul: string;
+  deskripsi: string;
+  status: string;
+  href: string;
+};
+
+const labelStatusPesanan = (status: string) => {
+  const map: Record<string, string> = {
+    menunggu_konfirmasi: "Menunggu Konfirmasi",
+    terjadwal: "Terjadwal",
+    diproses: "Diproses",
+    siap_diambil: "Siap Diambil",
+    selesai: "Selesai",
+    dibatalkan: "Dibatalkan",
+  };
+
+  return map[status] || status;
+};
+
+export const getNotifikasiAdminNavbar = async (): Promise<NotifikasiNavbar[]> => {
+  const pesanan = await getPesananAktifAdmin();
+
+  return pesanan
+    .filter((item: any) => item.status === "menunggu_konfirmasi")
+    .map((item: any) => ({
+      id: item.id_pesanan,
+      judul: "Pesanan baru masuk",
+      deskripsi: `${item.kode_pesanan} - ${item.pengguna?.nama_pengguna || "Pelanggan"}`,
+      status: labelStatusPesanan(item.status),
+      href: "/page/admin/pesanan/pesanan_aktif",
+    }));
+};
+
+export const getNotifikasiPelangganNavbar = async (): Promise<NotifikasiNavbar[]> => {
+  const pesanan = await getPesananSaya();
+
+  return pesanan
+    .filter((item: any) =>
+      ["menunggu_konfirmasi", "terjadwal", "diproses", "siap_diambil", "selesai", "dibatalkan"].includes(item.status)
+    )
+    .slice(0, 5)
+    .map((item: any) => ({
+      id: item.id_pesanan,
+      judul: "Update status pesanan",
+      deskripsi: `${item.kode_pesanan} - ${labelStatusPesanan(item.status)}`,
+      status: labelStatusPesanan(item.status),
+      href: "/page/pelanggan/pesanan",
+    }));
+};

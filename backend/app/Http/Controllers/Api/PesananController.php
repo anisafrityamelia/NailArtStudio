@@ -11,6 +11,7 @@ use App\Models\DetailRemove;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Services\FonnteService;
 
 class PesananController extends Controller
 {
@@ -421,11 +422,9 @@ class PesananController extends Controller
             'Selesai' => 'selesai',
         ];
 
-        $statusDatabase =
-            $statusMap[$request->status]
-            ?? $request->status;
+        $statusDatabase = $statusMap[$request->status] ?? $request->status;
 
-         $dataUpdate = [
+        $dataUpdate = [
             'status' => $statusDatabase,
             'catatan_admin' => $request->catatan_admin,
         ];
@@ -435,7 +434,7 @@ class PesananController extends Controller
             $dataUpdate['tanggal_konfirmasi'] = now();
             $dataUpdate['dikonfirmasi_oleh'] = $request->user()->id_pengguna;
         }
-        
+
         $pesanan->update($dataUpdate);
 
         if ($request->filled('harga_final') && $pesanan->pembayaran) {
@@ -444,6 +443,10 @@ class PesananController extends Controller
                 'tanggal_verifikasi' => Carbon::now(),
             ]);
         }
+
+        $pesanan->load(['pengguna', 'layanan']);
+
+        $this->kirimNotifikasiStatusPesanan($pesanan);
 
         return response()->json([
             'message' => 'Status pesanan aktif berhasil diperbarui',
@@ -502,5 +505,82 @@ class PesananController extends Controller
             'message' => 'Detail pesanan berhasil diambil',
             'data' => $pesanan,
         ]);
+    }
+
+    private function kirimNotifikasiStatusPesanan(Pesanan $pesanan): void
+    {
+        $fonnte = app(FonnteService::class);
+
+        $namaPelanggan = $pesanan->pengguna->nama_pengguna ?? 'Pelanggan';
+        $nomorPelanggan = $pesanan->pengguna->no_hp ?? null;
+        $namaLayanan = $pesanan->layanan->nama_layanan ?? 'Layanan';
+        $kodePesanan = $pesanan->kode_pesanan;
+
+        $tanggal = $pesanan->tanggal_pesanan
+            ? Carbon::parse($pesanan->tanggal_pesanan)->format('d-m-Y')
+            : '-';
+
+        $jam = $pesanan->jam_pesanan
+            ? Carbon::parse($pesanan->jam_pesanan)->format('H:i')
+            : '-';
+
+        $hargaFinal = $pesanan->harga_final
+            ? 'Rp ' . number_format($pesanan->harga_final, 0, ',', '.')
+            : '-';
+
+        if ($pesanan->status === 'terjadwal') {
+            $pesan = "Halo {$namaPelanggan}, pesanan kamu sudah dikonfirmasi.\n\n"
+                . "Kode Pesanan: {$kodePesanan}\n"
+                . "Layanan: {$namaLayanan}\n"
+                . "Tanggal: {$tanggal}\n"
+                . "Jam: {$jam}\n"
+                . "Total Harga: {$hargaFinal}\n\n"
+                . "Silakan datang sesuai jadwal ya. Terima kasih.";
+
+            $fonnte->sendMessage($nomorPelanggan, $pesan);
+        }
+
+        if ($pesanan->status === 'diproses') {
+            $pesan = "Halo {$namaPelanggan}, pesanan kamu sedang diproses.\n\n"
+                . "Kode Pesanan: {$kodePesanan}\n"
+                . "Layanan: {$namaLayanan}\n"
+                . "Total Harga: {$hargaFinal}\n\n"
+                . "Kami akan mengabari lagi jika ada update berikutnya.";
+
+            $fonnte->sendMessage($nomorPelanggan, $pesan);
+        }
+
+        if ($pesanan->status === 'siap_diambil') {
+            $pesan = "Halo {$namaPelanggan}, pesanan kamu sudah siap diambil.\n\n"
+                . "Kode Pesanan: {$kodePesanan}\n"
+                . "Layanan: {$namaLayanan}\n"
+                . "Total Harga: {$hargaFinal}\n\n"
+                . "Silakan ambil pesanan kamu di studio ya.";
+
+            $fonnte->sendMessage($nomorPelanggan, $pesan);
+        }
+
+        if ($pesanan->status === 'selesai') {
+            $pesan = "Halo {$namaPelanggan}, pesanan kamu sudah selesai.\n\n"
+                . "Kode Pesanan: {$kodePesanan}\n"
+                . "Layanan: {$namaLayanan}\n\n"
+                . "Terima kasih sudah melakukan pemesanan di Alia Oye Studio.";
+
+            $fonnte->sendMessage($nomorPelanggan, $pesan);
+        }
+
+        if ($pesanan->status === 'dibatalkan') {
+            $catatanAdmin = $pesanan->catatan_admin
+                ? "\nCatatan: {$pesanan->catatan_admin}"
+                : "";
+
+            $pesan = "Halo {$namaPelanggan}, mohon maaf pesanan kamu dibatalkan.\n\n"
+                . "Kode Pesanan: {$kodePesanan}\n"
+                . "Layanan: {$namaLayanan}"
+                . $catatanAdmin . "\n\n"
+                . "Silakan hubungi admin untuk informasi lebih lanjut.";
+
+            $fonnte->sendMessage($nomorPelanggan, $pesan);
+        }
     }
 }
