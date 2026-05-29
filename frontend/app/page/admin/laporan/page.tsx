@@ -13,6 +13,8 @@ import {
   type StatistikLaporan,
   type LayananTerlaris as LayananTerlarisType,
 } from "@/app/lib/laporan";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 export default function LaporanPage() {
   const [dataLaporan, setDataLaporan] = useState<BarisLaporan[]>([]);
@@ -48,7 +50,192 @@ export default function LaporanPage() {
     ambilLaporan();
   }, []);
   
-  const handleExport = () => {};
+  const handleExport = () => {
+    const doc = new jsPDF();
+
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    const warnaMaroon: [number, number, number] = [125, 52, 75];
+    const warnaPinkMuda: [number, number, number] = [253, 240, 244];
+
+    const tanggalCetak = new Date().toLocaleDateString("id-ID", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+
+    const periode =
+      tanggalMulai && tanggalSampai
+        ? `${tanggalMulai} - ${tanggalSampai}`
+        : "Semua periode";
+
+    // Judul utama
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.setTextColor(0, 0, 0);
+    doc.text("Laporan Pendapatan", pageWidth / 2, 15, {
+      align: "center",
+    });
+
+    // Info laporan
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.text("Tanggal Cetak", 14, 27);
+    doc.text("Periode", 14, 34);
+    doc.text("Layanan", 14, 41);
+
+    doc.setFont("helvetica", "normal");
+    doc.text(":", 40, 27);
+    doc.text(":", 40, 34);
+    doc.text(":", 40, 41);
+
+    doc.text(tanggalCetak, 45, 27);
+    doc.text(periode, 45, 34);
+    doc.text(layanan, 45, 41);
+
+    // Judul Ringkasan Statistik
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.text("Ringkasan Statistik", 14, 54);
+
+    autoTable(doc, {
+      startY: 59,
+      head: [["No", "Statistik", "Nilai", "Keterangan"]],
+      body: statistik.map((item, index) => [
+        index + 1,
+        item.judul,
+        item.nilai,
+        item.keterangan,
+      ]),
+      headStyles: {
+        fillColor: warnaMaroon,
+        textColor: [255, 255, 255],
+        fontStyle: "bold",
+        halign: "center",
+        valign: "middle",
+      },
+      columnStyles: {
+        0: {
+          halign: "center",
+          cellWidth: 12,
+        },
+      },
+      bodyStyles: {
+        textColor: [0, 0, 0],
+      },
+      alternateRowStyles: {
+        fillColor: warnaPinkMuda,
+      },
+      styles: {
+        fontSize: 9,
+        lineColor: [221, 152, 173],
+        lineWidth: 0.1,
+      },
+    });
+
+    const afterStatistik = (doc as any).lastAutoTable.finalY + 10;
+
+    // Judul Data Pesanan
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    doc.text("Data Pesanan", 14, afterStatistik);
+
+    autoTable(doc, {
+      startY: afterStatistik + 5,
+      head: [[
+        "No",
+        "Kode",
+        "Tanggal",
+        "Pelanggan",
+        "Layanan",
+        "Harga Final",
+        "DP",
+        "Pelunasan",
+        "Status",
+      ]],
+      body: dataLaporan.map((item, index) => [
+        index + 1,
+        item.kodePesanan,
+        item.tanggal,
+        item.pelanggan,
+        item.layanan,
+        item.hargaFinal,
+        item.dp,
+        item.pelunasan,
+        item.status,
+      ]),
+      headStyles: {
+        fillColor: warnaMaroon,
+        textColor: [255, 255, 255],
+        fontStyle: "bold",
+        halign: "center",
+        valign: "middle",
+      },
+      columnStyles: {
+        0: {
+          halign: "center",
+          cellWidth: 12,
+        },
+      },
+      bodyStyles: {
+        textColor: [0, 0, 0],
+      },
+      alternateRowStyles: {
+        fillColor: warnaPinkMuda,
+      },
+      styles: {
+        fontSize: 7,
+        lineColor: [221, 152, 173],
+        lineWidth: 0.1,
+      },
+    });
+
+    const afterPesanan = (doc as any).lastAutoTable.finalY + 10;
+
+    // Judul Layanan Terlaris
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    doc.text("Layanan Terlaris", 14, afterPesanan);
+
+    autoTable(doc, {
+      startY: afterPesanan + 5,
+      head: [["No", "Layanan", "Total Pesanan", "Persentase"]],
+      body: layananTerlaris.map((item, index) => [
+        index + 1,
+        item.nama,
+        item.total,
+        `${item.persen}%`,
+      ]),
+      headStyles: {
+        fillColor: warnaMaroon,
+        textColor: [255, 255, 255],
+        fontStyle: "bold",
+        halign: "center",
+        valign: "middle",
+      },
+      columnStyles: {
+        0: {
+          halign: "center",
+          cellWidth: 12,
+        },
+      },
+      bodyStyles: {
+        textColor: [0, 0, 0],
+      },
+      alternateRowStyles: {
+        fillColor: warnaPinkMuda,
+      },
+      styles: {
+        fontSize: 9,
+        lineColor: [221, 152, 173],
+        lineWidth: 0.1,
+      },
+    });
+
+    doc.save("laporan-pendapatan.pdf");
+  };
 
   return (
     <section>
