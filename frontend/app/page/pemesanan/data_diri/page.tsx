@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, ChevronDown } from "lucide-react";
+import API_BASE_URL from "@/app/lib/api";
+import { saveToken, saveUser } from "@/app/lib/auth";
 
 export default function HalamanPemesanan() {
   const [lihatSandi, setLihatSandi] = useState(false);
@@ -11,13 +13,53 @@ export default function HalamanPemesanan() {
   const [noHp, setNoHp] = useState("");
   const [kataSandi, setKataSandi] = useState("");
   const [layanan, setLayanan] = useState("nail_art");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    router.push(`/page/pemesanan/pemesanan_layanan/${layanan}`);
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          nama_pengguna: nama,
+          email: email,
+          no_hp: noHp,
+          password: kataSandi,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        if (result.errors) {
+          const firstError = Object.values(result.errors)[0] as string[];
+          setError(firstError[0]);
+        } else {
+          setError(result.message || "Registrasi gagal.");
+        }
+        return;
+      }
+
+      saveToken(result.token);
+      saveUser(result.user);
+
+      router.push(`/page/pemesanan/detail_layanan/${layanan}`);
+    } catch {
+      setError("Tidak bisa terhubung ke server. Pastikan backend Laravel sudah berjalan.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -152,12 +194,19 @@ export default function HalamanPemesanan() {
               </div>
             </div>
 
+            {error && (
+              <p className="rounded-md bg-red-100 px-3 py-2 text-xs font-medium text-red-700">
+                {error}
+              </p>
+            )}
+
             <div>
               <button
                 type="submit"
-                className="w-full cursor-pointer rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-4 py-1.5 text-xs font-medium text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 sm:text-sm mb-1"
+                disabled={loading}
+                className="w-full cursor-pointer rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-4 py-1.5 text-xs font-medium text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 sm:text-sm mb-1 disabled:cursor-not-allowed disabled:opacity-70"
               >
-                Lanjut Pemesanan
+                {loading ? "Memproses..." : "Lanjut Pemesanan"}
               </button>
             </div>
           </form>
