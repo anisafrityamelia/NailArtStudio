@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Reveal from "./reveal";
-import API_BASE_URL from "@/app/lib/api";
 import { getUlasanLanding } from "@/app/lib/ulasan";
 
 type UlasanLanding = {
@@ -96,7 +95,8 @@ export default function Ulasan() {
             className="mx-auto grid w-fit grid-cols-4 gap-4 max-md:w-full max-md:grid-cols-2 max-md:gap-3 max-md:px-4"
           >
             {ulasanTampil.map((ulasan, index) => {
-              const namaPelanggan = ulasan.nama_pelanggan || "pelanggan alia oye";
+              const namaPelanggan =
+                ulasan.nama_pelanggan || "pelanggan alia oye";
 
               const avatar =
                 ulasan.foto_profil_url || `/avatar ${(index % 3) + 1}.jpg`;
@@ -115,8 +115,8 @@ export default function Ulasan() {
                   supports-[hover:hover]:hover:shadow-[0_18px_38px_rgba(0,0,0,0.2)]"
                 >
                   {/* DESKTOP */}
-                  <div className="hidden md:block">
-                    <div className="px-5 pt-[18px] pb-[10px]">
+                  <div className="hidden md:flex md:h-full md:flex-col">
+                    <div className="flex min-h-[165px] flex-col px-5 pt-[18px] pb-[10px]">
                       <div className="mb-[18px] flex items-center gap-3">
                         <div className="relative h-[38px] w-[38px] shrink-0 overflow-hidden rounded-full bg-[rgba(255,255,255,0.2)]">
                           <img
@@ -126,19 +126,17 @@ export default function Ulasan() {
                           />
                         </div>
 
-                        <span className="text-[18px] font-semibold lowercase text-white">
+                        <span className="line-clamp-1 text-[18px] font-semibold lowercase text-white">
                           {namaPelanggan}
                         </span>
                       </div>
 
-                      <div className="mb-[14px] flex flex-col gap-3">
-                        <p className="line-clamp-3 text-[15px] font-medium lowercase text-white">
-                          {ulasan.ulasan}
-                        </p>
-                      </div>
+                      <p className="line-clamp-3 min-h-[72px] text-[15px] font-medium lowercase leading-[1.6] text-white">
+                        {ulasan.ulasan}
+                      </p>
 
                       <div
-                        className="mb-[2px] flex items-center gap-1"
+                        className="mt-auto flex items-center gap-1"
                         aria-label={`Rating ${rating} dari 5`}
                       >
                         {Array.from({ length: 5 }).map((_, index) => (
@@ -167,10 +165,10 @@ export default function Ulasan() {
                   </div>
 
                   {/* MOBILE */}
-                  <div className="flex min-h-[120px] md:hidden">
-                    <div className="flex flex-1 flex-col justify-between px-2 py-3">
-                      <div className="flex items-center gap-3">
-                        <div className="relative h-[26px] w-[26px] shrink-0 overflow-hidden rounded-full bg-[rgba(255,255,255,0.2)]">
+                  <div className="flex h-[108px] md:hidden">
+                    <div className="flex h-full w-[58%] min-w-0 flex-col px-2 py-3">
+                      <div className="mb-1.5 flex items-start gap-2">
+                        <div className="relative h-[24px] w-[24px] shrink-0 overflow-hidden rounded-full bg-[rgba(255,255,255,0.2)]">
                           <img
                             src={avatar}
                             alt={`Avatar ${namaPelanggan}`}
@@ -178,42 +176,41 @@ export default function Ulasan() {
                           />
                         </div>
 
-                        <span className="line-clamp-1 text-[11px] font-semibold lowercase text-white leading-tight">
+                        <span className="line-clamp-2 min-w-0 break-words text-[10px] font-semibold lowercase leading-[1.15] text-white">
                           {namaPelanggan}
                         </span>
                       </div>
 
-                      <div>
-                        <p className="mb-2 line-clamp-2 text-[10px] font-medium lowercase leading-[1.3] text-white">
+                      <div className="flex-1 overflow-hidden">
+                        <p className="line-clamp-3 break-words text-[7px] font-medium lowercase leading-[1.35] text-white">
                           {ulasan.ulasan}
                         </p>
+                      </div>
 
-                        <div
-                          className="flex items-center gap-1"
-                          aria-label={`Rating ${rating} dari 5`}
-                        >
-                          {Array.from({ length: 5 }).map((_, index) => (
-                            <span
-                              key={index}
-                              className="text-[14px] leading-none text-[#ffe4ef]"
-                              style={{
-                                textShadow:
-                                  "0 2px 4px rgba(0, 0, 0, 0.18)",
-                                opacity: index < rating ? 1 : 0.35,
-                              }}
-                            >
-                              ★
-                            </span>
-                          ))}
-                        </div>
+                      <div
+                        className="mt-1 flex items-center gap-[2px]"
+                        aria-label={`Rating ${rating} dari 5`}
+                      >
+                        {Array.from({ length: 5 }).map((_, index) => (
+                          <span
+                            key={index}
+                            className="text-[13px] leading-none text-[#ffe4ef]"
+                            style={{
+                              textShadow: "0 2px 4px rgba(0, 0, 0, 0.18)",
+                              opacity: index < rating ? 1 : 0.35,
+                            }}
+                          >
+                            ★
+                          </span>
+                        ))}
                       </div>
                     </div>
 
-                    <div className="relative w-[42%] min-w-[64px] overflow-hidden border-l border-[rgba(255,255,255,0.08)]">
+                    <div className="relative block h-full w-[42%] shrink-0 overflow-hidden bg-[#f7d7e1]">
                       <img
                         src={fotoUlasan}
                         alt={`Foto hasil layanan dari ${namaPelanggan}`}
-                        className="h-full w-full object-cover"
+                        className="absolute inset-0 h-full w-full object-cover"
                       />
                     </div>
                   </div>
