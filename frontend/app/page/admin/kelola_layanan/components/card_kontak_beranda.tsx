@@ -60,9 +60,8 @@ export default function Card_Kontak_Beranda({ dataBeranda, onRefresh }: Props) {
 
       await onRefresh();
       setIsEdit(false);
-      alert("Kontak berhasil diperbarui");
-    } catch (error: any) {
-      alert(error.message || "Gagal memperbarui kontak");
+    } catch (error) {
+      console.error("Gagal memperbarui kontak:", error);
     } finally {
       setLoading(false);
     }

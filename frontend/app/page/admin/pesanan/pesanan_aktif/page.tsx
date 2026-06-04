@@ -336,8 +336,6 @@ export default function PesananAktifPage() {
               payloadUpdate
             );
 
-            alert("Status pesanan berhasil diubah");
-
             const statusBaru = formatStatus(updatedData.status);
 
             if (statusBaru === "Selesai" || statusBaru === "Dibatalkan") {
@@ -377,8 +375,8 @@ export default function PesananAktifPage() {
             }
 
             setOpenModalEdit(false);
-          } catch (err: any) {
-            alert(err.message || "Gagal mengubah status pesanan");
+          } catch (error) {
+            console.error("Gagal mengubah status pesanan:", error);
           }
         }}
       />

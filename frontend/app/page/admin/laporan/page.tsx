@@ -39,8 +39,8 @@ export default function LaporanPage() {
       setDataLaporan(result.data ?? []);
       setStatistik(result.statistik ?? []);
       setLayananTerlaris(result.layananTerlaris ?? []);
-    } catch (error: any) {
-      alert(error.message || "Gagal mengambil data laporan");
+    } catch (error) {
+      console.error("Gagal mengambil data laporan:", error);
     } finally {
       setIsLoading(false);
     }

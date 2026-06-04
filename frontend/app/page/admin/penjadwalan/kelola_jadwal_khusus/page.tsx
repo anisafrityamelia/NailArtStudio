@@ -35,6 +35,9 @@ export default function KelolaJadwalKhususPage() {
   const [dataEdit, setDataEdit] = useState<JadwalKhusus | null>(null);
   const [dataHapus, setDataHapus] = useState<JadwalKhusus | null>(null);
 
+  const [errorJamTambah, setErrorJamTambah] = useState("");
+  const [errorJamEdit, setErrorJamEdit] = useState("");
+
   useEffect(() => {
     ambilJadwalKhusus();
   }, []);
@@ -56,8 +59,8 @@ export default function KelolaJadwalKhususPage() {
       }));
 
       setData(mappedData);
-    } catch (error: any) {
-      alert(error.message || "Gagal mengambil jadwal khusus");
+    } catch (error) {
+      console.error("Gagal mengambil jadwal khusus:", error);
     } finally {
       setIsLoading(false);
     }
@@ -65,12 +68,14 @@ export default function KelolaJadwalKhususPage() {
 
   function handleBukaModalEdit(item: JadwalKhusus) {
     setDataEdit(item);
+    setErrorJamEdit("");
     setIsModalEditOpen(true);
   }
 
   function handleTutupModalEdit() {
     setIsModalEditOpen(false);
     setDataEdit(null);
+    setErrorJamEdit("");
   }
 
   function handleBukaModalHapus(item: JadwalKhusus) {
@@ -91,9 +96,10 @@ export default function KelolaJadwalKhususPage() {
     catatan: string;
   }) {
     if (payload.status === "Buka" && payload.jamTutup <= payload.jamBuka) {
-      alert("Jam tutup harus lebih besar dari jam buka");
+      setErrorJamTambah("Jam tutup harus lebih besar dari jam buka");
       return;
     }
+    setErrorJamTambah("");
 
     try {
       await tambahJadwalKhususAdmin({
@@ -106,9 +112,8 @@ export default function KelolaJadwalKhususPage() {
 
       setIsModalTambahOpen(false);
       await ambilJadwalKhusus();
-      alert("Jadwal khusus berhasil ditambahkan");
-    } catch (error: any) {
-      alert(error.message || "Gagal menambah jadwal khusus");
+    } catch (error) {
+      console.error("Gagal menambah jadwal khusus:", error);
     }
   }
 
@@ -123,9 +128,10 @@ export default function KelolaJadwalKhususPage() {
     if (!dataEdit) return;
 
     if (payload.status === "Buka" && payload.jamTutup <= payload.jamBuka) {
-      alert("Jam tutup harus lebih besar dari jam buka");
+      setErrorJamEdit("Jam tutup harus lebih besar dari jam buka");
       return;
     }
+    setErrorJamEdit("");
 
     try {
       await updateJadwalKhususAdmin(dataEdit.id_jadwal, {
@@ -138,9 +144,8 @@ export default function KelolaJadwalKhususPage() {
 
       handleTutupModalEdit();
       await ambilJadwalKhusus();
-      alert("Jadwal khusus berhasil diperbarui");
-    } catch (error: any) {
-      alert(error.message || "Gagal memperbarui jadwal khusus");
+    } catch (error) {
+      console.error("Gagal memperbarui jadwal khusus:", error);
     }
   }
 
@@ -152,9 +157,8 @@ export default function KelolaJadwalKhususPage() {
 
       handleTutupModalHapus();
       await ambilJadwalKhusus();
-      alert("Jadwal khusus berhasil dihapus");
-    } catch (error: any) {
-      alert(error.message || "Gagal menghapus jadwal khusus");
+    } catch (error) {
+      console.error("Gagal menghapus jadwal khusus:", error);
     }
   }
 
@@ -168,7 +172,10 @@ export default function KelolaJadwalKhususPage() {
         <div className="flex justify-end">
           <button
             type="button"
-            onClick={() => setIsModalTambahOpen(true)}
+            onClick={() => {
+              setErrorJamTambah("");
+              setIsModalTambahOpen(true);
+            }}
             className="flex items-center gap-1 whitespace-nowrap rounded bg-gradient-to-r from-[#E45082] to-[#7D344B] px-2 py-2 text-xs text-white transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 cursor-pointer sm:px-3 sm:py-1.5 sm:text-sm shadow-soft-text"
           >
             <Plus size={15} /> Tambah
@@ -190,8 +197,12 @@ export default function KelolaJadwalKhususPage() {
 
       <ModalTambahJadwalKhusus
         isOpen={isModalTambahOpen}
-        onClose={() => setIsModalTambahOpen(false)}
+        onClose={() => {
+          setErrorJamTambah("");
+          setIsModalTambahOpen(false);
+        }}
         onSubmit={handleTambahJadwal}
+        errorJam={errorJamTambah}
       />
 
       <ModalEditJadwalKhusus
@@ -199,6 +210,7 @@ export default function KelolaJadwalKhususPage() {
         onClose={handleTutupModalEdit}
         data={dataEdit}
         onSubmit={handleEditJadwal}
+        errorJam={errorJamEdit}
       />
 
       <Modal_Hapus

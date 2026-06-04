@@ -70,6 +70,7 @@ export default function ModalUbahStatusPesanan({
   const [statusPesanan, setStatusPesanan] = useState("");
   const [statusAwal, setStatusAwal] = useState("");
   const [catatanAdmin, setCatatanAdmin] = useState("");
+  const [errorStatus, setErrorStatus] = useState("");
 
   useEffect(() => {
     if (isOpen) {
@@ -77,6 +78,7 @@ export default function ModalUbahStatusPesanan({
       setStatusPesanan(data?.status ?? "");
       setStatusAwal(data?.status ?? "");
       setCatatanAdmin(data?.catatanAdmin === "-" ? "" : data?.catatanAdmin ?? "");
+      setErrorStatus("");
     }
   }, [isOpen, data]);
 
@@ -86,9 +88,11 @@ export default function ModalUbahStatusPesanan({
     e.preventDefault();
 
     if (statusPesanan === statusAwal) {
-      alert("Status pesanan wajib diubah ke pilihan lain.");
+      setErrorStatus("Status pesanan wajib diubah ke pilihan lain.");
       return;
     }
+
+    setErrorStatus("");
 
     onSubmit?.({
       kode: data?.kode,
@@ -182,13 +186,22 @@ export default function ModalUbahStatusPesanan({
                         name="status_pesanan"
                         value={option}
                         checked={statusPesanan === option}
-                        onChange={(e) => setStatusPesanan(e.target.value)}
+                        onChange={(e) => {
+                          setStatusPesanan(e.target.value);
+                          setErrorStatus("");
+                        }}
                         className="h-4 w-4 accent-[#7D344B] cursor-pointer"
                       />
                       <span>{option}</span>
                     </label>
                   ))}
                 </div>
+
+                {errorStatus && (
+                  <p className="text-xs text-red-500 sm:text-sm">
+                    {errorStatus}
+                  </p>
+                )}
               </div>
 
               <div className="flex flex-col gap-1">

@@ -43,9 +43,8 @@ export default function Card_Keunggulan_Beranda({
       await onRefresh();
 
       setIsEdit(false);
-      alert("Keunggulan berhasil diperbarui");
-    } catch (error: any) {
-      alert(error.message || "Gagal memperbarui keunggulan");
+    } catch (error) {
+      console.error("Gagal memperbarui keunggulan:", error);
     } finally {
       setLoading(false);
     }

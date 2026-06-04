@@ -92,9 +92,8 @@ export default function Card_Galeri_Beranda({ dataBeranda, onRefresh }: Props) {
 
       await onRefresh();
       setIsEdit(false);
-      alert("Galeri berhasil diperbarui");
-    } catch (error: any) {
-      alert(error.message || "Gagal memperbarui galeri");
+    } catch (error) {
+      console.error("Gagal memperbarui galeri:", error);
     } finally {
       setLoading(false);
     }
@@ -116,9 +115,6 @@ export default function Card_Galeri_Beranda({ dataBeranda, onRefresh }: Props) {
       return;
     }
 
-    const konfirmasi = confirm("Yakin ingin menghapus gambar ini?");
-    if (!konfirmasi) return;
-
     try {
       setLoading(true);
 
@@ -126,9 +122,8 @@ export default function Card_Galeri_Beranda({ dataBeranda, onRefresh }: Props) {
       await onRefresh();
 
       setDraftGaleri(mappingGaleri());
-      alert("Gambar berhasil dihapus");
-    } catch (error: any) {
-      alert(error.message || "Gagal menghapus gambar");
+    } catch (error) {
+      console.error("Gagal menghapus gambar:", error);
     } finally {
       setLoading(false);
     }

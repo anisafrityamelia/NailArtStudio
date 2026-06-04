@@ -49,8 +49,8 @@ export default function KelolaKapasitasKhususPage() {
             );
 
             setData(mappedData);
-        } catch (error: any) {
-            alert(error.message || "Gagal mengambil kapasitas khusus");
+        } catch (error) {
+            console.error("Gagal mengambil kapasitas khusus:", error);
         } finally {
             setIsLoading(false);
         }
@@ -82,7 +82,6 @@ export default function KelolaKapasitasKhususPage() {
         catatan: string;
     }) {
         if (!payload.tanggal || payload.jumlahKaryawan < 1) {
-            alert("Tanggal dan jumlah karyawan wajib diisi");
             return;
         }
 
@@ -95,9 +94,8 @@ export default function KelolaKapasitasKhususPage() {
 
             setIsModalTambahOpen(false);
             await ambilKapasitasKhusus();
-            alert("Kapasitas khusus berhasil ditambahkan");
-        } catch (error: any) {
-            alert(error.message || "Gagal menambah kapasitas khusus");
+        } catch (error) {
+            console.error("Gagal menambah kapasitas khusus:", error);
         }
     }
 
@@ -110,7 +108,6 @@ export default function KelolaKapasitasKhususPage() {
         if (!dataEdit) return;
 
         if (!payload.tanggal || payload.jumlahKaryawan < 1) {
-            alert("Tanggal dan jumlah karyawan wajib diisi");
             return;
         }
 
@@ -123,9 +120,8 @@ export default function KelolaKapasitasKhususPage() {
 
             handleTutupModalEdit();
             await ambilKapasitasKhusus();
-            alert("Kapasitas khusus berhasil diperbarui");
-        } catch (error: any) {
-            alert(error.message || "Gagal memperbarui kapasitas khusus");
+        } catch (error) {
+            console.error("Gagal memperbarui kapasitas khusus:", error);
         }
     }
 
@@ -137,9 +133,8 @@ export default function KelolaKapasitasKhususPage() {
 
             handleTutupModalHapus();
             await ambilKapasitasKhusus();
-            alert("Kapasitas khusus berhasil dihapus");
-        } catch (error: any) {
-            alert(error.message || "Gagal menghapus kapasitas khusus");
+        } catch (error) {
+            console.error("Gagal menghapus kapasitas khusus:", error);
         }
     }
 

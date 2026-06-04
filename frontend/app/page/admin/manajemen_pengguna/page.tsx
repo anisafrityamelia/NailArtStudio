@@ -28,6 +28,7 @@ export default function ManajemenPenggunaPage() {
 
     const [dataEdit, setDataEdit] = useState<Baris_Manajemen_Pengguna | null>(null);
     const [dataHapus, setDataHapus] = useState<Baris_Manajemen_Pengguna | null>(null);
+    const [pesanResetPassword, setPesanResetPassword] = useState("");
 
     async function fetchPengguna() {
         try {
@@ -62,7 +63,7 @@ export default function ManajemenPenggunaPage() {
             );
 
             setData(mappedData);
-        } catch (error) {
+        } catch {
             setError("Gagal terhubung ke server");
         } finally {
             setLoading(false);
@@ -91,16 +92,15 @@ export default function ManajemenPenggunaPage() {
             const result = await response.json();
 
             if (!response.ok) {
-                alert(result.message || "Gagal menambahkan pengguna");
+                console.error("Gagal menambahkan pengguna:", result.message);
                 return;
             }
 
             await fetchPengguna();
             setIsModalTambahOpen(false);
 
-            alert("Pengguna berhasil ditambahkan");
         } catch (error) {
-            alert("Gagal terhubung ke server");
+            console.error("Gagal terhubung ke server:", error);
         }
     }
 
@@ -128,21 +128,22 @@ export default function ManajemenPenggunaPage() {
             const result = await response.json();
 
             if (!response.ok) {
-                alert(result.message || "Gagal update pengguna");
+                console.error("Gagal update pengguna:", result.message);
                 return;
             }
 
             await fetchPengguna();
             handleTutupModalEdit();
 
-            alert("Berhasil update pengguna");
         } catch (error) {
-            alert("Gagal terhubung ke server");
+            console.error("Gagal terhubung ke server:", error);
         }
     }
 
     async function handleResetPassword(id_pengguna: number) {
         try {
+            setPesanResetPassword("");
+
             const token = getToken();
 
             const response = await fetch(
@@ -159,13 +160,13 @@ export default function ManajemenPenggunaPage() {
             const result = await response.json();
 
             if (!response.ok) {
-                alert(result.message || "Gagal reset password");
+                setPesanResetPassword(result.message || "Gagal reset password");
                 return;
             }
 
-            alert("Password direset ke 123456");
-        } catch (error) {
-            alert("Gagal terhubung ke server");
+            setPesanResetPassword("Password berhasil direset ke 123456");
+        } catch {
+            setPesanResetPassword("Gagal terhubung ke server");
         }
     }
 
@@ -187,16 +188,15 @@ export default function ManajemenPenggunaPage() {
             const result = await response.json();
 
             if (!response.ok) {
-                alert(result.message || "Gagal menghapus pengguna");
+                console.error("Gagal menghapus pengguna:", result.message);
                 return;
             }
 
             await fetchPengguna();
             handleTutupModalHapus();
 
-            alert("Pengguna berhasil dihapus");
         } catch (error) {
-            alert("Gagal terhubung ke server");
+            console.error("Gagal terhubung ke server:", error);
         }
     }
 
@@ -206,12 +206,14 @@ export default function ManajemenPenggunaPage() {
 
     function handleBukaModalEdit(item: Baris_Manajemen_Pengguna) {
         setDataEdit(item);
+        setPesanResetPassword("");
         setIsModalEditOpen(true);
     }
 
     function handleTutupModalEdit() {
         setIsModalEditOpen(false);
         setDataEdit(null);
+        setPesanResetPassword("");
     }
         
     function handleBukaModalHapus(item: Baris_Manajemen_Pengguna) {
@@ -295,6 +297,7 @@ export default function ManajemenPenggunaPage() {
                 data={dataEdit} 
                 onSubmit={handleEditPengguna}
                 onResetPassword={handleResetPassword}
+                pesanResetPassword={pesanResetPassword}
             />
             
             <Modal_Hapus

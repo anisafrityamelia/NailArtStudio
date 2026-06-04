@@ -125,7 +125,7 @@ export default function KelolaLayananPage() {
             const result = await response.json();
 
             if (!response.ok) {
-                alert(result.message || "Gagal update layanan");
+                console.error("Gagal update layanan:", result.message);
                 return;
             }
 
@@ -184,9 +184,8 @@ export default function KelolaLayananPage() {
             }
             await fetchLayanan();
             handleTutupModalEdit();
-            alert("Layanan berhasil diperbarui");
         } catch (error) {
-            alert("Gagal terhubung ke server");
+            console.error("Gagal terhubung ke server:", error);
         }
     }
 

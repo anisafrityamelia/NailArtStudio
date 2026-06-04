@@ -33,6 +33,7 @@ export default function Kelola_Jadwal_Default_Content() {
   const [jamTutup, setJamTutup] = useState("");
   const [durasiSlot, setDurasiSlot] = useState("");
   const [jumlahKaryawan, setJumlahKaryawan] = useState("");
+  const [errorJam, setErrorJam] = useState("");
 
   useEffect(() => {
     ambilPengaturanBooking();
@@ -64,14 +65,15 @@ export default function Kelola_Jadwal_Default_Content() {
       } else {
         setDataJadwal(null);
       }
-    } catch (error: any) {
-      alert(error.message || "Gagal mengambil pengaturan booking");
+    } catch (error) {
+      console.error("Gagal mengambil pengaturan booking:", error);
     } finally {
       setIsLoading(false);
     }
   }
 
   function handleBukaEdit() {
+    setErrorJam("");
     setIsEdit(true);
   }
 
@@ -80,6 +82,7 @@ export default function Kelola_Jadwal_Default_Content() {
     setJamTutup(dataJadwal?.jamTutup || "");
     setDurasiSlot(dataJadwal?.durasiSlot || "");
     setJumlahKaryawan(dataJadwal?.jumlahKaryawan || "");
+    setErrorJam("");
     setIsEdit(false);
   }
 
@@ -87,14 +90,14 @@ export default function Kelola_Jadwal_Default_Content() {
     e.preventDefault();
 
     if (!jamBuka || !jamTutup || !durasiSlot || !jumlahKaryawan) {
-      alert("Semua field wajib diisi");
       return;
     }
 
     if (jamTutup <= jamBuka) {
-      alert("Jam tutup harus lebih besar dari jam buka");
+      setErrorJam("Jam tutup harus lebih besar dari jam buka");
       return;
     }
+    setErrorJam("");
 
     try {
       setIsSaving(true);
@@ -116,9 +119,8 @@ export default function Kelola_Jadwal_Default_Content() {
       });
 
       setIsEdit(false);
-      alert("Pengaturan booking berhasil disimpan");
-    } catch (error: any) {
-      alert(error.message || "Gagal menyimpan pengaturan booking");
+    } catch (error) {
+      console.error("Gagal menyimpan pengaturan booking:", error);
     } finally {
       setIsSaving(false);
     }
@@ -215,7 +217,10 @@ export default function Kelola_Jadwal_Default_Content() {
               <input
                 type="time"
                 value={isEdit ? jamTutup : dataJadwal?.jamTutup || ""}
-                onChange={(e) => setJamTutup(e.target.value)}
+                onChange={(e) => {
+                  setJamTutup(e.target.value);
+                  setErrorJam("");
+                }}
                 readOnly={!isEdit}
                 className={`w-full rounded-md border border-[#dd98ad] px-3 py-2 text-xs text-[#7D344B] shadow-soft-text outline-none transition sm:text-sm ${
                   isEdit
@@ -223,6 +228,11 @@ export default function Kelola_Jadwal_Default_Content() {
                     : "bg-white/70 text-gray-400"
                 }`}
               />
+              {errorJam && (
+                <p className="text-xs text-red-500 sm:text-sm">
+                  {errorJam}
+                </p>
+              )}
             </div>
 
             <div className="flex flex-col gap-1">

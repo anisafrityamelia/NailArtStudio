@@ -117,6 +117,9 @@ export default function ModalEditLayanan({
   const [fileGambarKategori, setFileGambarKategori] = useState<File | null>(null);
   const [previewGambarKategori, setPreviewGambarKategori] = useState("");
 
+  const [errorNamaKategori, setErrorNamaKategori] = useState("");
+  const [errorEstimasiHarga, setErrorEstimasiHarga] = useState("");
+
   const formatRupiah = (harga: number) => {
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
@@ -167,6 +170,8 @@ export default function ModalEditLayanan({
     setStatusKategori("aktif");
     setFileGambarKategori(null);
     setPreviewGambarKategori("");
+    setErrorNamaKategori("");
+    setErrorEstimasiHarga("");
   }
 
   const handleChangeFile = (
@@ -221,12 +226,24 @@ export default function ModalEditLayanan({
   };
 
   const handleSimpanKategori = async () => {
-    try {
-      if (!namaKategori || !estimasiHargaKategori) {
-        alert("Nama kategori dan estimasi harga wajib diisi");
-        return;
-      }
+    setErrorNamaKategori("");
+    setErrorEstimasiHarga("");
 
+    let valid = true;
+
+    if (!namaKategori.trim()) {
+      setErrorNamaKategori("Nama kategori wajib diisi");
+      valid = false;
+    }
+
+    if (!estimasiHargaKategori.trim()) {
+      setErrorEstimasiHarga("Estimasi harga wajib diisi");
+      valid = false;
+    }
+
+    if (!valid) return;
+
+    try {
       const payload: PayloadKategoriHarga = {
         nama_kategori: namaKategori,
         deskripsi_kategori: deskripsiKategori,
@@ -239,7 +256,6 @@ export default function ModalEditLayanan({
       if (modeKategori === "tambah") {
         const kategoriBaru = await onTambahKategoriHarga(data.id_layanan, payload);
         setKategoriHarga((prev) => [...prev, kategoriBaru]);
-        alert("Kategori harga berhasil ditambahkan");
       } else if (kategoriEdit) {
         const kategoriUpdate = await onUpdateKategoriHarga(
           kategoriEdit.id_kategori_harga,
@@ -254,22 +270,15 @@ export default function ModalEditLayanan({
           )
         );
 
-        alert("Kategori harga berhasil diperbarui");
       }
 
       resetFormKategori();
-    } catch (error: any) {
-      alert(error.message || "Gagal menyimpan kategori harga");
+    } catch (error) {
+      console.error("Gagal menyimpan kategori harga:", error);
     }
   };
 
   const handleHapusKategori = async (item: KategoriHargaLayanan) => {
-    const konfirmasi = confirm(
-      `Yakin ingin menghapus kategori ${item.nama_kategori}?`
-    );
-
-    if (!konfirmasi) return;
-
     try {
       await onHapusKategoriHarga(item.id_kategori_harga);
 
@@ -279,9 +288,8 @@ export default function ModalEditLayanan({
         )
       );
 
-      alert("Kategori harga berhasil dihapus");
-    } catch (error: any) {
-      alert(error.message || "Gagal menghapus kategori harga");
+    } catch (error) {
+      console.error("Gagal menghapus kategori harga:", error);
     }
   };
 
@@ -532,15 +540,21 @@ export default function ModalEditLayanan({
                   <InputText
                     label="Nama Kategori"
                     value={namaKategori}
-                    onChange={setNamaKategori}
+                    onChange={(value) => {
+                      setNamaKategori(value);
+                      setErrorNamaKategori("");
+                    }}
+                    error={errorNamaKategori}
                   />
 
                   <InputText
                     label="Estimasi Harga"
                     value={estimasiHargaKategori}
-                    onChange={(value) =>
-                      setEstimasiHargaKategori(value.replace(/\D/g, ""))
-                    }
+                    onChange={(value) => {
+                      setEstimasiHargaKategori(value.replace(/\D/g, ""));
+                      setErrorEstimasiHarga("");
+                    }}
+                    error={errorEstimasiHarga}
                   />
 
                   <div className="md:col-span-2">
@@ -657,10 +671,12 @@ function InputText({
   label,
   value,
   onChange,
+  error,
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
+  error?: string;
 }) {
   return (
     <div className="flex flex-col gap-1">
@@ -674,6 +690,12 @@ function InputText({
         onChange={(e) => onChange(e.target.value)}
         className="w-full rounded-md border border-[#dd98ad] bg-white px-2.5 py-1.5 text-[11px] text-[#7D344B] outline-none shadow-soft-text transition focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0] sm:px-3 sm:py-2 sm:text-sm"
       />
+
+      {error && (
+        <p className="text-xs text-red-500">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

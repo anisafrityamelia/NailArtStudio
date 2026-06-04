@@ -13,12 +13,14 @@ type PropsModalTambahJadwalKhusus = {
         jamTutup: string;
         catatan: string;
     }) => void;
+    errorJam?: string;
 };
 
 export default function ModalTambahJadwalKhusus({
     isOpen,
     onClose,
     onSubmit,
+    errorJam,
 }: PropsModalTambahJadwalKhusus) {
     const [tanggal, setTanggal] = useState("");
     const [status, setStatus] = useState("Buka");
@@ -145,6 +147,11 @@ export default function ModalTambahJadwalKhusus({
                                 disabled={status === "Tutup"}
                                 className="w-full cursor-pointer rounded-md border border-[#dd98ad] bg-white px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0] disabled:cursor-not-allowed disabled:bg-[#f5dfe7] disabled:text-[#b57b8d] sm:text-sm"
                             />
+                            {errorJam && (
+                                <p className="text-xs text-red-500 sm:text-sm">
+                                    {errorJam}
+                                </p>
+                            )}
                         </div>
                     </div>
 

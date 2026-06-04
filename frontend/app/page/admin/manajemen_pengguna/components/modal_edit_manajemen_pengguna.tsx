@@ -24,6 +24,7 @@ type PropsModalEditManajemenPengguna = {
     data: DataPengguna | null;
     onSubmit: (payload: PayloadEditManajemenPengguna) => void;
     onResetPassword: (id_pengguna: number) => void;
+    pesanResetPassword?: string;
 };
 
 export default function ModalEditManajemenPengguna({
@@ -32,6 +33,7 @@ export default function ModalEditManajemenPengguna({
     data,
     onSubmit,
     onResetPassword,
+    pesanResetPassword,
 }: PropsModalEditManajemenPengguna) {
     const [nama, setNama] = useState("");
     const [email, setEmail] = useState("");
@@ -203,6 +205,12 @@ export default function ModalEditManajemenPengguna({
                                     {showPassword ? <Eye size={16} /> : <EyeOff size={16} />}
                                 </button>
                             </div>
+
+                            {pesanResetPassword && (
+                                <p className="text-[10px] text-red-500 sm:text-xs">
+                                    {pesanResetPassword}
+                                </p>
+                            )}
 
                             <p className="text-[10px] leading-relaxed text-[#7D344B]/70 sm:text-xs">
                                 Kata sandi default ini digunakan setelah admin menekan tombol reset.
