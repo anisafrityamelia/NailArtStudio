@@ -162,16 +162,19 @@ export default function PesananSayaPage() {
                 <TabelPesananPelanggan
                     data={filteredData}
                     renderActions={(item) => (
-                    <div className="flex justify-center gap-2">
+                    <div className="flex flex-col items-center gap-1 sm:flex-row sm:justify-center sm:gap-2">
                         {item.status === "Menunggu Pembayaran" && (
                         <button
                             type="button"
                             onClick={() =>
                             window.location.href = `/page/pemesanan/pembayaran?id=${item.id_pesanan}`
                             }
-                            className="flex shrink-0 items-center gap-1 whitespace-nowrap rounded bg-gradient-to-r from-[#E45082] to-[#7D344B] px-1.5 py-1 text-[10px] text-white transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 cursor-pointer sm:px-2 sm:text-sm shadow-soft-text"
+                            className="flex shrink-0 items-center gap-0.5 whitespace-nowrap rounded-[2px] sm:rounded bg-gradient-to-r from-[#E45082] to-[#7D344B] px-1 py-0.5 text-[9px] text-white transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 cursor-pointer sm:gap-1 sm:px-2 sm:py-1 sm:text-sm shadow-soft-text"
                         >
-                            <CreditCard size={15} />
+                            <>
+                                <CreditCard size={12} className="sm:hidden" />
+                                <CreditCard size={15} className="hidden sm:block" />
+                            </>
                             Bayar
                         </button>
                         )}
@@ -182,9 +185,12 @@ export default function PesananSayaPage() {
                             setSelectedPesanan(item);
                             setOpenModalDetail(true);
                         }}
-                        className="flex shrink-0 items-center gap-1 whitespace-nowrap rounded bg-gradient-to-r from-[#E45082] to-[#7D344B] px-1.5 py-1 text-[10px] text-white transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 cursor-pointer sm:px-2 sm:text-sm shadow-soft-text"
+                        className="flex shrink-0 items-center gap-0.5 whitespace-nowrap rounded-[2px] sm:rounded bg-gradient-to-r from-[#E45082] to-[#7D344B] px-1 py-0.5 text-[9px] text-white transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 cursor-pointer sm:gap-1 sm:px-2 sm:py-1 sm:text-sm shadow-soft-text"
                         >
-                        <Eye size={15} />
+                        <>
+                            <Eye size={12} className="sm:hidden" />
+                            <Eye size={15} className="hidden sm:block" />
+                        </>
                         Detail
                         </button>
                     </div>
