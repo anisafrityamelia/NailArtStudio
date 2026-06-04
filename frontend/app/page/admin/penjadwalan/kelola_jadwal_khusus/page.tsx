@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 import Judul_Halaman from "@/app/components/ui/judul_halaman";
 import Tabel_Jadwal_Khusus from "./components/tabel_jadwal_khusus";
@@ -8,6 +9,7 @@ import ModalTambahJadwalKhusus from "./components/modal_tambah_jadwal_khusus";
 import ModalEditJadwalKhusus from "./components/modal_edit_jadwal_khusus";
 import Modal_Hapus from "@/app/components/ui/modal_hapus";
 import { getJadwalKhususAdmin, tambahJadwalKhususAdmin, updateJadwalKhususAdmin, hapusJadwalKhususAdmin, type JadwalKhusus as JadwalKhususApi } from "@/app/lib/jadwal_khusus";
+import { getCurrentUser } from "@/app/lib/auth";
 
 type JadwalKhusus = {
   id_jadwal: number;
@@ -25,6 +27,8 @@ function formatJam(jam?: string | null) {
 }
 
 export default function KelolaJadwalKhususPage() {
+  const router = useRouter();
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [data, setData] = useState<JadwalKhusus[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -39,8 +43,25 @@ export default function KelolaJadwalKhususPage() {
   const [errorJamEdit, setErrorJamEdit] = useState("");
 
   useEffect(() => {
-    ambilJadwalKhusus();
-  }, []);
+    const cekAuthDanAmbilJadwalKhusus = async () => {
+      const user = await getCurrentUser();
+
+      if (!user) {
+        router.push("/auth/login");
+        return;
+      }
+
+      if (user.role !== "admin") {
+        router.push("/auth/login");
+        return;
+      }
+
+      setIsCheckingAuth(false);
+      ambilJadwalKhusus();
+    };
+
+    cekAuthDanAmbilJadwalKhusus();
+  }, [router]);
 
   async function ambilJadwalKhusus() {
     try {
@@ -160,6 +181,16 @@ export default function KelolaJadwalKhususPage() {
     } catch (error) {
       console.error("Gagal menghapus jadwal khusus:", error);
     }
+  }
+
+  if (isCheckingAuth) {
+    return (
+      <section className="flex min-h-screen items-center justify-center">
+        <p className="text-sm font-semibold text-[#7D344B]">
+          Memeriksa akses...
+        </p>
+      </section>
+    );
   }
 
   return (

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 import Judul_Halaman from "@/app/components/ui/judul_halaman";
 import Tabel_Kapasitas_Khusus from "./components/tabel_kapasitas_khusus";
@@ -8,6 +9,7 @@ import ModalTambahKapasitasKhusus from "./components/modal_tambah_kapasitas_khus
 import ModalEditKapasitasKhusus from "./components/modal_edit_kapasitas_khusus";
 import Modal_Hapus from "@/app/components/ui/modal_hapus";
 import { getKapasitasKhususAdmin, tambahKapasitasKhususAdmin, updateKapasitasKhususAdmin, hapusKapasitasKhususAdmin, type KapasitasKhusus as KapasitasKhususApi } from "@/app/lib/kapasitas_khusus";
+import { getCurrentUser } from "@/app/lib/auth";
 
 type KapasitasKhusus = {
   id_kapasitas: number;
@@ -18,6 +20,8 @@ type KapasitasKhusus = {
 };
 
 export default function KelolaKapasitasKhususPage() {
+    const router = useRouter();
+    const [isCheckingAuth, setIsCheckingAuth] = useState(true);
     const [data, setData] = useState<KapasitasKhusus[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -29,8 +33,25 @@ export default function KelolaKapasitasKhususPage() {
     const [dataHapus, setDataHapus] = useState<KapasitasKhusus | null>(null);
 
     useEffect(() => {
-        ambilKapasitasKhusus();
-    }, []);
+        const cekAuthDanAmbilKapasitasKhusus = async () => {
+            const user = await getCurrentUser();
+
+            if (!user) {
+                router.push("/auth/login");
+                return;
+            }
+
+            if (user.role !== "admin") {
+                router.push("/auth/login");
+                return;
+            }
+
+            setIsCheckingAuth(false);
+            ambilKapasitasKhusus();
+        };
+
+        cekAuthDanAmbilKapasitasKhusus();
+    }, [router]);
 
     async function ambilKapasitasKhusus() {
         try {
@@ -136,6 +157,16 @@ export default function KelolaKapasitasKhususPage() {
         } catch (error) {
             console.error("Gagal menghapus kapasitas khusus:", error);
         }
+    }
+
+    if (isCheckingAuth) {
+        return (
+            <section className="flex min-h-screen items-center justify-center">
+                <p className="text-sm font-semibold text-[#7D344B]">
+                    Memeriksa akses...
+                </p>
+            </section>
+        );
     }
 
     return (

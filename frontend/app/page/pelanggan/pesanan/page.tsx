@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Eye, CreditCard  } from "lucide-react";
 import Judul_Halaman from "@/app/components/ui/judul_halaman";
 import TabPesanan from "./components/tab_pesanan_pelanggan";
@@ -8,6 +9,7 @@ import TabelPesananPelanggan from "./components/tabel_pesanan_pelanggan";
 import ModalDetailPesananPelanggan from "./components/modal_detail_pesanan_pelanggan";
 import { DetailPesananPelanggan } from "./components/detail_pesanan_pelanggan/detail_pesanan_types";
 import { getPesananSaya } from "@/app/lib/pesanan";
+import { getCurrentUser } from "@/app/lib/auth";
 
 const statusAktif = ["Menunggu Pembayaran", "Menunggu Konfirmasi", "Terjadwal", "Diproses", "Siap Diambil"];
 const statusRiwayat = ["Selesai", "Dibatalkan"];
@@ -27,6 +29,8 @@ const formatStatus = (status: string) => {
 };
 
 export default function PesananSayaPage() {
+    const router = useRouter();
+    const [isCheckingAuth, setIsCheckingAuth] = useState(true);
     const [activeTab, setActiveTab] = useState<"aktif" | "riwayat">("aktif");
     const [openModalDetail, setOpenModalDetail] = useState(false);
     const [selectedPesanan, setSelectedPesanan] = useState<DetailPesananPelanggan | null>(null);
@@ -35,98 +39,106 @@ export default function PesananSayaPage() {
     const [error, setError] = useState("");
 
     useEffect(() => {
-        const fetchPesanan = async () => {
+        const cekAuthDanFetchPesanan = async () => {
             try {
-            setLoading(true);
+                const user = await getCurrentUser();
 
-            const result = await getPesananSaya();
+                if (!user) {
+                    router.push("/auth/login");
+                    return;
+                }
 
-            const mappedData: DetailPesananPelanggan[] = result.map(
-                (item: any, index: number) => ({
-                no: index + 1,
-                id_pesanan: item.id_pesanan,
-                kode: item.kode_pesanan,
-                layanan: item.layanan?.nama_layanan || "-",
-                tanggal: item.tanggal_pesanan || "-",
-                jam: item.jam_pesanan || "-",
-                status: formatStatus(item.status),
+                if (user.role !== "pelanggan") {
+                    router.push("/auth/login");
+                    return;
+                }
 
-                // Detail Nail Art dan Remove
-                bagianKuku:
-                    item.detail_nail_art?.bagian_kuku ||
-                    item.detail_remove?.bagian_kuku ||
-                    "-",
-                layananTambahan:
-                    item.detail_nail_art?.layanan_tambahan || "-",
+                setIsCheckingAuth(false);
+                setLoading(true);
 
-                // catatan (nail art, press on, eyelash, remove)
-                catatan:
-                    item.detail_nail_art?.catatan ||
-                    item.detail_press_on?.catatan ||
-                    item.detail_eyelash?.catatan ||
-                    item.detail_remove?.catatan ||
-                    "-",
+                const result = await getPesananSaya();
 
-                // Gambar Inspo untuk Nail Art & Press ON
-                    gambarReferensi:
-                    item.detail_nail_art?.url_gambar_inspo ||
-                    item.detail_press_on?.url_gambar_inspo ||
-                    undefined,
-                
-                // Detail Press On
-                fotoJariKanan:
-                    item.detail_press_on?.url_foto_jari_kanan || undefined,
+                const mappedData: DetailPesananPelanggan[] = result.map(
+                    (item: any, index: number) => ({
+                        no: index + 1,
+                        id_pesanan: item.id_pesanan,
+                        kode: item.kode_pesanan,
+                        layanan: item.layanan?.nama_layanan || "-",
+                        tanggal: item.tanggal_pesanan || "-",
+                        jam: item.jam_pesanan || "-",
+                        status: formatStatus(item.status),
 
-                fotoJempolKanan:
-                    item.detail_press_on?.url_foto_jempol_kanan || undefined,
+                        bagianKuku:
+                            item.detail_nail_art?.bagian_kuku ||
+                            item.detail_remove?.bagian_kuku ||
+                            "-",
 
-                fotoJariKiri:
-                    item.detail_press_on?.url_foto_jari_kiri || undefined,
+                        layananTambahan:
+                            item.detail_nail_art?.layanan_tambahan || "-",
 
-                fotoJempolKiri:
-                    item.detail_press_on?.url_foto_jempol_kiri || undefined,
+                        catatan:
+                            item.detail_nail_art?.catatan ||
+                            item.detail_press_on?.catatan ||
+                            item.detail_eyelash?.catatan ||
+                            item.detail_remove?.catatan ||
+                            "-",
 
-                shapeKuku:
-                    item.detail_press_on?.shape_kuku || "-",
+                        gambarReferensi:
+                            item.detail_nail_art?.url_gambar_inspo ||
+                            item.detail_press_on?.url_gambar_inspo ||
+                            undefined,
 
-                metodePengambilan:
-                    item.detail_press_on?.metode_pengambilan === "antar"
-                    ? "Diantar ke rumah"
-                    : item.detail_press_on?.metode_pengambilan === "ambil"
-                    ? "Ambil ke studio"
-                    : "-",
+                        fotoJariKanan:
+                            item.detail_press_on?.url_foto_jari_kanan || undefined,
 
-                alamatPengiriman:
-                    item.detail_press_on?.alamat_pengiriman || "-",
+                        fotoJempolKanan:
+                            item.detail_press_on?.url_foto_jempol_kanan || undefined,
 
-                // detail eyelash
-                jenisLash:
-                    item.detail_eyelash?.jenis_lash || "-",
-                    
-                // Pembayaran
-                kodePembayaran: 
-                    item.pembayaran?.kode_pembayaran || "-",
+                        fotoJariKiri:
+                            item.detail_press_on?.url_foto_jari_kiri || undefined,
 
-                hargaFinal: 
-                    item.harga_final || "",
+                        fotoJempolKiri:
+                            item.detail_press_on?.url_foto_jempol_kiri || undefined,
 
-                buktiTransfer:
-                    item.pembayaran?.url_bukti_pembayaran || undefined,
+                        shapeKuku:
+                            item.detail_press_on?.shape_kuku || "-",
 
-                catatanAdmin: item.catatan_admin || "-",
-                })
-            );
+                        metodePengambilan:
+                            item.detail_press_on?.metode_pengambilan === "antar"
+                                ? "Diantar ke rumah"
+                                : item.detail_press_on?.metode_pengambilan === "ambil"
+                                ? "Ambil ke studio"
+                                : "-",
 
-            setDataPesanan(mappedData);
-        } catch (err: any) {
-            setError(err.message || "Gagal memuat data pesanan");
-        } finally {
-            setLoading(false);
-        }
-    };
+                        alamatPengiriman:
+                            item.detail_press_on?.alamat_pengiriman || "-",
 
-    fetchPesanan();
-    }, []);
+                        jenisLash:
+                            item.detail_eyelash?.jenis_lash || "-",
+
+                        kodePembayaran:
+                            item.pembayaran?.kode_pembayaran || "-",
+
+                        hargaFinal:
+                            item.harga_final || "",
+
+                        buktiTransfer:
+                            item.pembayaran?.url_bukti_pembayaran || undefined,
+
+                        catatanAdmin: item.catatan_admin || "-",
+                    })
+                );
+
+                setDataPesanan(mappedData);
+            } catch (err: any) {
+                setError(err.message || "Gagal memuat data pesanan");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        cekAuthDanFetchPesanan();
+    }, [router]);
 
     const filteredData = dataPesanan.filter((item) => {
         if (activeTab === "aktif") {
@@ -139,6 +151,16 @@ export default function PesananSayaPage() {
         ...item,
         no: index + 1,
     }));
+
+    if (isCheckingAuth) {
+        return (
+            <section className="flex min-h-screen items-center justify-center">
+                <p className="text-sm font-semibold text-[#7D344B]">
+                    Memeriksa akses...
+                </p>
+            </section>
+        );
+    }
 
     return (
         <>

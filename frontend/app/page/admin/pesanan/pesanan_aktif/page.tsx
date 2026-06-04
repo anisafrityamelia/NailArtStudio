@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Eye, Pencil } from "lucide-react";
 import Tabel_Pesanan from "../components/tabel_pesanan";
 import Judul_Halaman from "@/app/components/ui/judul_halaman";
@@ -11,6 +12,7 @@ import {
   getPesananAktifAdmin,
   updateStatusPesananAktif,
 } from "@/app/lib/pesanan";
+import { getCurrentUser } from "@/app/lib/auth";
 import { DetailPesanan } from "../components/detail_pesanan/detail_pesanan_types";
 
 const formatStatus = (status: string) => {
@@ -87,6 +89,8 @@ const sortPesananAktif = (data: DetailPesanan[]) => {
 };
 
 export default function PesananAktifPage() {
+  const router = useRouter();
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [dataPesanan, setDataPesanan] = useState<DetailPesanan[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -98,8 +102,21 @@ export default function PesananAktifPage() {
   const [selectedPesanan, setSelectedPesanan] = useState<DetailPesanan | null>(null);
 
   useEffect(() => {
-    const fetchPesananAktif = async () => {
+    const cekAuthDanFetchPesananAktif = async () => {
       try {
+        const user = await getCurrentUser();
+
+        if (!user) {
+          router.push("/auth/login");
+          return;
+        }
+
+        if (user.role !== "admin") {
+          router.push("/auth/login");
+          return;
+        }
+
+        setIsCheckingAuth(false);
         setLoading(true);
 
         const result = await getPesananAktifAdmin();
@@ -108,55 +125,43 @@ export default function PesananAktifPage() {
           (item: any, index: number) => ({
             no: index + 1,
             id_pesanan: item.id_pesanan,
-
             kode: item.kode_pesanan,
-
             pelanggan: item.pengguna?.nama_pengguna || "-",
-
             layanan: item.layanan?.nama_layanan || "-",
-
             tanggal: item.tanggal_pesanan || "-",
-
             jam: item.jam_pesanan || "-",
-
             status: formatStatus(item.status),
 
-            // detail nail art dan remove
-            bagianKuku: 
+            bagianKuku:
               item.detail_nail_art?.bagian_kuku ||
               item.detail_remove?.bagian_kuku ||
               "-",
 
-            layananTambahan: item.detail_nail_art?.layanan_tambahan || "-",
+            layananTambahan:
+              item.detail_nail_art?.layanan_tambahan || "-",
 
-            // gambar referensi (nail art, press on)
             gambarReferensi:
               item.detail_nail_art?.url_gambar_inspo ||
               item.detail_press_on?.url_gambar_inspo ||
               undefined,
 
-            // detail eyelash
             jenisLash:
               item.detail_eyelash?.jenis_lash || "-",
 
-            // detail press on
             fotoJariKanan:
-              item.detail_press_on?.url_foto_jari_kanan || 
-              undefined,
+              item.detail_press_on?.url_foto_jari_kanan || undefined,
 
             fotoJempolKanan:
-              item.detail_press_on?.url_foto_jempol_kanan || 
-              undefined,
+              item.detail_press_on?.url_foto_jempol_kanan || undefined,
 
             fotoJariKiri:
-              item.detail_press_on?.url_foto_jari_kiri || 
-              undefined,
+              item.detail_press_on?.url_foto_jari_kiri || undefined,
 
             fotoJempolKiri:
-              item.detail_press_on?.url_foto_jempol_kiri || 
-              undefined,
+              item.detail_press_on?.url_foto_jempol_kiri || undefined,
 
-            shapeKuku: item.detail_press_on?.shape_kuku || "-",
+            shapeKuku:
+              item.detail_press_on?.shape_kuku || "-",
 
             metodePengambilan:
               item.detail_press_on?.metode_pengambilan === "antar"
@@ -165,9 +170,9 @@ export default function PesananAktifPage() {
                 ? "Ambil ke studio"
                 : "-",
 
-            alamatPengiriman: item.detail_press_on?.alamat_pengiriman || "-",
+            alamatPengiriman:
+              item.detail_press_on?.alamat_pengiriman || "-",
 
-            // catatan (nail art, press on, eyelash, remove)
             catatan:
               item.detail_nail_art?.catatan ||
               item.detail_press_on?.catatan ||
@@ -175,14 +180,16 @@ export default function PesananAktifPage() {
               item.detail_remove?.catatan ||
               "-",
 
-            // pembayaran
-            kodePembayaran: item.pembayaran?.kode_pembayaran || "-",
+            kodePembayaran:
+              item.pembayaran?.kode_pembayaran || "-",
 
-            nominalPembayaran: item.pembayaran?.nominal_pembayaran || "-",
+            nominalPembayaran:
+              item.pembayaran?.nominal_pembayaran || "-",
 
-            hargaFinal: item.harga_final || "",
+            hargaFinal:
+              item.harga_final || "",
 
-            statusPembayaran: 
+            statusPembayaran:
               item.pembayaran?.status_verifikasi
                 ? item.pembayaran.status_verifikasi
                     .replaceAll("_", " ")
@@ -191,19 +198,21 @@ export default function PesananAktifPage() {
                     )
                 : "-",
 
-            tanggalPembayaran: 
+            tanggalPembayaran:
               item.pembayaran?.tanggal_pembayaran
                 ? item.pembayaran.tanggal_pembayaran.split(" ")[0]
                 : "-",
 
-            tanggalVerifikasi: 
+            tanggalVerifikasi:
               item.pembayaran?.tanggal_verifikasi
                 ? item.pembayaran.tanggal_verifikasi.split(" ")[0]
                 : "-",
 
-            catatanAdmin: item.catatan_admin || "-",
+            catatanAdmin:
+              item.catatan_admin || "-",
 
-            buktiTransfer: item.pembayaran?.url_bukti_pembayaran || undefined,
+            buktiTransfer:
+              item.pembayaran?.url_bukti_pembayaran || undefined,
           })
         );
 
@@ -215,8 +224,8 @@ export default function PesananAktifPage() {
       }
     };
 
-    fetchPesananAktif();
-  }, []);
+    cekAuthDanFetchPesananAktif();
+  }, [router]);
 
   const filteredData = dataPesanan.filter((item) => {
     const matchLayanan =
@@ -233,6 +242,16 @@ export default function PesananAktifPage() {
     ...item,
     no: index + 1,
   }));
+
+  if (isCheckingAuth) {
+    return (
+      <section className="flex min-h-screen items-center justify-center">
+        <p className="text-sm font-semibold text-[#7D344B]">
+          Memeriksa akses...
+        </p>
+      </section>
+    );
+  }
 
   return (
     <>

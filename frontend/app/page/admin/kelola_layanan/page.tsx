@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Judul_Halaman from "@/app/components/ui/judul_halaman";
 import Tabel_Kelola_Layanan, {
   type Baris_Kelola_Layanan,
@@ -13,10 +14,12 @@ import Card_Keunggulan_Beranda from "./components/card_keunggulan_beranda";
 import Card_Galeri_Beranda from "./components/card_galeri_beranda";
 import Card_Kontak_Beranda from "./components/card_kontak_beranda";
 import API_BASE_URL from "@/app/lib/api";
-import { getToken } from "@/app/lib/auth";
+import { getCurrentUser, getToken } from "@/app/lib/auth";
 import { getBerandaAdmin } from "@/app/lib/beranda";
 
 export default function KelolaLayananPage() {
+    const router = useRouter();
+    const [isCheckingAuth, setIsCheckingAuth] = useState(true);
     const [data, setData] = useState<Baris_Kelola_Layanan[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -83,9 +86,26 @@ export default function KelolaLayananPage() {
     }
 
     useEffect(() => {
-        fetchLayanan();
-        fetchBeranda();
-    }, []);
+        const cekAuthDanFetchData = async () => {
+            const user = await getCurrentUser();
+
+            if (!user) {
+                router.push("/auth/login");
+                return;
+            }
+
+            if (user.role !== "admin") {
+                router.push("/auth/login");
+                return;
+            }
+
+            setIsCheckingAuth(false);
+            fetchLayanan();
+            fetchBeranda();
+        };
+
+        cekAuthDanFetchData();
+    }, [router]);
 
     function handleBukaModalEdit(item: Baris_Kelola_Layanan) {
         setDataEdit(item);
@@ -290,6 +310,16 @@ export default function KelolaLayananPage() {
         }
 
         await fetchLayanan();
+    }
+
+    if (isCheckingAuth) {
+        return (
+            <section className="flex min-h-screen items-center justify-center">
+                <p className="text-sm font-semibold text-[#7D344B]">
+                    Memeriksa akses...
+                </p>
+            </section>
+        );
     }
 
     return (

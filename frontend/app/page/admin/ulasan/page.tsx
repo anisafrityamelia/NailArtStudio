@@ -1,17 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Judul_Halaman from "@/app/components/ui/judul_halaman";
 import Filter_Ulasan from "./components/filter_ulasan";
 import Tabel_Ulasan from "./components/tabel_ulasan";
 import Modal_Hide from "@/app/components/ui/modal_hide";
-
 import {
   getUlasanAdmin,
   updateStatusTampilUlasan,
 } from "@/app/lib/ulasan";
-
 import API_BASE_URL from "@/app/lib/api";
+import { getCurrentUser } from "@/app/lib/auth";
 
 export type UlasanAdmin = {
   id_ulasan: number;
@@ -30,6 +30,8 @@ type LayananOption = {
 };
 
 export default function UlasanPage() {
+  const router = useRouter();
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [data, setData] = useState<UlasanAdmin[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -76,8 +78,25 @@ export default function UlasanPage() {
   };
 
   useEffect(() => {
-    ambilDataUlasan();
-  }, []);
+    const cekAuthDanAmbilDataUlasan = async () => {
+      const user = await getCurrentUser();
+
+      if (!user) {
+        router.push("/auth/login");
+        return;
+      }
+
+      if (user.role !== "admin") {
+        router.push("/auth/login");
+        return;
+      }
+
+      setIsCheckingAuth(false);
+      ambilDataUlasan();
+    };
+
+    cekAuthDanAmbilDataUlasan();
+  }, [router]);
 
   useEffect(() => {
     const ambilDataLayanan = async () => {
@@ -115,8 +134,10 @@ export default function UlasanPage() {
       }
     };
 
-    ambilDataLayanan();
-  }, []);
+    if (!isCheckingAuth) {
+      ambilDataLayanan();
+    }
+  }, [isCheckingAuth]);
 
   const filteredData = data
     .filter((item) => {
@@ -183,6 +204,16 @@ export default function UlasanPage() {
         error
       );
     }
+  }
+
+  if (isCheckingAuth) {
+    return (
+      <section className="flex min-h-screen items-center justify-center">
+        <p className="text-sm font-semibold text-[#7D344B]">
+          Memeriksa akses...
+        </p>
+      </section>
+    );
   }
 
   return (

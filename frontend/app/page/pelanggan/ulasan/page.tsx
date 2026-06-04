@@ -1,14 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Judul_Halaman from "@/app/components/ui/judul_halaman";
 import Tabel_Ulasan, { type Baris_Ulasan_Pelanggan } from "./components/tabel_ulasan";
 import Modal_Hapus from "@/app/components/ui/modal_hapus";
 import ModalTambahUlasanPelanggan from "./components/modal_tambah_ulasan_pelanggan";
 import ModalEditUlasanPelanggan from "./components/modal_edit_ulasan_pelanggan";
 import { getUlasanSaya, tambahUlasan, updateUlasan, hapusUlasan } from "@/app/lib/ulasan";
+import { getCurrentUser } from "@/app/lib/auth";
 
 export default function UlasanPage() {
+  const router = useRouter();
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [isModalTambahUlasanOpen, setIsModalTambahUlasanOpen] = useState(false);
   const [isModalEditUlasanOpen, setIsModalEditUlasanOpen] = useState(false);
   const [isModalHapusOpen, setIsModalHapusOpen] = useState(false);
@@ -50,8 +54,25 @@ export default function UlasanPage() {
   };
 
   useEffect(() => {
-    fetchUlasan();
-  }, []);
+    const cekAuthPelanggan = async () => {
+      const user = await getCurrentUser();
+
+      if (!user) {
+        router.push("/auth/login");
+        return;
+      }
+
+      if (user.role !== "pelanggan") {
+        router.push("/auth/login");
+        return;
+      }
+
+      setIsCheckingAuth(false);
+      fetchUlasan();
+    };
+
+    cekAuthPelanggan();
+  }, [router]);
 
   function handleBukaModalTambahUlasan(item: Baris_Ulasan_Pelanggan) {
     setDataUlasan(item);
@@ -93,6 +114,16 @@ export default function UlasanPage() {
     } catch (err: any) {
       alert(err.message || "Gagal menghapus ulasan");
     }
+  }
+
+  if (isCheckingAuth) {
+    return (
+      <section className="flex min-h-screen items-center justify-center">
+        <p className="text-sm font-semibold text-[#7D344B]">
+          Memeriksa akses...
+        </p>
+      </section>
+    );
   }
 
   return (

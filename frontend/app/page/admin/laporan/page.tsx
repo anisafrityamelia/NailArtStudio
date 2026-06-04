@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Judul_Halaman from "@/app/components/ui/judul_halaman";
 import FilterLaporan from "./components/filter_laporan";
 import CardStatistik from "./components/card_statistik";
@@ -15,8 +16,11 @@ import {
 } from "@/app/lib/laporan";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { getCurrentUser } from "@/app/lib/auth";
 
 export default function LaporanPage() {
+  const router = useRouter();
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [dataLaporan, setDataLaporan] = useState<BarisLaporan[]>([]);
   const [statistik, setStatistik] = useState<StatistikLaporan[]>([]);
   const [layananTerlaris, setLayananTerlaris] = useState<LayananTerlarisType[]>([]);
@@ -47,8 +51,25 @@ export default function LaporanPage() {
   }
 
   useEffect(() => {
-    ambilLaporan();
-  }, []);
+    const cekAuthDanAmbilLaporan = async () => {
+      const user = await getCurrentUser();
+
+      if (!user) {
+        router.push("/auth/login");
+        return;
+      }
+
+      if (user.role !== "admin") {
+        router.push("/auth/login");
+        return;
+      }
+
+      setIsCheckingAuth(false);
+      ambilLaporan();
+    };
+
+    cekAuthDanAmbilLaporan();
+  }, [router]);
   
   const handleExport = () => {
     const doc = new jsPDF();
@@ -236,6 +257,16 @@ export default function LaporanPage() {
 
     doc.save("laporan-pendapatan.pdf");
   };
+
+  if (isCheckingAuth) {
+    return (
+      <section className="flex min-h-screen items-center justify-center">
+        <p className="text-sm font-semibold text-[#7D344B]">
+          Memeriksa akses...
+        </p>
+      </section>
+    );
+  }
 
   return (
     <section>

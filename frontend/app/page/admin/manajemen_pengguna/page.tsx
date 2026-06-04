@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 import Judul_Halaman from "@/app/components/ui/judul_halaman";
 import Tabel_Manajemen_Pengguna, {
@@ -14,9 +15,11 @@ import ModalEditManajemenPengguna, {
 } from "./components/modal_edit_manajemen_pengguna";
 import Modal_Hapus from "@/app/components/ui/modal_hapus";
 import API_BASE_URL from "@/app/lib/api";
-import { getToken } from "@/app/lib/auth";
+import { getCurrentUser, getToken } from "@/app/lib/auth";
 
 export default function ManajemenPenggunaPage() {
+    const router = useRouter();
+    const [isCheckingAuth, setIsCheckingAuth] = useState(true);
     const [data, setData] = useState<Baris_Manajemen_Pengguna[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -201,8 +204,25 @@ export default function ManajemenPenggunaPage() {
     }
 
     useEffect(() => {
-        fetchPengguna();
-    }, []);
+        const cekAuthDanFetchPengguna = async () => {
+            const user = await getCurrentUser();
+
+            if (!user) {
+                router.push("/auth/login");
+                return;
+            }
+
+            if (user.role !== "admin") {
+                router.push("/auth/login");
+                return;
+            }
+
+            setIsCheckingAuth(false);
+            fetchPengguna();
+        };
+
+        cekAuthDanFetchPengguna();
+    }, [router]);
 
     function handleBukaModalEdit(item: Baris_Manajemen_Pengguna) {
         setDataEdit(item);
@@ -241,6 +261,16 @@ export default function ManajemenPenggunaPage() {
         ...item,
         no: index + 1,
     }));
+
+    if (isCheckingAuth) {
+        return (
+            <section className="flex min-h-screen items-center justify-center">
+                <p className="text-sm font-semibold text-[#7D344B]">
+                    Memeriksa akses...
+                </p>
+            </section>
+        );
+    }
 
     return (
         <>
