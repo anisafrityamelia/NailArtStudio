@@ -126,7 +126,7 @@ export default function FormRemove({ layanan }: Props) {
               setJamPesanan("");
             }}
             min={new Date().toISOString().split("T")[0]}
-            className="w-full rounded-md border border-[#dd98ad] bg-white px-3 py-2 text-xs text-[#7D344B] outline-none shadow-soft-text"
+            className="w-full rounded-md border border-[#dd98ad] bg-white px-3 py-2 text-xs text-[#7D344B] outline-none shadow-soft-text focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0]"
           />
 
           <p className="text-[11px] text-[#7D344B]/70">
@@ -229,14 +229,14 @@ export default function FormRemove({ layanan }: Props) {
           onChange={(e) => setCatatan(e.target.value)}
           placeholder="Contoh: remove gel polish / nail art lama"
           rows={3}
-          className="rounded-md border border-[#dd98ad] bg-white px-3 py-2 text-xs text-[#7D344B] outline-none"
+          className="rounded-md border border-[#dd98ad] bg-white px-3 py-2 text-xs text-[#7D344B] outline-none focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0]"
         />
       </div>
 
       <button
         type="submit"
         disabled={isSubmitting || statusJadwal === "Tutup"}
-        className="w-full cursor-pointer rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-4 py-2 text-xs font-medium text-white shadow-soft-text disabled:cursor-not-allowed disabled:opacity-60"
+        className="w-full cursor-pointer rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-4 py-2 text-xs font-medium text-white shadow-soft-text disabled:cursor-not-allowed disabled:opacity-60 transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95"
       >
         {isSubmitting ? "Memproses..." : "Lanjut ke Pembayaran"}
       </button>

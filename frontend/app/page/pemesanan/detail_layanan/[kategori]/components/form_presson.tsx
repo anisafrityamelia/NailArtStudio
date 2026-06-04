@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { X } from "lucide-react";
 import { bookingPressOn } from "@/app/lib/pesanan";
 
 type Layanan = {
@@ -12,9 +11,10 @@ type Layanan = {
 
 type Props = {
   layanan: Layanan;
+  onPreview: (src: string) => void;
 };
 
-export default function FormPressOn({ layanan }: Props) {
+export default function FormPressOn({ layanan, onPreview }: Props) {
   const router = useRouter();
 
   const [gambarInspo, setGambarInspo] = useState<File | null>(null);
@@ -28,7 +28,6 @@ export default function FormPressOn({ layanan }: Props) {
   const [alamatPengiriman, setAlamatPengiriman] = useState("");
   const [catatan, setCatatan] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [previewGambar, setPreviewGambar] = useState<string | null>(null);
 
   const pilihanShapeKuku = [
     "Almond",
@@ -100,7 +99,7 @@ export default function FormPressOn({ layanan }: Props) {
           label="Panduan Foto Jari"
           src="/contoh-foto.jpeg"
           alt="Panduan Foto Jari"
-          onClick={() => setPreviewGambar("/contoh-foto.jpeg")}
+          onClick={() => onPreview("/contoh-foto.jpeg")}
         />
 
         <InputFile
@@ -127,7 +126,7 @@ export default function FormPressOn({ layanan }: Props) {
           label="Panduan Shape Kuku"
           src="/shape-kuku.jpeg"
           alt="Panduan Shape Kuku"
-          onClick={() => setPreviewGambar("/shape-kuku.jpeg")}
+          onClick={() => onPreview("/shape-kuku.jpeg")}
         />
 
         <div>
@@ -215,28 +214,6 @@ export default function FormPressOn({ layanan }: Props) {
           {isSubmitting ? "Memproses..." : "Pesan"}
         </button>
       </form>
-
-      {previewGambar && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 px-4 py-6">
-          <div className="relative w-full max-w-4xl rounded-lg bg-white p-3 shadow-2xl">
-            <button
-              type="button"
-              onClick={() => setPreviewGambar(null)}
-              className="absolute right-3 top-3 z-10 cursor-pointer rounded-full bg-white/90 p-1 text-[#7D344B] hover:bg-[#f8dfe8]"
-            >
-              <X size={20} />
-            </button>
-
-            <div className="flex max-h-[80vh] items-center justify-center p-4">
-              <img
-                src={previewGambar}
-                alt="Preview panduan"
-                className="max-h-[72vh] w-auto max-w-full object-contain"
-              />
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }
