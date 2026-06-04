@@ -29,6 +29,9 @@ export default function FormPressOn({ layanan, onPreview }: Props) {
   const [catatan, setCatatan] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const [errorFotoJari, setErrorFotoJari] = useState("");
+  const [errorAlamat, setErrorAlamat] = useState("");
+
   const pilihanShapeKuku = [
     "Almond",
     "Square",
@@ -41,18 +44,21 @@ export default function FormPressOn({ layanan, onPreview }: Props) {
   const handleSubmitPressOn = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    setErrorFotoJari("");
+    setErrorAlamat("");
+
     if (
       !fotoJariKanan ||
       !fotoJempolKanan ||
       !fotoJariKiri ||
       !fotoJempolKiri
     ) {
-      alert("Semua foto jari wajib diunggah");
+      setErrorFotoJari("Semua foto jari wajib diunggah");
       return;
     }
 
     if (metodePengambilan === "antar" && !alamatPengiriman) {
-      alert("Alamat pengiriman wajib diisi");
+      setErrorAlamat("Alamat pengiriman wajib diisi");
       return;
     }
 
@@ -79,8 +85,8 @@ export default function FormPressOn({ layanan, onPreview }: Props) {
       const result = await bookingPressOn(formData);
 
       router.push(`/page/pemesanan/pembayaran?id=${result.data.id_pesanan}`);
-    } catch (error: any) {
-      alert(error.message || "Booking press on gagal");
+    } catch (error) {
+      console.error("Booking press on gagal:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -104,23 +110,41 @@ export default function FormPressOn({ layanan, onPreview }: Props) {
 
         <InputFile
           label="Unggah Foto Jari Kanan"
-          onChange={setFotoJariKanan}
+          onChange={(file) => {
+            setFotoJariKanan(file);
+            setErrorFotoJari("");
+          }}
         />
 
         <InputFile
           label="Unggah Foto Jempol Kanan"
-          onChange={setFotoJempolKanan}
+          onChange={(file) => {
+            setFotoJempolKanan(file);
+            setErrorFotoJari("");
+          }}
         />
 
         <InputFile
           label="Unggah Foto Jari Kiri"
-          onChange={setFotoJariKiri}
+          onChange={(file) => {
+            setFotoJariKiri(file);
+            setErrorFotoJari("");
+          }}
         />
 
         <InputFile
           label="Unggah Foto Jempol Kiri"
-          onChange={setFotoJempolKiri}
+          onChange={(file) => {
+            setFotoJempolKiri(file);
+            setErrorFotoJari("");
+          }}
         />
+
+        {errorFotoJari && (
+          <p className="text-[11px] text-red-500">
+            {errorFotoJari}
+          </p>
+        )}
 
         <PanduanPreview
           label="Panduan Shape Kuku"
@@ -158,7 +182,10 @@ export default function FormPressOn({ layanan, onPreview }: Props) {
               name="metodePengambilan"
               value="ambil"
               checked={metodePengambilan === "ambil"}
-              onChange={(e) => setMetodePengambilan(e.target.value)}
+              onChange={(e) => {
+                setMetodePengambilan(e.target.value);
+                setErrorAlamat("");
+              }}
               className="h-4 w-4 cursor-pointer accent-[#7D344B]"
             />
             Ambil ke studio
@@ -170,7 +197,10 @@ export default function FormPressOn({ layanan, onPreview }: Props) {
               name="metodePengambilan"
               value="antar"
               checked={metodePengambilan === "antar"}
-              onChange={(e) => setMetodePengambilan(e.target.value)}
+              onChange={(e) => {
+                setMetodePengambilan(e.target.value);
+                setErrorAlamat("");
+              }}
               className="h-4 w-4 cursor-pointer accent-[#7D344B]"
             />
             Diantar ke rumah (ongkir menyesuaikan jarak)
@@ -185,10 +215,18 @@ export default function FormPressOn({ layanan, onPreview }: Props) {
 
             <textarea
               value={alamatPengiriman}
-              onChange={(e) => setAlamatPengiriman(e.target.value)}
+              onChange={(e) => {
+                setAlamatPengiriman(e.target.value);
+                setErrorAlamat("");
+              }}
               rows={3}
               className="mt-2 w-full resize-none rounded-md border border-[#dd98ad] bg-white px-3 py-2 text-xs text-[#7D344B] outline-none shadow-soft-text focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0] sm:text-sm"
             />
+            {errorAlamat && (
+              <p className="mt-1 text-[11px] text-red-500">
+                {errorAlamat}
+              </p>
+            )}
           </div>
         )}
 

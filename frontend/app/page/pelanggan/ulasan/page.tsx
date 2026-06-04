@@ -111,8 +111,8 @@ export default function UlasanPage() {
       await hapusUlasan(dataHapus.id_ulasan);
       handleTutupModalHapus();
       fetchUlasan();
-    } catch (err: any) {
-      alert(err.message || "Gagal menghapus ulasan");
+    } catch (error) {
+      console.error("Gagal menghapus ulasan:", error);
     }
   }
 
@@ -170,8 +170,8 @@ export default function UlasanPage() {
             await tambahUlasan(formData);
             handleTutupModalTambahUlasan();
             fetchUlasan();
-          } catch (err: any) {
-            alert(err.message || "Gagal menyimpan ulasan");
+          } catch (error) {
+              console.error("Gagal menyimpan ulasan:", error);
           }
         }}
       />
@@ -196,8 +196,8 @@ export default function UlasanPage() {
             await updateUlasan(payload.id_ulasan, formData);
             handleTutupModalEditUlasan();
             fetchUlasan();
-          } catch (err: any) {
-            alert(err.message || "Gagal memperbarui ulasan");
+          } catch (error) {
+            console.error("Gagal memperbarui ulasan:", error);
           }
         }}
       />

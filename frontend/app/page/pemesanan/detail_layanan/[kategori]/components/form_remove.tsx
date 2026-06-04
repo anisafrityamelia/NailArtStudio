@@ -25,6 +25,8 @@ export default function FormRemove({ layanan }: Props) {
   const [isLoadingSlot, setIsLoadingSlot] = useState(false);
   const [statusJadwal, setStatusJadwal] = useState<"Default" | "Buka" | "Tutup">("Default");
   const [catatanJadwal, setCatatanJadwal] = useState<string | null>(null);
+  const [errorJam, setErrorJam] = useState("");
+  const [errorBagianKuku, setErrorBagianKuku] = useState("");
 
   const pilihanBagianKuku = ["Jari tangan", "Jari kaki"];
 
@@ -60,8 +62,8 @@ export default function FormRemove({ layanan }: Props) {
         setSlotBooking(data.slots);
         setStatusJadwal(data.status_jadwal);
         setCatatanJadwal(data.catatan_jadwal);
-      } catch (error: any) {
-        alert(error.message || "Gagal mengambil slot booking");
+      } catch (error) {
+        console.error("Gagal mengambil slot booking:", error);
         setSlotBooking([]);
         setStatusJadwal("Default");
         setCatatanJadwal(null);
@@ -76,13 +78,20 @@ export default function FormRemove({ layanan }: Props) {
   const handleSubmitRemove = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (statusJadwal === "Tutup") {
-      alert("Studio tutup pada tanggal ini. Silakan pilih tanggal lain.");
+    setErrorJam("");
+    setErrorBagianKuku("");
+
+    if (!jamPesanan) {
+      setErrorJam("Silakan pilih jam terlebih dahulu");
       return;
     }
 
-    if (!tanggalPesanan || !jamPesanan || bagianKuku.length === 0) {
-      alert("Tanggal, jam, dan bagian kuku wajib diisi");
+    if (bagianKuku.length === 0) {
+      setErrorBagianKuku("Silakan pilih bagian kuku");
+      return;
+    }
+
+    if (statusJadwal === "Tutup") {
       return;
     }
 
@@ -100,8 +109,8 @@ export default function FormRemove({ layanan }: Props) {
       const result = await bookingRemove(formData);
 
       router.push(`/page/pemesanan/pembayaran?id=${result.data.id_pesanan}`);
-    } catch (error: any) {
-      alert(error.message || "Booking remove gagal");
+    } catch (error) {
+      console.error("Booking remove gagal:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -126,6 +135,7 @@ export default function FormRemove({ layanan }: Props) {
               setJamPesanan("");
             }}
             min={new Date().toISOString().split("T")[0]}
+            required
             className="w-full rounded-md border border-[#dd98ad] bg-white px-3 py-2 text-xs text-[#7D344B] outline-none shadow-soft-text focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0]"
           />
 
@@ -162,7 +172,10 @@ export default function FormRemove({ layanan }: Props) {
                   key={slot.jam}
                   type="button"
                   disabled={!tanggalPesanan || !slot.tersedia}
-                  onClick={() => setJamPesanan(slot.jam)}
+                  onClick={() => {
+                    setJamPesanan(slot.jam);
+                    setErrorJam("");
+                  }}
                   className={`rounded-md border px-3 py-2 text-xs font-medium transition ${
                     jamPesanan === slot.jam
                       ? "border-[#E45082] bg-[#f8dfe8] text-[#7D344B]"
@@ -188,6 +201,11 @@ export default function FormRemove({ layanan }: Props) {
             </p>
           )}
         </div>
+        {errorJam && (
+          <p className="text-[11px] text-red-500">
+            {errorJam}
+          </p>
+        )}
       </div>
 
       <div className="flex flex-col gap-2">
@@ -208,15 +226,21 @@ export default function FormRemove({ layanan }: Props) {
               <input
                 type="checkbox"
                 checked={bagianKuku.includes(item)}
-                onChange={() =>
-                  handleCheckboxChange(item, bagianKuku, setBagianKuku)
-                }
+                onChange={() => {
+                  handleCheckboxChange(item, bagianKuku, setBagianKuku);
+                  setErrorBagianKuku("");
+                }}
                 className="accent-[#E45082]"
               />
               {item}
             </label>
           ))}
         </div>
+        {errorBagianKuku && (
+          <p className="text-[11px] text-red-500">
+            {errorBagianKuku}
+          </p>
+        )}
       </div>
 
       <div className="flex flex-col gap-1">

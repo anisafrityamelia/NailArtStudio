@@ -18,6 +18,9 @@ export default function ModalGantiPassword({ isOpen, onClose }: Props) {
   const [lihatSandiLama, setLihatSandiLama] = useState(false);
   const [lihatSandiBaru, setLihatSandiBaru] = useState(false);
   const [lihatKonfirmasiSandi, setLihatKonfirmasiSandi] = useState(false);
+  const [errorSandiLama, setErrorSandiLama] = useState("");
+  const [errorSandiBaru, setErrorSandiBaru] = useState("");
+  const [errorKonfirmasi, setErrorKonfirmasi] = useState("");
 
   if (!isOpen) return null;
 
@@ -28,18 +31,30 @@ export default function ModalGantiPassword({ isOpen, onClose }: Props) {
     setLihatSandiLama(false);
     setLihatSandiBaru(false);
     setLihatKonfirmasiSandi(false);
+    setErrorSandiLama("");
+    setErrorSandiBaru("");
+    setErrorKonfirmasi("");
   };
 
   const handleCloseAndReset = () => {
     resetForm();
     onClose();
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    setErrorSandiLama("");
+    setErrorSandiBaru("");
+    setErrorKonfirmasi("");
+
+    if (sandiBaru.length < 6) {
+      setErrorSandiBaru("Sandi baru minimal 6 karakter");
+      return;
+    }
+
     if (sandiBaru !== konfirmasiSandi) {
-      alert("Konfirmasi kata sandi tidak cocok");
+      setErrorKonfirmasi("Konfirmasi kata sandi tidak cocok");
       return;
     }
 
@@ -65,15 +80,13 @@ export default function ModalGantiPassword({ isOpen, onClose }: Props) {
       const result = await response.json();
 
       if (!response.ok) {
-        alert(result.message || "Gagal mengubah kata sandi");
+        setErrorSandiLama(result.message || "Sandi lama tidak sesuai");
         return;
       }
 
-      alert(result.message || "Kata sandi berhasil diubah");
-
       handleCloseAndReset();
     } catch (error) {
-      alert("Gagal terhubung ke server");
+      console.error("Gagal terhubung ke server:", error);
     }
   };
 
@@ -113,7 +126,10 @@ export default function ModalGantiPassword({ isOpen, onClose }: Props) {
               <input
                 type={lihatSandiLama ? "text" : "password"}
                 value={sandiLama}
-                onChange={(e) => setSandiLama(e.target.value)}
+                onChange={(e) => {
+                  setSandiLama(e.target.value);
+                  setErrorSandiLama("");
+                }}
                 autoComplete="current-password"
                 className="hide-password-toggle w-full rounded-lg border border-[#dd98ad] bg-white px-4 py-2 pr-11 text-sm text-[#7d344b] outline-none transition focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0] cursor-text shadow-soft-text"
                 placeholder="Masukkan sandi lama"
@@ -131,6 +147,11 @@ export default function ModalGantiPassword({ isOpen, onClose }: Props) {
                 {lihatSandiLama ? <Eye size={18} /> : <EyeOff size={18} />}
               </button>
             </div>
+            {errorSandiLama && (
+              <p className="mt-1 text-xs text-red-500 sm:text-sm">
+                {errorSandiLama}
+              </p>
+            )}
           </div>
 
           {/* Sandi Baru */}
@@ -143,7 +164,10 @@ export default function ModalGantiPassword({ isOpen, onClose }: Props) {
               <input
                 type={lihatSandiBaru ? "text" : "password"}
                 value={sandiBaru}
-                onChange={(e) => setSandiBaru(e.target.value)}
+                onChange={(e) => {
+                  setSandiBaru(e.target.value);
+                  setErrorSandiBaru("");
+                }}
                 autoComplete="new-password"
                 className="hide-password-toggle w-full rounded-lg border border-[#dd98ad] bg-white px-4 py-2 pr-11 text-sm text-[#7d344b] outline-none transition focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0] cursor-text shadow-soft-text"
                 placeholder="Masukkan sandi baru"
@@ -161,6 +185,11 @@ export default function ModalGantiPassword({ isOpen, onClose }: Props) {
                 {lihatSandiBaru ? <Eye size={18} /> : <EyeOff size={18} />}
               </button>
             </div>
+            {errorSandiBaru && (
+              <p className="mt-1 text-xs text-red-500 sm:text-sm">
+                {errorSandiBaru}
+              </p>
+            )}
           </div>
 
           {/* Konfirmasi */}
@@ -173,7 +202,10 @@ export default function ModalGantiPassword({ isOpen, onClose }: Props) {
               <input
                 type={lihatKonfirmasiSandi ? "text" : "password"}
                 value={konfirmasiSandi}
-                onChange={(e) => setKonfirmasiSandi(e.target.value)}
+                onChange={(e) => {
+                  setKonfirmasiSandi(e.target.value);
+                  setErrorKonfirmasi("");
+                }}
                 autoComplete="new-password"
                 className="hide-password-toggle w-full rounded-lg border border-[#dd98ad] bg-white px-4 py-2 pr-11 text-sm text-[#7d344b] outline-none transition focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0] cursor-text shadow-soft-text"
                 placeholder="Ulangi sandi baru"
@@ -197,6 +229,11 @@ export default function ModalGantiPassword({ isOpen, onClose }: Props) {
                 )}
               </button>
             </div>
+            {errorKonfirmasi && (
+              <p className="mt-1 text-xs text-red-500 sm:text-sm">
+                {errorKonfirmasi}
+              </p>
+            )}
           </div>
 
           {/* Tombol */}

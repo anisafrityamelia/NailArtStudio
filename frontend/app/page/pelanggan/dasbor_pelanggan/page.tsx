@@ -58,11 +58,9 @@ export default function DashboardPelangganPage() {
       setEmail(updatedUser.email || "");
       setNoHp(updatedUser.no_hp || "");
 
-      alert("Profil berhasil diperbarui");
-
       setIsEditing(false);
-    } catch (error: any) {
-      alert(error.message || "Gagal memperbarui profil");
+    } catch (error) {
+      console.error("Gagal memperbarui profil:", error);
     }
   };
 
@@ -78,9 +76,8 @@ export default function DashboardPelangganPage() {
 
       setFotoProfil(result.url_foto);
 
-      alert("Foto profil berhasil diperbarui");
-    } catch (error: any) {
-      alert(error.message || "Gagal upload foto profil");
+    } catch (error) {
+      console.error("Gagal upload foto profil:", error);
     }
   };
 

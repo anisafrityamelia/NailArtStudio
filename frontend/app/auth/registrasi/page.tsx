@@ -62,7 +62,6 @@ export default function RegistrasiPage() {
       localStorage.setItem("token", result.token);
       localStorage.setItem("user", JSON.stringify(result.user));
 
-      alert("Registrasi berhasil!");
       router.push("/auth/login");
     } catch (error) {
       setError("Tidak bisa terhubung ke server. Pastikan backend Laravel sudah berjalan.");
