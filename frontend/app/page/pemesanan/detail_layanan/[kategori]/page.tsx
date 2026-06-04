@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Plus } from "lucide-react";
+import { ArrowLeft, Plus, X } from "lucide-react";
 import API_BASE_URL from "@/app/lib/api";
 import BottomSheetPemesanan from "./components/bottom_sheet_pemesanan";
 import FormNailArt from "./components/form_nail_art";
@@ -52,6 +52,8 @@ export default function DetailLayananPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [previewGambar, setPreviewGambar] = useState<string | null>(null);
+  const [showBookingHint, setShowBookingHint] = useState(true);
 
   const formatRupiah = (harga: number) => {
     return new Intl.NumberFormat("id-ID", {
@@ -92,6 +94,14 @@ export default function DetailLayananPage() {
       fetchDetailLayanan();
     }
   }, [kategori]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowBookingHint(false);
+    }, 6000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   if (loading) {
     return (
@@ -264,13 +274,24 @@ export default function DetailLayananPage() {
         </section>
       </div>
 
-      <button
-        type="button"
-        onClick={() => setIsFormOpen(true)}
-        className="fixed bottom-6 right-6 z-30 flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-gradient-to-r from-[#E45082] to-[#7D344B] text-white shadow-[0_10px_25px_rgba(125,52,75,0.35)] transition-all duration-200 hover:-translate-y-1 hover:opacity-95"
-      >
-        <Plus size={26} />
-      </button>
+      <div className="fixed bottom-6 right-6 z-30 flex items-center gap-3">
+        {showBookingHint && !isFormOpen && (
+          <div className="animate-pulse rounded-3xl border border-[#dd98ad] bg-[#ffecf2] px-5 py-3 text-sm font-semibold text-[#7D344B] shadow-[0_8px_20px_rgba(125,52,75,0.25)]">
+            Klik di sini untuk pesan
+          </div>
+        )}
+
+        <button
+          type="button"
+          onClick={() => {
+            setIsFormOpen(true);
+            setShowBookingHint(false);
+          }}
+          className="flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-gradient-to-r from-[#E45082] to-[#7D344B] text-white shadow-[0_10px_25px_rgba(125,52,75,0.35)] transition-all duration-200 hover:-translate-y-1 hover:opacity-95"
+        >
+          <Plus size={26} />
+        </button>
+      </div>
 
       <BottomSheetPemesanan
         isOpen={isFormOpen}
@@ -283,7 +304,10 @@ export default function DetailLayananPage() {
         )}
 
         {layanan.kategori_layanan === "presson" && (
-          <FormPressOn layanan={layanan} />
+          <FormPressOn
+            layanan={layanan}
+            onPreview={setPreviewGambar}
+          />
         )}
 
         {layanan.kategori_layanan === "eyelash" && (
@@ -301,6 +325,28 @@ export default function DetailLayananPage() {
             <FormPlaceholderLayanan namaLayanan={layanan.nama_layanan} />
           )}
       </BottomSheetPemesanan>
+
+      {previewGambar && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 px-4 py-6">
+          <div className="relative w-full max-w-4xl rounded-lg bg-white p-3 shadow-2xl">
+            <button
+              type="button"
+              onClick={() => setPreviewGambar(null)}
+              className="absolute right-3 top-3 z-10 cursor-pointer rounded-full bg-white/90 p-1 text-[#7D344B] hover:bg-[#f8dfe8]"
+            >
+              <X size={20} />
+            </button>
+
+            <div className="flex max-h-[80vh] items-center justify-center p-4">
+              <img
+                src={previewGambar}
+                alt="Preview panduan"
+                className="max-h-[72vh] w-auto max-w-full object-contain"
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
