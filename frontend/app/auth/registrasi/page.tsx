@@ -122,7 +122,7 @@ export default function RegistrasiPage() {
                       const value = e.target.value.replace(/\D/g, "");
                       setNoHp(value);
                     }}
-                    placeholder="Masukkan No HP (Aktif)"
+                    placeholder="Masukkan No WA (Aktif)"
                     className="h-9 w-full rounded-md border border-[#dd98ad] bg-[#f7dbe4]/80 px-3 text-sm text-[#7D344B] outline-none transition placeholder:text-[#a97084] focus:border-[#c75b82] focus:ring-2 focus:ring-[#e8b2c4] shadow-soft-text"
                     required
                   />

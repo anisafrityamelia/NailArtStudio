@@ -182,18 +182,18 @@ export default function ModalEditUlasanPelanggan({
                             className="w-full rounded-md border border-[#dd98ad] bg-white px-3 py-1.5 text-xs text-[#7D344B] outline-none shadow-soft-text sm:text-sm file:mr-3 file:rounded-md file:border-0 file:bg-[#d88fa5] file:px-3 file:py-1 file:text-white file:bg-[#e6b1c2] hover:file:bg-[#d996ad] file:cursor-pointer"
                         />
 
-                        {gambar && (
-                            <p className="text-[11px] text-[#7D344B]/80">
-                                File dipilih: {gambar}
-                            </p>
-                        )}
-
                         {previewGambar && (
-                            <img
-                                src={previewGambar}
-                                alt="Preview gambar ulasan"
-                                className="mt-2 h-24 w-24 rounded-md border border-[#dd98ad] object-cover"
-                            />
+                            <div className="mt-2 flex flex-col gap-2">
+                                <p className="text-[10px] text-[#A36A7D]/80">
+                                    Preview Gambar
+                                </p>
+
+                                <img
+                                    src={previewGambar}
+                                    alt="Preview gambar ulasan"
+                                    className="h-24 w-24 rounded-md border border-[#dd98ad] object-cover"
+                                />
+                            </div>
                         )}
                     </div>
                     <div>
