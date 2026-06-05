@@ -286,16 +286,16 @@ export default function PesananAktifPage() {
           data={filteredData}
           highlightMenungguKonfirmasi={true}
           renderActions={(item) => (
-            <div className="flex flex-nowrap items-center justify-center gap-1 sm:gap-2">
+            <div className="flex flex-col items-center justify-center gap-0.5 sm:flex-row sm:gap-2">
               <button
                 type="button"
                 onClick={() => {
                   setSelectedPesanan(item);
                   setOpenModalDetail(true);
                 }}
-                className="flex shrink-0 items-center gap-1 whitespace-nowrap rounded bg-gradient-to-r from-[#E45082] to-[#7D344B] px-1.5 py-1 text-[10px] text-white transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 cursor-pointer sm:px-2 sm:text-sm shadow-soft-text"
+                className="flex shrink-0 items-center gap-0.5 whitespace-nowrap rounded bg-gradient-to-r from-[#E45082] to-[#7D344B] px-1 py-0.5 text-[8px] text-white transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 cursor-pointer sm:gap-1 sm:px-2 sm:py-1 sm:text-sm shadow-soft-text"
               >
-                <Eye size={15} /> Detail
+                <Eye size={12} className="sm:w-[15px] sm:h-[15px]" /> Detail
               </button>
 
               <button
@@ -304,9 +304,9 @@ export default function PesananAktifPage() {
                   setSelectedPesanan(item);
                   setOpenModalEdit(true);
                 }}
-                className="flex shrink-0 items-center gap-1 whitespace-nowrap rounded bg-gradient-to-r from-[#E45082] to-[#7D344B] px-1.5 py-1 text-[10px] text-white transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 cursor-pointer sm:px-2 sm:text-sm shadow-soft-text"
+                className="flex shrink-0 items-center gap-0.5 whitespace-nowrap rounded bg-gradient-to-r from-[#E45082] to-[#7D344B] px-1 py-0.5 text-[8px] text-white transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 cursor-pointer sm:gap-1 sm:px-2 sm:py-1 sm:text-sm shadow-soft-text"
               >
-                <Pencil size={15} /> Edit
+                <Pencil size={12} className="sm:w-[15px] sm:h-[15px]" /> Edit
               </button>
             </div>
           )}

@@ -235,15 +235,15 @@ export default function RiwayatPesananPage() {
         <Tabel_Pesanan
           data={filteredData}
           renderActions={(item) => (
-            <div className="flex justify-center">
+            <div className="items-center justify-center gap-0.5 sm:flex-row sm:gap-2">
               <button
                 type="button"
                 onClick={() => {
                   setSelectedPesanan(item);
                   setOpenModal(true);
                 }}
-                className="flex shrink-0 items-center gap-1 whitespace-nowrap rounded bg-gradient-to-r from-[#E45082] to-[#7D344B] px-1.5 py-1 text-[10px] text-white transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 cursor-pointer sm:px-2 sm:text-sm shadow-soft-text">
-                <Eye size={15} /> Detail 
+                className="flex shrink-0 items-center gap-0.5 whitespace-nowrap rounded bg-gradient-to-r from-[#E45082] to-[#7D344B] px-1 py-0.5 text-[8px] text-white transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 cursor-pointer sm:gap-1 sm:px-2 sm:py-1 sm:text-sm shadow-soft-text">
+                <Eye size={12} className="sm:w-[15px] sm:h-[15px]" /> Detail 
               </button>
             </div>
           )}
