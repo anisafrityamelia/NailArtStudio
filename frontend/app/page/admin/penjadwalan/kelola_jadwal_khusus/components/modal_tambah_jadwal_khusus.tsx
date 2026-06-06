@@ -14,6 +14,9 @@ type PropsModalTambahJadwalKhusus = {
         catatan: string;
     }) => void;
     errorJam?: string;
+    errorTanggal?: string;
+    clearErrorTanggal?: () => void;
+    clearErrorJam?: () => void;
 };
 
 export default function ModalTambahJadwalKhusus({
@@ -21,6 +24,9 @@ export default function ModalTambahJadwalKhusus({
     onClose,
     onSubmit,
     errorJam,
+    errorTanggal,
+    clearErrorTanggal,
+    clearErrorJam,
 }: PropsModalTambahJadwalKhusus) {
     const [tanggal, setTanggal] = useState("");
     const [status, setStatus] = useState("Buka");
@@ -84,11 +90,19 @@ export default function ModalTambahJadwalKhusus({
                         <input
                             type="date"
                             value={tanggal}
-                            onChange={(e) => setTanggal(e.target.value)}
+                            onChange={(e) => {
+                                setTanggal(e.target.value);
+                                clearErrorTanggal?.();
+                            }}
                             min={new Date().toISOString().split("T")[0]}
                             required
                             className="w-full cursor-pointer rounded-md border border-[#dd98ad] bg-white px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0] sm:text-sm"
                         />
+                        {errorTanggal && (
+                            <p className="text-xs text-red-500 sm:text-sm">
+                                {errorTanggal}
+                            </p>
+                        )}
                     </div>
 
                     <div className="flex flex-col gap-2">
@@ -142,7 +156,10 @@ export default function ModalTambahJadwalKhusus({
                             <input
                                 type="time"
                                 value={jamTutup}
-                                onChange={(e) => setJamTutup(e.target.value)}
+                                onChange={(e) => {
+                                    setJamTutup(e.target.value);
+                                    clearErrorJam?.();
+                                }}
                                 required={status === "Buka"}
                                 disabled={status === "Tutup"}
                                 className="w-full cursor-pointer rounded-md border border-[#dd98ad] bg-white px-3 py-2 text-xs text-[#7D344B] outline-none transition shadow-soft-text focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0] disabled:cursor-not-allowed disabled:bg-[#f5dfe7] disabled:text-[#b57b8d] sm:text-sm"

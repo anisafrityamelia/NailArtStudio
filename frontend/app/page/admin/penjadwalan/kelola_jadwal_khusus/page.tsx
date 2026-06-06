@@ -41,6 +41,8 @@ export default function KelolaJadwalKhususPage() {
 
   const [errorJamTambah, setErrorJamTambah] = useState("");
   const [errorJamEdit, setErrorJamEdit] = useState("");
+  const [errorTanggalTambah, setErrorTanggalTambah] = useState("");
+  const [errorTanggalEdit, setErrorTanggalEdit] = useState("");
 
   useEffect(() => {
     const cekAuthDanAmbilJadwalKhusus = async () => {
@@ -90,6 +92,7 @@ export default function KelolaJadwalKhususPage() {
   function handleBukaModalEdit(item: JadwalKhusus) {
     setDataEdit(item);
     setErrorJamEdit("");
+    setErrorTanggalEdit("");
     setIsModalEditOpen(true);
   }
 
@@ -97,6 +100,7 @@ export default function KelolaJadwalKhususPage() {
     setIsModalEditOpen(false);
     setDataEdit(null);
     setErrorJamEdit("");
+    setErrorTanggalEdit("");
   }
 
   function handleBukaModalHapus(item: JadwalKhusus) {
@@ -116,6 +120,17 @@ export default function KelolaJadwalKhususPage() {
     jamTutup: string;
     catatan: string;
   }) {
+    const tanggalSudahAda = data.some(
+      (item) => item.tanggal === payload.tanggal
+    );
+
+    if (tanggalSudahAda) {
+      setErrorTanggalTambah("Tanggal ini sudah memiliki jadwal khusus");
+      return;
+    }
+
+    setErrorTanggalTambah("");
+
     if (payload.status === "Buka" && payload.jamTutup <= payload.jamBuka) {
       setErrorJamTambah("Jam tutup harus lebih besar dari jam buka");
       return;
@@ -147,6 +162,19 @@ export default function KelolaJadwalKhususPage() {
     catatan: string;
   }) {
     if (!dataEdit) return;
+
+    const tanggalSudahAda = data.some(
+      (item) =>
+        item.tanggal === payload.tanggal &&
+        item.id_jadwal !== dataEdit.id_jadwal
+    );
+
+    if (tanggalSudahAda) {
+      setErrorTanggalEdit("Tanggal ini sudah memiliki jadwal khusus");
+      return;
+    }
+
+    setErrorTanggalEdit("");
 
     if (payload.status === "Buka" && payload.jamTutup <= payload.jamBuka) {
       setErrorJamEdit("Jam tutup harus lebih besar dari jam buka");
@@ -205,6 +233,7 @@ export default function KelolaJadwalKhususPage() {
             type="button"
             onClick={() => {
               setErrorJamTambah("");
+              setErrorTanggalTambah("");
               setIsModalTambahOpen(true);
             }}
             className="flex items-center gap-1 whitespace-nowrap rounded bg-gradient-to-r from-[#E45082] to-[#7D344B] px-2 py-2 text-xs text-white transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 cursor-pointer sm:px-3 sm:py-1.5 sm:text-sm shadow-soft-text"
@@ -230,10 +259,14 @@ export default function KelolaJadwalKhususPage() {
         isOpen={isModalTambahOpen}
         onClose={() => {
           setErrorJamTambah("");
+          setErrorTanggalTambah("");
           setIsModalTambahOpen(false);
         }}
         onSubmit={handleTambahJadwal}
         errorJam={errorJamTambah}
+        errorTanggal={errorTanggalTambah}
+        clearErrorTanggal={() => setErrorTanggalTambah("")}
+        clearErrorJam={() => setErrorJamTambah("")}
       />
 
       <ModalEditJadwalKhusus
@@ -242,6 +275,9 @@ export default function KelolaJadwalKhususPage() {
         data={dataEdit}
         onSubmit={handleEditJadwal}
         errorJam={errorJamEdit}
+        errorTanggal={errorTanggalEdit}
+        clearErrorTanggal={() => setErrorTanggalEdit("")}
+        clearErrorJam={() => setErrorJamEdit("")}
       />
 
       <Modal_Hapus

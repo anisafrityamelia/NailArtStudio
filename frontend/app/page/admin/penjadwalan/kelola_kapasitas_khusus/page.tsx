@@ -32,6 +32,9 @@ export default function KelolaKapasitasKhususPage() {
     const [dataEdit, setDataEdit] = useState<KapasitasKhusus | null>(null);
     const [dataHapus, setDataHapus] = useState<KapasitasKhusus | null>(null);
 
+    const [errorTanggalTambah, setErrorTanggalTambah] = useState("");
+    const [errorTanggalEdit, setErrorTanggalEdit] = useState("");
+
     useEffect(() => {
         const cekAuthDanAmbilKapasitasKhusus = async () => {
             const user = await getCurrentUser();
@@ -79,12 +82,14 @@ export default function KelolaKapasitasKhususPage() {
 
     function handleBukaModalEdit(item: KapasitasKhusus) {
         setDataEdit(item);
+        setErrorTanggalEdit("");
         setIsModalEditOpen(true);
     }
 
     function handleTutupModalEdit() {
         setIsModalEditOpen(false);
         setDataEdit(null);
+        setErrorTanggalEdit("");
     }
     
     function handleBukaModalHapus(item: KapasitasKhusus) {
@@ -105,6 +110,17 @@ export default function KelolaKapasitasKhususPage() {
         if (!payload.tanggal || payload.jumlahKaryawan < 1) {
             return;
         }
+
+        const tanggalSudahAda = data.some(
+            (item) => item.tanggal === payload.tanggal
+        );
+
+        if (tanggalSudahAda) {
+            setErrorTanggalTambah("Tanggal ini sudah memiliki kapasitas khusus");
+            return;
+        }
+
+        setErrorTanggalTambah("");
 
         try {
             await tambahKapasitasKhususAdmin({
@@ -131,6 +147,19 @@ export default function KelolaKapasitasKhususPage() {
         if (!payload.tanggal || payload.jumlahKaryawan < 1) {
             return;
         }
+
+        const tanggalSudahAda = data.some(
+            (item) =>
+                item.tanggal === payload.tanggal &&
+                item.id_kapasitas !== dataEdit.id_kapasitas
+        );
+
+        if (tanggalSudahAda) {
+            setErrorTanggalEdit("Tanggal ini sudah memiliki kapasitas khusus");
+            return;
+        }
+
+        setErrorTanggalEdit("");
 
         try {
             await updateKapasitasKhususAdmin(dataEdit.id_kapasitas, {
@@ -179,7 +208,10 @@ export default function KelolaKapasitasKhususPage() {
                 <div className="flex justify-end">
                     <button
                         type="button"
-                        onClick={() => setIsModalTambahOpen(true)}
+                        onClick={() => {
+                            setErrorTanggalTambah("");
+                            setIsModalTambahOpen(true);
+                        }}
                         className="flex items-center gap-1 whitespace-nowrap rounded bg-gradient-to-r from-[#E45082] to-[#7D344B] px-2 py-2 text-xs text-white transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 cursor-pointer sm:px-3 sm:py-1.5 sm:text-sm shadow-soft-text"
                     >
                         <Plus size={15} /> Tambah
@@ -201,8 +233,13 @@ export default function KelolaKapasitasKhususPage() {
 
             <ModalTambahKapasitasKhusus
                 isOpen={isModalTambahOpen}
-                onClose={() => setIsModalTambahOpen(false)}
+                onClose={() => {
+                    setErrorTanggalTambah("");
+                    setIsModalTambahOpen(false);
+                }}
                 onSubmit={handleTambahKapasitas}
+                errorTanggal={errorTanggalTambah}
+                clearErrorTanggal={() => setErrorTanggalTambah("")}
             />
 
             <ModalEditKapasitasKhusus
@@ -210,6 +247,8 @@ export default function KelolaKapasitasKhususPage() {
                 onClose={handleTutupModalEdit}
                 data={dataEdit}
                 onSubmit={handleEditKapasitas}
+                errorTanggal={errorTanggalEdit}
+                clearErrorTanggal={() => setErrorTanggalEdit("")}
             />
 
             <Modal_Hapus

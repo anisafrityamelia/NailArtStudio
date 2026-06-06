@@ -451,10 +451,10 @@ export default function ModalEditLayanan({
               <button
                 type="button"
                 onClick={handleBukaTambahKategori}
-                className="flex cursor-pointer items-center gap-1 rounded bg-[#E45082] px-2 py-1 text-[10px] text-white shadow-soft-text sm:text-[11px]"
+                className="flex cursor-pointer items-center gap-1 rounded bg-gradient-to-r from-[#E45082] to-[#7D344B] px-2 py-1 text-[10px] text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 sm:text-[11px]"
               >
                 <Plus size={13} />
-                Tambah
+                Tambah 
               </button>
             </div>
 
@@ -637,7 +637,7 @@ export default function ModalEditLayanan({
                     <button
                       type="button"
                       onClick={handleSimpanKategori}
-                      className="flex-1 cursor-pointer rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-3 py-1.5 text-[11px] font-medium text-white shadow-soft-text sm:py-2 sm:text-xs"
+                      className="flex-1 cursor-pointer rounded-md bg-gradient-to-r from-[#E45082] to-[#7D344B] px-3 py-1.5 text-[11px] font-medium text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 sm:py-2 sm:text-xs"
                     >
                       Simpan Kategori
                     </button>
@@ -645,7 +645,7 @@ export default function ModalEditLayanan({
                     <button
                       type="button"
                       onClick={resetFormKategori}
-                      className="flex-1 cursor-pointer rounded-md border border-[#dd98ad] bg-white px-3 py-1.5 text-[11px] font-medium text-[#7D344B] sm:py-2 sm:text-xs"
+                      className="flex-1 cursor-pointer rounded-md bg-gradient-to-r from-[#d9d9d9] to-[#dd98ad] px-3 py-1.5 text-[11px] font-medium text-white shadow-soft-text transition-all duration-200 ease-out hover:-translate-y-[2px] hover:opacity-95 sm:py-2 sm:text-xs"
                     >
                       Batal
                     </button>
