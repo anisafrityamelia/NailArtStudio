@@ -11,7 +11,7 @@ class LayananController extends Controller
     public function index()
     {
         $layanan = Layanan::with(['gambar', 'kategoriHarga'])
-            ->orderBy('id_layanan', 'desc')
+            ->orderBy('id_layanan', 'asc')
             ->get();
 
         return response()->json([
@@ -24,7 +24,7 @@ class LayananController extends Controller
     {
         $layanan = Layanan::with(['gambar', 'kategoriHarga'])
             ->where('status_layanan', 'aktif')
-            ->orderBy('id_layanan', 'desc')
+            ->orderBy('id_layanan', 'asc')
             ->get();
 
         return response()->json([
