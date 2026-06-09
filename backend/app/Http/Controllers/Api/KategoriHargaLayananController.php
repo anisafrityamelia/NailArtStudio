@@ -10,6 +10,14 @@ use Illuminate\Support\Facades\Storage;
 
 class KategoriHargaLayananController extends Controller
 {
+    /**
+     * Menambahkan kategori harga layanan.
+     *
+     * Endpoint ini digunakan oleh admin untuk menambahkan kategori harga pada
+     * suatu layanan. Kategori harga dapat berupa variasi layanan seperti Basic,
+     * Medium, atau Premium yang memiliki estimasi harga, deskripsi, gambar
+     * referensi, serta urutan tampilan yang berbeda.
+     */
     public function store(Request $request, $id_layanan)
     {
         $layanan = Layanan::find($id_layanan);
@@ -53,6 +61,13 @@ class KategoriHargaLayananController extends Controller
         ], 201);
     }
 
+    /**
+     * Memperbarui kategori harga layanan.
+     *
+     * Endpoint ini digunakan oleh admin untuk mengubah informasi kategori harga
+     * layanan yang sudah ada, termasuk nama kategori, deskripsi, estimasi harga,
+     * gambar kategori, urutan tampilan, dan status kategori.
+     */
     public function update(Request $request, $id_kategori_harga)
     {
         $kategori = KategoriHargaLayanan::find($id_kategori_harga);
@@ -97,6 +112,13 @@ class KategoriHargaLayananController extends Controller
         ]);
     }
 
+    /**
+     * Menghapus kategori harga layanan.
+     *
+     * Endpoint ini digunakan oleh admin untuk menghapus kategori harga layanan
+     * berdasarkan ID kategori. Jika kategori memiliki gambar yang tersimpan,
+     * maka file gambar tersebut juga akan dihapus dari penyimpanan server.
+     */
     public function destroy($id_kategori_harga)
     {
         $kategori = KategoriHargaLayanan::find($id_kategori_harga);

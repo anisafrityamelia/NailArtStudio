@@ -8,6 +8,12 @@ use Illuminate\Http\Request;
 
 class LayananController extends Controller
 {
+    /**
+     * Menampilkan semua data layanan.
+     *
+     * Endpoint ini digunakan untuk mengambil seluruh data layanan yang tersedia
+     * pada sistem Alia Oye Studio, termasuk gambar layanan dan kategori harga.
+     */
     public function index()
     {
         $layanan = Layanan::with(['gambar', 'kategoriHarga'])
@@ -20,6 +26,13 @@ class LayananController extends Controller
         ]);
     }
 
+    /**
+     * Menampilkan data layanan aktif.
+     *
+     * Endpoint ini digunakan untuk mengambil daftar layanan yang memiliki status aktif.
+     * Data ini biasanya ditampilkan pada halaman pelanggan atau landing page agar
+     * pelanggan hanya melihat layanan yang tersedia untuk dipesan.
+     */
     public function aktif()
     {
         $layanan = Layanan::with(['gambar', 'kategoriHarga'])
@@ -33,6 +46,13 @@ class LayananController extends Controller
         ]);
     }
 
+    /**
+     * Menampilkan detail layanan berdasarkan ID.
+     *
+     * Endpoint ini digunakan untuk mengambil detail satu layanan berdasarkan ID layanan,
+     * termasuk data gambar layanan dan kategori harga. Jika layanan tidak ditemukan,
+     * sistem akan mengembalikan response 404.
+     */
     public function show($id)
     {
         $layanan = Layanan::with(['gambar', 'kategoriHarga'])->find($id);
@@ -49,6 +69,13 @@ class LayananController extends Controller
         ]);
     }
 
+    /**
+     * Menambahkan data layanan baru.
+     *
+     * Endpoint ini digunakan oleh admin untuk menambahkan layanan baru ke dalam sistem
+     * Alia Oye Studio. Data yang dikirim meliputi nama layanan, harga dasar, deskripsi,
+     * kategori layanan, durasi layanan, dan status layanan.
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -75,6 +102,13 @@ class LayananController extends Controller
         ], 201);
     }
 
+    /**
+     * Memperbarui data layanan.
+     *
+     * Endpoint ini digunakan oleh admin untuk mengubah data layanan berdasarkan ID layanan.
+     * Data yang dapat diperbarui meliputi nama layanan, harga dasar, deskripsi layanan,
+     * kategori layanan, durasi layanan, dan status layanan.
+     */
     public function update(Request $request, $id)
     {
         $layanan = Layanan::find($id);
@@ -109,6 +143,12 @@ class LayananController extends Controller
         ]);
     }
 
+    /**
+     * Menghapus data layanan.
+     *
+     * Endpoint ini digunakan oleh admin untuk menghapus data layanan berdasarkan ID layanan.
+     * Jika layanan tidak ditemukan, sistem akan mengembalikan response 404.
+     */
     public function destroy($id)
     {
         $layanan = Layanan::find($id);
@@ -126,6 +166,13 @@ class LayananController extends Controller
         ]);
     }
 
+    /**
+     * Menampilkan detail layanan berdasarkan kategori.
+     *
+     * Endpoint ini digunakan untuk mengambil detail layanan aktif berdasarkan kategori layanan,
+     * seperti nail art, press on, eyelash, remove, atau kursus. Data yang ditampilkan
+     * mencakup informasi layanan, gambar layanan, dan kategori harga.
+     */
     public function showByKategori($kategori)
     {
         $layanan = Layanan::with(['gambar', 'kategoriHarga'])

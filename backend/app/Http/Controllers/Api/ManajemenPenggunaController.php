@@ -9,6 +9,13 @@ use Illuminate\Support\Facades\Hash;
 
 class ManajemenPenggunaController extends Controller
 {
+    /**
+     * Menampilkan daftar pengguna.
+     *
+     * Endpoint ini digunakan oleh admin untuk mengambil seluruh data pengguna
+     * yang terdaftar pada sistem Alia Oye Studio, baik pengguna dengan peran
+     * admin maupun pelanggan.
+     */
     public function index()
     {
         $pengguna = User::orderBy('id_pengguna', 'desc')->get();
@@ -19,6 +26,13 @@ class ManajemenPenggunaController extends Controller
         ]);
     }
 
+    /**
+     * Menambahkan pengguna baru.
+     *
+     * Endpoint ini digunakan oleh admin untuk membuat akun pengguna baru.
+     * Admin dapat menentukan peran pengguna sebagai admin atau pelanggan.
+     * Password awal akan dibuat secara otomatis menggunakan password default.
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -42,6 +56,13 @@ class ManajemenPenggunaController extends Controller
         ], 201);
     }
 
+    /**
+     * Memperbarui data pengguna.
+     *
+     * Endpoint ini digunakan oleh admin untuk mengubah informasi akun pengguna,
+     * seperti nama pengguna, email, dan nomor handphone. Perubahan hanya dapat
+     * dilakukan pada akun yang diperbolehkan oleh sistem.
+     */
     public function update(Request $request, $id)
     {
         $pengguna = User::find($id);
@@ -76,6 +97,13 @@ class ManajemenPenggunaController extends Controller
         ]);
     }
 
+    /**
+     * Mereset password pengguna.
+     *
+     * Endpoint ini digunakan oleh admin untuk mengembalikan password pengguna
+     * ke password default yang telah ditentukan sistem. Fitur ini digunakan
+     * ketika pengguna mengalami kendala saat masuk ke akun.
+     */
     public function resetPassword($id)
     {
         $pengguna = User::find($id);
@@ -96,6 +124,13 @@ class ManajemenPenggunaController extends Controller
         ]);
     }
 
+    /**
+     * Menghapus pengguna.
+     *
+     * Endpoint ini digunakan oleh admin untuk menghapus akun pengguna dari sistem.
+     * Setelah akun dihapus, pengguna tidak lagi dapat mengakses layanan maupun
+     * fitur yang tersedia pada aplikasi.
+     */
     public function destroy($id)
     {
         $pengguna = User::find($id);

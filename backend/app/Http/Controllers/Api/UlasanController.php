@@ -10,6 +10,13 @@ use Illuminate\Support\Facades\Storage;
 
 class UlasanController extends Controller
 {
+    /**
+     * Menampilkan daftar ulasan pelanggan.
+     *
+     * Endpoint ini digunakan oleh pelanggan untuk mengambil daftar pesanan yang
+     * sudah selesai dan dapat diberi ulasan. Data yang ditampilkan mencakup
+     * informasi layanan dan ulasan yang sudah diberikan jika tersedia.
+     */
     public function index(Request $request)
     {
         $user = $request->user();
@@ -29,6 +36,13 @@ class UlasanController extends Controller
         ]);
     }
 
+    /**
+     * Menampilkan ulasan pada landing page.
+     *
+     * Endpoint ini digunakan untuk mengambil ulasan pelanggan yang ditampilkan
+     * pada landing page. Data ulasan diambil secara acak dan hanya menampilkan
+     * ulasan yang memiliki status ditampilkan.
+     */
     public function landing()
     {
         $ulasan = Ulasan::with([
@@ -60,6 +74,13 @@ class UlasanController extends Controller
         ]);
     }
 
+    /**
+     * Menampilkan daftar ulasan untuk admin.
+     *
+     * Endpoint ini digunakan oleh admin untuk mengambil seluruh data ulasan
+     * pelanggan. Data yang ditampilkan mencakup kode pesanan, nama pelanggan,
+     * nama layanan, rating, isi ulasan, gambar ulasan, dan status tampil.
+     */
     public function adminIndex()
     {
         $ulasan = Ulasan::with([
@@ -87,6 +108,13 @@ class UlasanController extends Controller
         ]);
     }
 
+    /**
+     * Memperbarui status tampil ulasan.
+     *
+     * Endpoint ini digunakan oleh admin untuk mengubah status ulasan menjadi
+     * ditampilkan atau disembunyikan. Status ini menentukan apakah ulasan
+     * pelanggan akan muncul pada landing page.
+     */
     public function ubahStatusTampil(Request $request, $id)
     {
         $request->validate([
@@ -111,6 +139,13 @@ class UlasanController extends Controller
         ]);
     }
 
+    /**
+     * Menambahkan ulasan pelanggan.
+     *
+     * Endpoint ini digunakan oleh pelanggan untuk memberikan ulasan pada pesanan
+     * yang sudah selesai. Data ulasan mencakup rating, isi ulasan, dan gambar
+     * ulasan opsional. Setiap pesanan hanya dapat diberi satu ulasan.
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -168,6 +203,13 @@ class UlasanController extends Controller
         ], 201);
     }
 
+    /**
+     * Memperbarui ulasan pelanggan.
+     *
+     * Endpoint ini digunakan oleh pelanggan untuk mengubah ulasan yang sudah
+     * pernah diberikan, meliputi rating, isi ulasan, dan gambar ulasan. Jika
+     * pelanggan mengunggah gambar baru, maka gambar lama akan diganti.
+     */
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -212,6 +254,13 @@ class UlasanController extends Controller
         ]);
     }
 
+    /**
+     * Menghapus ulasan pelanggan.
+     *
+     * Endpoint ini digunakan oleh pelanggan untuk menghapus ulasan miliknya.
+     * Jika ulasan memiliki gambar yang tersimpan, maka file gambar tersebut
+     * juga akan dihapus dari penyimpanan server.
+     */
     public function destroy(Request $request, $id)
     {
         $user = $request->user();

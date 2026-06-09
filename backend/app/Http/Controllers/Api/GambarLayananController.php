@@ -10,6 +10,13 @@ use Illuminate\Support\Facades\Storage;
 
 class GambarLayananController extends Controller
 {
+    /**
+     * Menambahkan gambar layanan.
+     *
+     * Endpoint ini digunakan oleh admin untuk mengunggah gambar baru yang
+     * akan dikaitkan dengan suatu layanan. Gambar yang berhasil diunggah
+     * akan disimpan pada penyimpanan server dan dicatat pada database.
+     */
     public function store(Request $request, $id_layanan)
     {
         $layanan = Layanan::find($id_layanan);
@@ -38,6 +45,13 @@ class GambarLayananController extends Controller
         ], 201);
     }
 
+    /**
+     * Mengganti gambar layanan.
+     *
+     * Endpoint ini digunakan oleh admin untuk memperbarui gambar layanan yang
+     * sudah ada. Jika sebelumnya terdapat file gambar lama, maka file tersebut
+     * akan dihapus dari penyimpanan sebelum gambar baru disimpan.
+     */
     public function replace(Request $request, $id_gambar)
     {
         $gambar = GambarLayanan::find($id_gambar);
@@ -72,6 +86,13 @@ class GambarLayananController extends Controller
         ]);
     }
 
+    /**
+     * Menghapus gambar layanan.
+     *
+     * Endpoint ini digunakan oleh admin untuk menghapus gambar layanan berdasarkan
+     * ID gambar. File gambar yang tersimpan pada server juga akan dihapus secara
+     * otomatis untuk menjaga konsistensi data dan penyimpanan.
+     */
     public function destroy($id_gambar)
     {
         $gambar = GambarLayanan::find($id_gambar);

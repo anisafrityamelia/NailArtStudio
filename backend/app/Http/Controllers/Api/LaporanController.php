@@ -10,6 +10,18 @@ use Illuminate\Support\Facades\DB;
 
 class LaporanController extends Controller
 {
+    /**
+     * Menampilkan laporan pesanan dan keuangan.
+     *
+     * Endpoint ini digunakan oleh admin untuk mengambil data laporan operasional
+     * Alia Oye Studio. Data laporan mencakup daftar pesanan selesai, statistik
+     * pesanan, total DP masuk, total uang masuk, nilai pesanan, sisa pelunasan,
+     * serta layanan terlaris.
+     *
+     * Laporan dapat difilter berdasarkan tanggal mulai, tanggal sampai, dan nama
+     * layanan tertentu sehingga admin dapat melihat rekapitulasi sesuai periode
+     * atau jenis layanan yang dipilih.
+     */
     public function index(Request $request)
     {
          $statusAktif = [

@@ -12,6 +12,14 @@ use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
+    /**
+     * Registrasi akun pelanggan.
+     *
+     * Endpoint ini digunakan untuk membuat akun pelanggan baru pada sistem
+     * Alia Oye Studio. Setelah registrasi berhasil, sistem akan menghasilkan
+     * token autentikasi yang dapat digunakan untuk mengakses endpoint yang
+     * memerlukan login.
+     */
     public function register(Request $request)
     {
         $request->validate([
@@ -38,6 +46,13 @@ class AuthController extends Controller
         ], 201);
     }
 
+    /**
+     * Login pengguna.
+     *
+     * Endpoint ini digunakan untuk melakukan autentikasi pengguna menggunakan
+     * email dan password. Jika data valid, sistem akan menghasilkan token
+     * autentikasi baru dan mengembalikan informasi pengguna.
+     */
     public function login(Request $request)
     {
         $request->validate([
@@ -64,6 +79,12 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * Menampilkan data pengguna yang sedang login.
+     *
+     * Endpoint ini digunakan untuk mengambil informasi akun pengguna yang sedang
+     * terautentikasi berdasarkan token yang dikirim pada request.
+     */
     public function me(Request $request)
     {
         return response()->json([
@@ -71,6 +92,12 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * Memperbarui profil pengguna.
+     *
+     * Endpoint ini digunakan untuk mengubah informasi profil pengguna yang sedang
+     * login, seperti nama pengguna, email, dan nomor handphone.
+     */
     public function updateProfile(Request $request)
     {
         $user = $request->user();
@@ -97,6 +124,13 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * Memperbarui foto profil pengguna.
+     *
+     * Endpoint ini digunakan untuk mengunggah dan mengganti foto profil pengguna.
+     * Jika pengguna sebelumnya telah memiliki foto profil, maka foto lama akan
+     * dihapus dari penyimpanan sebelum foto baru disimpan.
+     */
     public function updateFotoProfil(Request $request)
     {
         $user = $request->user();
@@ -125,6 +159,12 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * Logout pengguna.
+     *
+     * Endpoint ini digunakan untuk mengakhiri sesi pengguna yang sedang login
+     * dengan menghapus token autentikasi yang sedang digunakan.
+     */
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
@@ -134,6 +174,13 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * Mengubah kata sandi pengguna.
+     *
+     * Endpoint ini digunakan untuk memperbarui kata sandi akun pengguna.
+     * Pengguna harus memasukkan kata sandi lama yang sesuai sebelum dapat
+     * mengganti kata sandi dengan yang baru.
+     */
     public function changePassword(Request $request)
     {
         $request->validate([

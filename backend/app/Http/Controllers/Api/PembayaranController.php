@@ -10,6 +10,18 @@ use App\Services\FonnteService;
 
 class PembayaranController extends Controller
 {
+    
+    /**
+     * Mengirim pembayaran DP pesanan.
+     *
+     * Endpoint ini digunakan oleh pelanggan untuk mengunggah bukti pembayaran
+     * uang muka (DP) pada pesanan yang telah dibuat. Setelah pembayaran berhasil
+     * dikirim, sistem akan membuat data pembayaran, mengubah status pesanan
+     * menjadi menunggu konfirmasi, serta mengirimkan notifikasi kepada admin
+     * melalui WhatsApp agar pesanan dapat segera diverifikasi.
+     *
+     * Nominal DP yang digunakan pada sistem adalah Rp50.000 untuk setiap pesanan.
+     */
     public function store(Request $request)
     {
         $request->validate([

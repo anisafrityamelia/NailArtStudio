@@ -9,6 +9,14 @@ use Illuminate\Validation\Rule;
 
 class KapasitasKhususController extends Controller
 {
+    /**
+     * Menampilkan daftar kapasitas khusus.
+     *
+     * Endpoint ini digunakan untuk mengambil seluruh data kapasitas khusus yang
+     * telah ditentukan oleh admin. Data ini digunakan untuk menyesuaikan jumlah
+     * karyawan yang tersedia pada tanggal tertentu sehingga kapasitas pemesanan
+     * dapat dihitung dengan lebih akurat.
+     */
     public function index()
     {
         $kapasitas = KapasitasKhusus::orderBy('tanggal', 'asc')->get();
@@ -19,6 +27,13 @@ class KapasitasKhususController extends Controller
         ]);
     }
 
+    /**
+     * Menambahkan kapasitas khusus.
+     *
+     * Endpoint ini digunakan oleh admin untuk menetapkan jumlah karyawan yang
+     * tersedia pada tanggal tertentu. Pengaturan ini dapat digunakan ketika
+     * terjadi penambahan atau pengurangan staf yang memengaruhi kapasitas layanan.
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -39,6 +54,13 @@ class KapasitasKhususController extends Controller
         ], 201);
     }
 
+    /**
+     * Memperbarui kapasitas khusus.
+     *
+     * Endpoint ini digunakan oleh admin untuk mengubah data kapasitas khusus yang
+     * telah dibuat sebelumnya, termasuk tanggal, jumlah karyawan yang tersedia,
+     * dan catatan tambahan.
+     */
     public function update(Request $request, $id)
     {
         $kapasitas = KapasitasKhusus::findOrFail($id);
@@ -66,6 +88,13 @@ class KapasitasKhususController extends Controller
         ]);
     }
 
+    /**
+     * Menghapus kapasitas khusus.
+     *
+     * Endpoint ini digunakan oleh admin untuk menghapus pengaturan kapasitas
+     * khusus pada tanggal tertentu. Setelah dihapus, sistem akan menggunakan
+     * jumlah karyawan dari pengaturan booking default.
+     */
     public function destroy($id)
     {
         $kapasitas = KapasitasKhusus::findOrFail($id);

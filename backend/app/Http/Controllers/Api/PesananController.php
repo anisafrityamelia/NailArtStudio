@@ -15,6 +15,14 @@ use App\Services\FonnteService;
 
 class PesananController extends Controller
 {
+    /**
+     * Membuat pesanan layanan Nail Art.
+     *
+     * Endpoint ini digunakan oleh pelanggan untuk membuat booking layanan Nail Art.
+     * Data pesanan mencakup tanggal, jam, gambar inspirasi, bagian kuku, layanan
+     * tambahan, dan catatan. Setelah berhasil, sistem akan membuat data pesanan
+     * dan detail Nail Art dengan status awal menunggu pembayaran.
+     */
     public function storeNailArt(Request $request)
     {
         $request->validate([
@@ -101,6 +109,14 @@ class PesananController extends Controller
         }
     }
 
+    /**
+     * Membuat pesanan layanan Press On.
+     *
+     * Endpoint ini digunakan oleh pelanggan untuk membuat pesanan Press On.
+     * Data yang dikirim mencakup gambar inspirasi, foto jari kanan dan kiri,
+     * foto jempol kanan dan kiri, shape kuku, metode pengambilan, alamat
+     * pengiriman jika memilih antar, serta catatan tambahan.
+     */
     public function storePressOn(Request $request)
     {
         $request->validate([
@@ -212,6 +228,13 @@ class PesananController extends Controller
         }
     }
 
+    /**
+     * Membuat pesanan layanan Eyelash.
+     *
+     * Endpoint ini digunakan oleh pelanggan untuk membuat booking layanan Eyelash.
+     * Data pesanan mencakup layanan yang dipilih, tanggal, jam, jenis lash,
+     * dan catatan tambahan. Status awal pesanan adalah menunggu pembayaran.
+     */
     public function storeEyelash(Request $request)
     {
         $request->validate([
@@ -276,6 +299,13 @@ class PesananController extends Controller
         }
     }
 
+    /**
+     * Membuat pesanan layanan Remove.
+     *
+     * Endpoint ini digunakan oleh pelanggan untuk membuat booking layanan Remove.
+     * Data pesanan mencakup layanan yang dipilih, tanggal, jam, bagian kuku,
+     * dan catatan tambahan. Status awal pesanan adalah menunggu pembayaran.
+     */
     public function storeRemove(Request $request)
     {
         $request->validate([
@@ -340,6 +370,13 @@ class PesananController extends Controller
         }
     }
 
+    /**
+     * Menampilkan daftar pesanan pelanggan.
+     *
+     * Endpoint ini digunakan untuk mengambil seluruh pesanan milik pelanggan
+     * yang sedang login. Data yang ditampilkan mencakup informasi layanan,
+     * detail pesanan sesuai jenis layanan, pembayaran, dan ulasan.
+     */
     public function index(Request $request)
     {
         // Ambil user yang sedang login
@@ -365,7 +402,14 @@ class PesananController extends Controller
         ]);
     }
 
-    // pesanan aktif admin
+    /**
+     * Menampilkan daftar pesanan aktif untuk admin.
+     *
+     * Endpoint ini digunakan oleh admin untuk mengambil daftar pesanan aktif,
+     * yaitu pesanan dengan status menunggu konfirmasi, terjadwal, diproses,
+     * atau siap diambil. Data diurutkan berdasarkan prioritas status, tanggal,
+     * jam pesanan, dan waktu pembuatan.
+     */
     public function pesananAktifAdmin()
     {
         $pesanan = Pesanan::with([
@@ -398,6 +442,15 @@ class PesananController extends Controller
         ]);
     }
 
+    /**
+     * Memperbarui status pesanan aktif.
+     *
+     * Endpoint ini digunakan oleh admin untuk mengubah status pesanan aktif,
+     * menambahkan catatan admin, serta mengisi harga final pesanan. Jika harga
+     * final diisi, sistem juga akan memverifikasi pembayaran DP dan mencatat
+     * waktu konfirmasi. Setelah status diperbarui, sistem akan mengirimkan
+     * notifikasi WhatsApp kepada pelanggan.
+     */
     public function updateStatusAktif(Request $request, $id)
     {
         $request->validate([
@@ -462,7 +515,13 @@ class PesananController extends Controller
         ]);
     }
 
-    // riwayat pesanan admin
+    /**
+     * Menampilkan riwayat pesanan admin.
+     *
+     * Endpoint ini digunakan oleh admin untuk mengambil daftar pesanan yang sudah
+     * selesai atau dibatalkan. Data riwayat digunakan untuk melihat rekam jejak
+     * pesanan yang tidak lagi termasuk dalam pesanan aktif.
+     */
     public function riwayatPesananAdmin()
     {
         $pesanan = Pesanan::with([
@@ -484,6 +543,13 @@ class PesananController extends Controller
         ]);
     }
 
+    /**
+     * Menampilkan detail pesanan.
+     *
+     * Endpoint ini digunakan untuk mengambil detail pesanan berdasarkan ID pesanan.
+     * Data yang ditampilkan mencakup informasi pengguna, layanan, serta detail
+     * layanan sesuai jenis pesanan seperti Nail Art, Press On, Eyelash, atau Remove.
+     */
     public function show($id)
     {
         $pesanan = Pesanan::with([

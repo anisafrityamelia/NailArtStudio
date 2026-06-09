@@ -9,6 +9,14 @@ use Illuminate\Validation\Rule;
 
 class JadwalKhususController extends Controller
 {
+    /**
+     * Menampilkan daftar jadwal khusus.
+     *
+     * Endpoint ini digunakan untuk mengambil seluruh data jadwal khusus yang telah
+     * ditentukan oleh admin. Jadwal khusus digunakan untuk mengatur perubahan
+     * operasional studio pada tanggal tertentu, seperti hari libur atau perubahan
+     * jam operasional.
+     */
     public function index()
     {
         $jadwal = JadwalKhusus::orderBy('tanggal', 'asc')->get();
@@ -19,6 +27,13 @@ class JadwalKhususController extends Controller
         ]);
     }
 
+    /**
+     * Menambahkan jadwal khusus.
+     *
+     * Endpoint ini digunakan oleh admin untuk membuat jadwal khusus pada tanggal
+     * tertentu. Admin dapat menentukan apakah studio buka atau tutup serta
+     * mengatur jam operasional khusus yang berbeda dari pengaturan default.
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -43,6 +58,13 @@ class JadwalKhususController extends Controller
         ], 201);
     }
 
+    /**
+     * Memperbarui jadwal khusus.
+     *
+     * Endpoint ini digunakan oleh admin untuk mengubah data jadwal khusus yang
+     * sudah ada, termasuk tanggal, status buka atau tutup, jam operasional,
+     * serta catatan tambahan.
+     */
     public function update(Request $request, $id)
     {
         $jadwal = JadwalKhusus::findOrFail($id);
@@ -74,6 +96,13 @@ class JadwalKhususController extends Controller
         ]);
     }
 
+    /**
+     * Menghapus jadwal khusus.
+     *
+     * Endpoint ini digunakan oleh admin untuk menghapus jadwal khusus berdasarkan
+     * ID jadwal. Setelah dihapus, sistem akan kembali menggunakan pengaturan
+     * operasional default pada tanggal tersebut.
+     */
     public function destroy($id)
     {
         $jadwal = JadwalKhusus::findOrFail($id);

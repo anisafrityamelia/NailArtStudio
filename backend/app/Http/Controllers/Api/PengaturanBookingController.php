@@ -13,6 +13,14 @@ use Illuminate\Http\Request;
 
 class PengaturanBookingController extends Controller
 {
+    /**
+     * Menampilkan pengaturan booking.
+     *
+     * Endpoint ini digunakan untuk mengambil pengaturan booking yang sedang
+     * digunakan oleh sistem, seperti jam buka, jam tutup, durasi slot, dan
+     * jumlah karyawan. Jika terdapat kapasitas khusus pada hari ini, jumlah
+     * karyawan akan disesuaikan dengan data kapasitas khusus tersebut.
+     */
     public function show()
     {
         $pengaturan = PengaturanBooking::first();
@@ -33,6 +41,13 @@ class PengaturanBookingController extends Controller
         ]);
     }
 
+    /**
+     * Memperbarui pengaturan booking.
+     *
+     * Endpoint ini digunakan oleh admin untuk mengubah pengaturan booking default,
+     * meliputi jam buka, jam tutup, durasi slot, dan jumlah karyawan. Pengaturan
+     * ini digunakan sebagai dasar perhitungan slot pemesanan layanan.
+     */
     public function update(Request $request)
     {
         $request->validate([
@@ -63,6 +78,15 @@ class PengaturanBookingController extends Controller
         ]);
     }
 
+    /**
+     * Menampilkan slot booking yang tersedia.
+     *
+     * Endpoint ini digunakan untuk mengambil daftar slot waktu yang tersedia
+     * berdasarkan tanggal dan layanan yang dipilih pelanggan. Sistem akan
+     * menghitung ketersediaan slot berdasarkan jam operasional, durasi layanan,
+     * durasi slot, jumlah karyawan, jadwal khusus, kapasitas khusus, dan pesanan
+     * aktif yang sudah ada pada tanggal tersebut.
+     */
     public function slotTersedia(Request $request)
     {
         $request->validate([

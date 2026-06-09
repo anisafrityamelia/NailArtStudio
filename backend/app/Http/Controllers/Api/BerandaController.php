@@ -26,6 +26,13 @@ class BerandaController extends Controller
         );
     }
 
+    /**
+     * Menampilkan data beranda.
+     *
+     * Endpoint ini digunakan untuk mengambil seluruh informasi yang ditampilkan
+     * pada halaman beranda, seperti deskripsi studio, alamat, jam operasional,
+     * media sosial, kontak WhatsApp, dan galeri studio.
+     */
     public function show()
     {
         $beranda = $this->getOrCreateBeranda()->load('galeri');
@@ -36,6 +43,13 @@ class BerandaController extends Controller
         ]);
     }
 
+    /**
+     * Memperbarui data beranda.
+     *
+     * Endpoint ini digunakan oleh admin untuk mengubah informasi yang ditampilkan
+     * pada halaman beranda, seperti deskripsi studio, alamat, link lokasi,
+     * jam operasional, akun media sosial, dan nomor WhatsApp.
+     */
     public function update(Request $request)
     {
         $beranda = $this->getOrCreateBeranda();
@@ -58,6 +72,13 @@ class BerandaController extends Controller
         ]);
     }
 
+    /**
+     * Mengunggah atau memperbarui gambar galeri.
+     *
+     * Endpoint ini digunakan oleh admin untuk menambahkan atau mengganti gambar
+     * galeri yang ditampilkan pada halaman beranda. Setiap gambar memiliki urutan
+     * tampil yang digunakan untuk mengatur posisi galeri pada landing page.
+     */
     public function uploadGaleri(Request $request)
     {
         $beranda = $this->getOrCreateBeranda();
@@ -95,6 +116,13 @@ class BerandaController extends Controller
         ]);
     }
 
+    /**
+     * Menghapus gambar galeri.
+     *
+     * Endpoint ini digunakan oleh admin untuk menghapus gambar galeri berdasarkan
+     * ID galeri. File gambar yang tersimpan pada penyimpanan server juga akan
+     * dihapus secara otomatis.
+     */
     public function deleteGaleri($id_galeri)
     {
         $galeri = BerandaGaleri::findOrFail($id_galeri);

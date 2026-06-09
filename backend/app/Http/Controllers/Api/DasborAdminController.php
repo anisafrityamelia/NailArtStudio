@@ -8,6 +8,13 @@ use App\Models\Pesanan;
 
 class DasborAdminController extends Controller
 {
+    /**
+     * Menampilkan statistik dasbor admin.
+     *
+     * Endpoint ini digunakan untuk mengambil ringkasan data yang ditampilkan
+     * pada dasbor admin, meliputi jumlah pelanggan yang terdaftar, jumlah
+     * pesanan aktif, dan jumlah pesanan yang telah selesai.
+     */
     public function statistik()
     {
         $jumlahPelanggan = User::where('role', 'pelanggan')->count();
@@ -31,6 +38,13 @@ class DasborAdminController extends Controller
         ]);
     }
 
+    /**
+     * Menampilkan jadwal pesanan bulanan.
+     *
+     * Endpoint ini digunakan untuk mengambil daftar pesanan dengan status
+     * terjadwal berdasarkan bulan dan tahun yang dipilih. Data yang ditampilkan
+     * meliputi kode pesanan, nama pelanggan, layanan, tanggal, dan jam pesanan.
+     */
     public function jadwalBulanan()
     {
         $bulan = request()->query('bulan');
