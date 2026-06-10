@@ -1,15 +1,7 @@
 import API_BASE_URL from "./api";
 import { getToken } from "./auth";
 
-export type LayananType = "Semua" | "Nail Art" | "Press On" | "Eyelash" | "Remove";
-
-export const pilihanLayanan: LayananType[] = [
-  "Semua",
-  "Nail Art",
-  "Press On",
-  "Eyelash",
-  "Remove",
-];
+export type LayananType = string;
 
 export type StatistikLaporan = {
   id: number;

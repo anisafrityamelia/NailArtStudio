@@ -9,7 +9,6 @@ import TabelLaporan from "./components/tabel_laporan";
 import LayananTerlaris from "./components/layanan_terlaris";
 import {
   getLaporanAdmin,
-  type LayananType,
   type BarisLaporan,
   type StatistikLaporan,
   type LayananTerlaris as LayananTerlarisType,
@@ -17,6 +16,12 @@ import {
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { getCurrentUser } from "@/app/lib/auth";
+import API_BASE_URL from "@/app/lib/api";
+
+type LayananOption = {
+  id_layanan: number;
+  nama_layanan: string;
+};
 
 export default function LaporanPage() {
   const router = useRouter();
@@ -28,7 +33,8 @@ export default function LaporanPage() {
 
   const [tanggalMulai, setTanggalMulai] = useState("");
   const [tanggalSampai, setTanggalSampai] = useState("");
-  const [layanan, setLayanan] = useState<LayananType>("Semua");
+  const [layanan, setLayanan] = useState<string>("Semua");
+  const [layananOptions, setLayananOptions] = useState<string[]>(["Semua"]);
 
   async function ambilLaporan() {
     try {
@@ -70,6 +76,35 @@ export default function LaporanPage() {
 
     cekAuthDanAmbilLaporan();
   }, [router]);
+
+  useEffect(() => {
+    const ambilDataLayanan = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/layanan`, {
+          headers: {
+            Accept: "application/json",
+          },
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) return;
+
+        const options = result.data.map(
+          (item: LayananOption) => item.nama_layanan
+        );
+
+        setLayananOptions(["Semua", ...options]);
+      } catch (error) {
+        console.error("Gagal mengambil data layanan:", error);
+        setLayananOptions(["Semua"]);
+      }
+    };
+
+    if (!isCheckingAuth) {
+      ambilDataLayanan();
+    }
+  }, [isCheckingAuth]);
   
   const handleExport = () => {
     const doc = new jsPDF();
@@ -278,6 +313,7 @@ export default function LaporanPage() {
         tanggalMulai={tanggalMulai}
         tanggalSampai={tanggalSampai}
         layanan={layanan}
+        layananOptions={layananOptions}
         loading={isLoading}
         setTanggalMulai={setTanggalMulai}
         setTanggalSampai={setTanggalSampai}

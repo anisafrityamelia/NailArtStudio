@@ -9,7 +9,13 @@ import Filter_Pesanan from "../components/filter_pesanan";
 import ModalDetailPesanan from "../components/modal_detail_pesanan";
 import { getRiwayatPesananAdmin } from "@/app/lib/pesanan";
 import { getCurrentUser } from "@/app/lib/auth";
+import API_BASE_URL from "@/app/lib/api";
 import { DetailPesanan } from "../components/detail_pesanan/detail_pesanan_types";
+
+type LayananOption = {
+  id_layanan: number;
+  nama_layanan: string;
+};
 
 const formatStatus = (status: string) => {
   const statusMap: Record<string, string> = {
@@ -30,6 +36,7 @@ export default function RiwayatPesananPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const [layananOptions, setLayananOptions] = useState<string[]>(["Layanan"]);
   const [filter, setFilter] = useState({ layanan: "Layanan", status: "Status"});
   const [openModal, setOpenModal] = useState(false);
   
@@ -179,6 +186,35 @@ export default function RiwayatPesananPage() {
     cekAuthDanFetchRiwayatPesanan();
   }, [router]);
 
+  useEffect(() => {
+    const ambilDataLayanan = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/layanan`, {
+          headers: {
+            Accept: "application/json",
+          },
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) return;
+
+        const options = result.data.map(
+          (item: LayananOption) => item.nama_layanan
+        );
+
+        setLayananOptions(["Layanan", ...options]);
+      } catch (error) {
+        console.error("Gagal mengambil data layanan:", error);
+        setLayananOptions(["Layanan"]);
+      }
+    };
+
+    if (!isCheckingAuth) {
+      ambilDataLayanan();
+    }
+  }, [isCheckingAuth]);
+
   const filteredData = dataPesanan.filter((item) => {
     const matchLayanan =
       filter.layanan === "Layanan" ||
@@ -225,7 +261,7 @@ export default function RiwayatPesananPage() {
 
         {/* Filter data */}
         <Filter_Pesanan 
-          layananOptions={["Layanan", "Nail Art", "Press On", "Remove", "Eyelash", "Behel", "Waxing", "Diamond Gigi", "Catok"]}
+          layananOptions={layananOptions}
           statusOptions={["Status", "Selesai", "Dibatalkan"]}
           onFilterChange={(newFilter) =>
             setFilter((prev) => ({

@@ -1,16 +1,16 @@
 "use client";
 
 import { ExternalLink } from "lucide-react";
-import { pilihanLayanan, type LayananType } from "@/app/lib/laporan";
 
 interface FilterLaporanProps {
   tanggalMulai: string;
   tanggalSampai: string;
-  layanan: LayananType;
+  layanan: string;
+  layananOptions: string[];
   loading: boolean;
   setTanggalMulai: (value: string) => void;
   setTanggalSampai: (value: string) => void;
-  setLayanan: (value: LayananType) => void;
+  setLayanan: (value: string) => void;
   onTerapkan: () => void;
   onExport: () => void;
 }
@@ -19,6 +19,7 @@ export default function FilterLaporan({
   tanggalMulai,
   tanggalSampai,
   layanan,
+  layananOptions,
   loading,
   setTanggalMulai,
   setTanggalSampai,
@@ -57,11 +58,11 @@ export default function FilterLaporan({
           <label className="text-sm font-medium text-[#7d344b]">Layanan</label>
           <select
             value={layanan}
-            onChange={(e) => setLayanan(e.target.value as LayananType)}
+            onChange={(e) => setLayanan(e.target.value)}
             className="h-8 rounded border border-[#dd98ad] bg-[#dd98ad] px-3 text-sm text-[#7d344b] outline-none cursor-pointer"
           >
-            {pilihanLayanan.map((item) => (
-              <option key={item} value={item}>
+            {layananOptions.map((item) => (
+              <option key={item} value={item} className="bg-white">
                 {item}
               </option>
             ))}
