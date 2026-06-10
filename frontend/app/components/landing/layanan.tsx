@@ -54,6 +54,22 @@ const getDetailUrl = (kategori: string) => {
     return "/page/pemesanan/detail_layanan/course";
   }
 
+  if (kategoriLower === "behel") {
+    return "/page/pemesanan/detail_layanan/behel";
+  }
+
+  if (kategoriLower === "waxing") {
+    return "/page/pemesanan/detail_layanan/waxing";
+  }
+
+  if (kategoriLower === "diamond_gigi") {
+    return "/page/pemesanan/detail_layanan/diamond_gigi";
+  }
+
+  if (kategoriLower === "catok") {
+    return "/page/pemesanan/detail_layanan/catok";
+  }
+
   return "/page/pemesanan";
 };
 

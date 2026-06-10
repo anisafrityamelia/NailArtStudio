@@ -95,6 +95,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/pesanan/press-on', [PesananController::class, 'storePressOn']);
         Route::post('/pesanan/eyelash', [PesananController::class, 'storeEyelash']);
         Route::post('/pesanan/remove', [PesananController::class, 'storeRemove']);
+        Route::post('/pesanan/layanan-tambahan', [PesananController::class, 'storeLayananTambahan']);
         Route::get('/pesanan', [PesananController::class, 'index']);
         Route::get('/pesanan/{id}', [PesananController::class, 'show']);
 

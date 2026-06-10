@@ -81,6 +81,7 @@ export default function PesananSayaPage() {
                             item.detail_press_on?.catatan ||
                             item.detail_eyelash?.catatan ||
                             item.detail_remove?.catatan ||
+                            item.detail_layanan_tambahan?.catatan ||
                             "-",
 
                         gambarReferensi:
@@ -115,6 +116,9 @@ export default function PesananSayaPage() {
 
                         jenisLash:
                             item.detail_eyelash?.jenis_lash || "-",
+
+                        areaWaxing:
+                            item.detail_layanan_tambahan?.area_waxing || "-",
 
                         kodePembayaran:
                             item.pembayaran?.kode_pembayaran || "-",

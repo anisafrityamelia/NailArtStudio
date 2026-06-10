@@ -11,6 +11,7 @@ import DetailDesainNailArt from "./detail_pesanan_pelanggan/detail_desain_nail_a
 import DetailDesainPressOn from "./detail_pesanan_pelanggan/detail_desain_presson";
 import DetailDesainRemove from "./detail_pesanan_pelanggan/detail_desain_remove";
 import DetailDesainEyelash from "./detail_pesanan_pelanggan/detail_desain_eyelash";
+import DetailDesainLayananTambahan from "./detail_pesanan_pelanggan/detail_desain_layanan_tambahan";
 
 type PropsModalDetailPesananPelanggan = {
     isOpen: boolean;
@@ -39,6 +40,12 @@ function RenderDetailDesain({
         case "eyelash":
             return <DetailDesainEyelash data={data} />;
 
+        case "behel":
+        case "waxing":
+        case "diamond gigi":
+        case "catok":
+            return <DetailDesainLayananTambahan data={data} />;
+            
         default:
             return (
                 <div className="rounded-md border border-[#dd98ad] bg-white px-3 py-2 text-sm text-[#7D344B]">

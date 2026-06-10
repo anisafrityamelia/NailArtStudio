@@ -11,6 +11,7 @@ import DetailDesainNailArt from "./detail_pesanan/detail_desain_nail_art";
 import DetailDesainPressOn from "./detail_pesanan/detail_desain_presson";
 import DetailDesainRemove from "./detail_pesanan/detail_desain_remove";
 import DetailDesainEyelash from "./detail_pesanan/detail_desain_eyelash";
+import DetailDesainLayananTambahan from "./detail_pesanan/detail_desain_layanan_tambahan";
 
 type PropsModalDetailPesanan = {
   isOpen: boolean;
@@ -39,6 +40,13 @@ function RenderDetailDesain({
 
     case "eyelash":
       return <DetailDesainEyelash data={data} />;
+
+    case "behel":
+    case "waxing":
+    case "diamond gigi":
+    case "diamond_gigi":
+    case "catok":
+      return <DetailDesainLayananTambahan data={data} />;
 
     default:
       return (

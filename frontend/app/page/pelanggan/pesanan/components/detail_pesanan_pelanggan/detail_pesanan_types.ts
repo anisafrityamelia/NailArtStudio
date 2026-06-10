@@ -24,6 +24,9 @@ export type DetailPesananPelanggan = {
   // Eyelash
   jenisLash?: string;
 
+  // Layanan tambahan
+  areaWaxing?: string;
+
   // Umum
   catatan?: string;
 

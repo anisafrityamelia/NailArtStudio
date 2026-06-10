@@ -74,6 +74,15 @@ class Pesanan extends Model
             'id_pesanan'
         );
     }
+
+    public function detailLayananTambahan()
+    {
+        return $this->hasOne(
+            DetailLayananTambahan::class,
+            'id_pesanan',
+            'id_pesanan'
+        );
+    }
     
     public function pembayaran()
     {

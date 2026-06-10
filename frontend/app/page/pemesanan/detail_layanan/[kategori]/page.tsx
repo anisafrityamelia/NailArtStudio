@@ -10,6 +10,7 @@ import FormPlaceholderLayanan from "./components/form_placeholder_layanan";
 import FormPressOn from "./components/form_presson";
 import FormEyelash from "./components/form_eyelash";
 import FormRemove from "./components/form_remove";
+import FormLayananTambahan from "./components/form_layanan_tambahan";
 
 type GambarLayanan = {
   id_gambar: number;
@@ -47,6 +48,13 @@ export default function DetailLayananPage() {
   const params = useParams();
 
   const kategori = params.kategori as string;
+
+  const kategoriLayananTambahan = [
+    "behel",
+    "waxing",
+    "diamond_gigi",
+    "catok",
+  ];
 
   const [layanan, setLayanan] = useState<Layanan | null>(null);
   const [loading, setLoading] = useState(true);
@@ -318,10 +326,15 @@ export default function DetailLayananPage() {
           <FormRemove layanan={layanan} />
         )}
 
+        {kategoriLayananTambahan.includes(layanan.kategori_layanan) && (
+          <FormLayananTambahan layanan={layanan} />
+        )}
+
         {layanan.kategori_layanan !== "nail_art" &&
           layanan.kategori_layanan !== "presson" &&
           layanan.kategori_layanan !== "eyelash" &&
-          layanan.kategori_layanan !== "remove" && (
+          layanan.kategori_layanan !== "remove" && 
+          !kategoriLayananTambahan.includes(layanan.kategori_layanan) && (
             <FormPlaceholderLayanan namaLayanan={layanan.nama_layanan} />
           )}
       </BottomSheetPemesanan>

@@ -8,6 +8,8 @@ use App\Models\DetailNailArt;
 use App\Models\DetailPressOn;
 use App\Models\DetailEyelash;
 use App\Models\DetailRemove;
+use App\Models\DetailLayananTambahan;
+use App\Models\Layanan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -370,6 +372,76 @@ class PesananController extends Controller
         }
     }
 
+    public function storeLayananTambahan(Request $request)
+    {
+        $request->validate([
+            'id_layanan' => 'required|exists:layanan,id_layanan',
+            'tanggal_pesanan' => 'required|date|after_or_equal:today',
+            'jam_pesanan' => 'required',
+            'area_waxing' => 'nullable|string',
+            'catatan' => 'nullable|string',
+        ]);
+
+        $layanan = Layanan::find($request->id_layanan);
+
+        if (! $layanan) {
+            return response()->json([
+                'message' => 'Layanan tidak ditemukan',
+            ], 404);
+        }
+
+        if (
+            $layanan->kategori_layanan === 'waxing' &&
+            ! $request->area_waxing
+        ) {
+            return response()->json([
+                'message' => 'Area waxing wajib diisi',
+            ], 422);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $kodePesanan = 'ORD-' . now()->format('YmdHis');
+
+            $pesanan = Pesanan::create([
+                'kode_pesanan' => $kodePesanan,
+                'id_pengguna' => $request->user()->id_pengguna,
+                'id_layanan' => $request->id_layanan,
+                'tanggal_pesanan' => $request->tanggal_pesanan,
+                'jam_pesanan' => $request->jam_pesanan,
+                'status' => 'menunggu_pembayaran',
+            ]);
+
+            DetailLayananTambahan::create([
+                'id_pesanan' => $pesanan->id_pesanan,
+                'area_waxing' => $layanan->kategori_layanan === 'waxing'
+                    ? $request->area_waxing
+                    : null,
+                'catatan' => $request->catatan,
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Booking layanan berhasil',
+                'data' => $pesanan->load([
+                    'detailLayananTambahan',
+                    'layanan',
+                    'pengguna'
+                ]),
+            ], 201);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'message' => 'Booking layanan gagal',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
     /**
      * Menampilkan daftar pesanan pelanggan.
      *
@@ -389,6 +461,7 @@ class PesananController extends Controller
             'detailPressOn',
             'detailEyelash',
             'detailRemove',
+            'detailLayananTambahan',
             'pembayaran',
             'ulasan',
         ])
@@ -419,6 +492,7 @@ class PesananController extends Controller
             'detailPressOn',
             'detailEyelash',
             'detailRemove',
+            'detailLayananTambahan',
             'pembayaran',
         ])
         ->whereIn('status', ['menunggu_konfirmasi', 'terjadwal', 'diproses', 'siap_diambil'])
@@ -510,6 +584,7 @@ class PesananController extends Controller
                 'detailPressOn',
                 'detailEyelash',
                 'detailRemove',
+                'detailLayananTambahan',
                 'pembayaran',
             ]),
         ]);
@@ -531,6 +606,7 @@ class PesananController extends Controller
             'detailPressOn',
             'detailEyelash',
             'detailRemove',
+            'detailLayananTambahan',
             'pembayaran',
         ])
         ->whereIn('status', ['selesai', 'dibatalkan'])
@@ -559,6 +635,7 @@ class PesananController extends Controller
             'detailPressOn',
             'detailEyelash',
             'detailRemove',
+            'detailLayananTambahan',
         ])->find($id);
 
         if (! $pesanan) {

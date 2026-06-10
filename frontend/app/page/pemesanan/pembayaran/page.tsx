@@ -220,6 +220,34 @@ export default function PembayaranUniversal() {
       );
     }
 
+    if (pesanan?.detail_layanan_tambahan) {
+      return (
+        <>
+          <InputReadonly
+            label="Tanggal"
+            value={pesanan?.tanggal_pesanan || "-"}
+          />
+
+          <InputReadonly
+            label="Jam"
+            value={pesanan?.jam_pesanan || "-"}
+          />
+
+          {pesanan?.layanan?.kategori_layanan === "waxing" && (
+            <InputReadonly
+              label="Area Waxing"
+              value={pesanan?.detail_layanan_tambahan?.area_waxing || "-"}
+            />
+          )}
+
+          <TextareaReadonly
+            label="Catatan"
+            value={pesanan?.detail_layanan_tambahan?.catatan || "-"}
+          />
+        </>
+      );
+    }
+
     return (
       <p className="text-center text-sm text-red-600">
         Detail layanan tidak ditemukan.

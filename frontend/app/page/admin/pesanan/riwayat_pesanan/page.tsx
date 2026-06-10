@@ -92,6 +92,9 @@ export default function RiwayatPesananPage() {
             jenisLash:
               item.detail_eyelash?.jenis_lash || "-",
 
+            areaWaxing:
+              item.detail_layanan_tambahan?.area_waxing || "-",
+
             fotoJariKanan:
               item.detail_press_on?.url_foto_jari_kanan ||
               undefined,
@@ -126,6 +129,7 @@ export default function RiwayatPesananPage() {
               item.detail_press_on?.catatan ||
               item.detail_eyelash?.catatan ||
               item.detail_remove?.catatan ||
+              item.detail_layanan_tambahan?.catatan ||
               "-",
 
             kodePembayaran:
@@ -221,7 +225,7 @@ export default function RiwayatPesananPage() {
 
         {/* Filter data */}
         <Filter_Pesanan 
-          layananOptions={["Layanan", "Nail Art", "Press On", "Remove", "Eyelash"]}
+          layananOptions={["Layanan", "Nail Art", "Press On", "Remove", "Eyelash", "Behel", "Waxing", "Diamond Gigi", "Catok"]}
           statusOptions={["Status", "Selesai", "Dibatalkan"]}
           onFilterChange={(newFilter) =>
             setFilter((prev) => ({
