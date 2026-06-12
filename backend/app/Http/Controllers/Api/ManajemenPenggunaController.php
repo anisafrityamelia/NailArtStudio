@@ -18,7 +18,7 @@ class ManajemenPenggunaController extends Controller
      */
     public function index()
     {
-        $pengguna = User::orderBy('id_pengguna', 'desc')->get();
+        $pengguna = User::orderBy('id_pengguna', 'asc')->get();
 
         return response()->json([
             'message' => 'Data pengguna berhasil diambil',

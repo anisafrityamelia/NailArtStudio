@@ -59,7 +59,9 @@ class PesananController extends Controller
             // generate kode pesanan
             $kodePesanan =
                 'ORD-' .
-                now()->format('YmdHis');
+                now()->format('YmdHis').
+                '-' .
+                strtoupper(substr(uniqid(), -5));
 
             // simpan pesanan
             $pesanan = Pesanan::create([
