@@ -25,6 +25,7 @@ export default function ManajemenPenggunaPage() {
     const [error, setError] = useState("");
 
     const [roleFilter, setRoleFilter] = useState("semua");
+    const [roleOptions, setRoleOptions] = useState<string[]>(["semua"]);
     const [isModalTambahOpen, setIsModalTambahOpen] = useState(false);
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);
     const [isModalHapusOpen, setIsModalHapusOpen] = useState(false);
@@ -66,6 +67,13 @@ export default function ManajemenPenggunaPage() {
             );
 
             setData(mappedData);
+            const roles = Array.from(
+                new Set<string>(
+                    result.data.map((item: any) => item.role)
+                )
+            );
+
+            setRoleOptions(["semua", ...roles]);
         } catch {
             setError("Gagal terhubung ke server");
         } finally {
@@ -285,9 +293,17 @@ export default function ManajemenPenggunaPage() {
                         onChange={(e) => setRoleFilter(e.target.value)}
                         className="h-8 rounded border border-[#c88ca1] bg-[#dd98ad] px-2 text-xs text-[#7d344b] font-semibold outline-none cursor-pointer sm:px-4 sm:text-sm"
                     >
-                        <option value="semua" className="bg-white">Role</option>
-                        <option value="admin" className="bg-white">Admin</option>
-                        <option value="pelanggan" className="bg-white">Pelanggan</option>
+                        {roleOptions.map((role) => (
+                            <option
+                                key={role}
+                                value={role}
+                                className="bg-white"
+                            >
+                                {role === "semua"
+                                    ? "Role"
+                                    : role.charAt(0).toUpperCase() + role.slice(1)}
+                            </option>
+                        ))}
                     </select>
 
                     {/* Tombol tambah */}
