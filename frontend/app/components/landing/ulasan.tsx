@@ -99,7 +99,7 @@ export default function Ulasan() {
                 ulasan.nama_pelanggan || "pelanggan alia oye";
 
               const avatar =
-                ulasan.foto_profil_url || `/avatar ${(index % 3) + 1}.jpg`;
+                ulasan.foto_profil_url || "/profile-default.jfif";
 
               const fotoUlasan =
                 ulasan.gambar_ulasan_url || "/ulasan-default.png";
