@@ -58,7 +58,7 @@ const menuItems = [
     icon: Users,
   },
   {
-    title: "Ulasan Pengguna",
+    title: "Kelola Ulasan",
     href: "/page/admin/ulasan",
     icon: MessageSquareText,
   },

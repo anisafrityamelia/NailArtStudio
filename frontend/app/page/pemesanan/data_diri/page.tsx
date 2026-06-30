@@ -1,10 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, ChevronDown } from "lucide-react";
 import API_BASE_URL from "@/app/lib/api";
 import { saveToken, saveUser } from "@/app/lib/auth";
+
+type LayananOption = {
+  id_layanan: number;
+  nama_layanan: string;
+};
 
 export default function HalamanPemesanan() {
   const [lihatSandi, setLihatSandi] = useState(false);
@@ -12,11 +17,42 @@ export default function HalamanPemesanan() {
   const [email, setEmail] = useState("");
   const [noHp, setNoHp] = useState("");
   const [kataSandi, setKataSandi] = useState("");
-  const [layanan, setLayanan] = useState("nail_art");
+  const [layanan, setLayanan] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [layananOptions, setLayananOptions] = useState<LayananOption[]>([]);
 
   const router = useRouter();
+
+  useEffect(() => {
+    const ambilLayanan = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/layanan`, {
+          headers: {
+            Accept: "application/json",
+          },
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) return;
+
+        setLayananOptions(result.data);
+
+        if (result.data.length > 0) {
+          setLayanan(
+            result.data[0].nama_layanan
+              .toLowerCase()
+              .replace(/\s+/g, "_")
+          );
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    ambilLayanan();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -134,7 +170,7 @@ export default function HalamanPemesanan() {
                   const value = e.target.value.replace(/\D/g, "");
                   setNoHp(value);
                 }}
-                placeholder="Masukkan No HP (Aktif)"
+                placeholder="Masukkan No WA (Aktif)"
                 className="w-full rounded-md border border-[#dd98ad] bg-white px-3 py-1.5 text-xs text-[#7D344B] outline-none transition shadow-soft-text placeholder:text-[#b57f91] focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0] sm:text-sm"
                 required
               />
@@ -181,10 +217,14 @@ export default function HalamanPemesanan() {
                   className="w-full appearance-none cursor-pointer rounded-md border border-[#dd98ad] bg-white px-3 py-1.5 pr-10 text-xs text-[#7D344B] outline-none transition shadow-soft-text focus:border-[#c75b82] focus:ring-2 focus:ring-[#e9a9c0] sm:text-sm"
                   required
                 >
-                  <option value="nail_art">Nail Art</option>
-                  <option value="presson">Press On</option>
-                  <option value="eyelash">Eyelash</option>
-                  <option value="remove">Remove</option>
+                  {layananOptions.map((item) => (
+                    <option
+                      key={item.id_layanan}
+                      value={item.nama_layanan.toLowerCase().replace(/\s+/g, "_")}
+                    >
+                      {item.nama_layanan}
+                    </option>
+                  ))}
                 </select>
 
                 <ChevronDown
