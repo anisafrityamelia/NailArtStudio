@@ -5,7 +5,7 @@
 
 ## Luaran AAS
 - [Video Presentasi ATS](https://youtu.be/GkaauNr-22I?si=tJ_CfnjXEvLz_Exd)
-- [Laporan PBL]()
+- [Laporan PBL](https://drive.google.com/file/d/1Y5brg8qjpq58bIU9GTKPgVR3dMEp8jbW/view?usp=sharing)
 - [PPT IF-4PA-03](https://drive.google.com/file/d/1N9SyZo5cZPKCCtFGPVM9flESv3Siibmx/view?usp=sharing)
 - [Luaran AAS](https://drive.google.com/drive/folders/1-dXnkaJwVg3TkHxP0DsL95QOL2VUx1R0?usp=drive_link)
 - [Luaran Pendukung AAS](https://drive.google.com/drive/folders/1DXqBinbqKQkZ6vGPoUj_A8iX2ln3KIBv?usp=drive_link)
